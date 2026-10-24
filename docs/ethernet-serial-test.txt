@@ -1,0 +1,9 @@
+[SYS] Netzkonfiguration angefordert; Ergebnis im HOST-Log
+aut
+[HOST] W5500=1 link=1 online=1 IP=192.168.77.2 statisch; HTTP=80 ModbusTCP=502
+[SENSOR] TEST_MODE T=20.21 C RH=42.78 %
+[SYS] mode=TEST_MODE service=0 alarm=0 fault=0 ready=1 faults=0x0000 DI=0x00 relay=0x04 uptime=283s
+[SENSOR] valid=1 T=20.21 RH=42.78 age=3074ms error=0
+[HOST] W5500=1 link=1 online=1 IP=192.168.77.2 | [MODBUS] requests=0 rejected=0
+[MODBUS] TCP port=502 requests=0 rejected=0 network=statisch
+[SYS] Logik-Selbsttest PASS
