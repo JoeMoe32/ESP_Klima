@@ -1,0 +1,55 @@
+name: Build AirMonitor Compact CAD V0.3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cad/airmonitor-compact-v0.3
+    paths:
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.3/*.py"
+      - ".github/workflows/build-airmonitor-compact-cad-v03.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-cad:
+    runs-on: ubuntu-latest
+    env:
+      REV_DIR: hardware/cad/AirMonitor_Compact_Revision_V0.3
+    steps:
+      - name: Check out CAD branch
+        uses: actions/checkout@v4
+        with:
+          ref: cad/airmonitor-compact-v0.3
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Clearance check (no CAD kernel)
+        working-directory: ${{ env.REV_DIR }}
+        run: python check_clearances.py
+
+      - name: Install CadQuery
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install cadquery==2.5.2
+
+      - name: Generate STEP and STL files
+        working-directory: ${{ env.REV_DIR }}
+        run: python build_compact_revision.py
+
+      - name: Commit generated CAD files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$REV_DIR/01_CAD_Global" "$REV_DIR/02_CAD_Print" "$REV_DIR/03_Renders_Drawings" "$REV_DIR/DIMENSIONS.csv"
+          if git diff --cached --quiet; then
+            echo "CAD outputs already current."
+            exit 0
+          fi
+          git commit -m "Generate compact AirMonitor CAD revision V0.3"
+          git push origin HEAD:cad/airmonitor-compact-v0.3
