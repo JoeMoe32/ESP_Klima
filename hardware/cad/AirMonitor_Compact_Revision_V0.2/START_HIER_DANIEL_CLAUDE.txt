@@ -1,0 +1,7 @@
+1. Nach Abschluss der GitHub Action den Ordner 01_CAD_Global öffnen.
+2. AirMonitor_Compact_Reference_With_Dummies_V0.2.step in Fusion 360 öffnen.
+3. CAD_COMPACT_SPEC_V0.2.md lesen.
+4. PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW.md in Claude einfügen.
+5. Reales Waveshare und SEN0661 gegen die Referenzkörper prüfen.
+6. Noch nichts drucken oder ändern, bevor die Abweichungsliste erstellt ist.
+7. Bei einer notwendigen CAD-Änderung zuerst Jonathan informieren und danach Revision V0.3 anlegen.
