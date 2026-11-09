@@ -4,6 +4,8 @@ Ohne CAD-Kern. Aufruf: python tools_assembly_stl.py
 Erzeugt in 03_Renders_Drawings/:
   AirMonitor_Compact_Assembly_V0.3.stl              alle Teile, Haube montiert (Kalibrierbetrieb)
   AirMonitor_Compact_Assembly_With_Dummies_V0.3.stl zusätzlich Waveshare, SEN0661, Tasterplatine als Quader
+  AirMonitor_Compact_Assembly_Parts_V0.3.3mf        alle Teile + Dummys GETRENNT, benannt und farbig
+  AirMonitor_Compact_Assembly_Parts_V0.3.stl        dasselbe als ASCII-STL mit einem solid-Block pro Teil
 """
 import struct
 import sys
@@ -72,6 +74,67 @@ write_stl(OUT / 'AirMonitor_Compact_Assembly_V0.3.stl', tris)
 dummies = [C.CARRIER, (21.6, 173.4, 11.0, 101.0, 9.6, 11.2), C.SEN_PCB, C.SEN_TOP, C.SEN_CON, C.BTN_PCB_DUMMY]
 tris_d = tris + [t for d in dummies for t in box_tris(*d)]
 write_stl(OUT / 'AirMonitor_Compact_Assembly_With_Dummies_V0.3.stl', tris_d)
+
+# ---- Getrennte Teile in einer Datei ----
+# 3MF: jedes Teil ein eigenes, benanntes Objekt mit Farbe (Windows 3D-Viewer, 3D Builder, PrusaSlicer, Fusion).
+# ASCII-STL: mehrere "solid"-Blöcke; je nach Programm als getrennte Körper geladen.
+import zipfile  # noqa: E402
+
+COLORS = {'P01': '#B8C4CC', 'P02': '#E8EEF2', 'P03': '#F0C774', 'P04': '#3A3A3A', 'P05': '#3A3A3A',
+          'P07': '#7FB3D5', 'P08': '#3A3A3A', 'Dummy': '#2E8B57'}
+named = []
+for name, tf in PARTS.items():
+    named.append((name.replace('_Print.stl', ''), [tuple(tf(*p) for p in t) for t in read_stl(P / name)]))
+dummy_names = ['Dummy_Waveshare_Traeger', 'Dummy_Waveshare_PCB', 'Dummy_SEN0661_PCB', 'Dummy_SEN0661_Oberteil',
+               'Dummy_SEN0661_Stecker', 'Dummy_Tasterplatine']
+named += [(n, list(box_tris(*d))) for n, d in zip(dummy_names, dummies)]
+
+
+def color_of(n):
+    return COLORS['Dummy'] if n.startswith('Dummy') else COLORS[n[:3]]
+
+
+with (OUT / 'AirMonitor_Compact_Assembly_Parts_V0.3.stl').open('w', encoding='ascii') as f:
+    for n, ts in named:
+        f.write(f'solid {n}\n')
+        for a, b, c in ts:
+            nx, ny, nz = normal(a, b, c)
+            f.write(f' facet normal {nx:.6e} {ny:.6e} {nz:.6e}\n  outer loop\n')
+            for p in (a, b, c):
+                f.write(f'   vertex {p[0]:.4f} {p[1]:.4f} {p[2]:.4f}\n')
+            f.write('  endloop\n endfacet\n')
+        f.write(f'endsolid {n}\n')
+
+objs, items = [], []
+mats = ''.join(f'<base name="{n}" displaycolor="{color_of(n)}FF"/>' for n, _ in named)
+for i, (n, ts) in enumerate(named):
+    idx, verts, tri_xml = {}, [], []
+    for t in ts:
+        ids = []
+        for p in t:
+            k = (round(p[0], 4), round(p[1], 4), round(p[2], 4))
+            if k not in idx:
+                idx[k] = len(verts); verts.append(k)
+            ids.append(idx[k])
+        if len(set(ids)) == 3:
+            tri_xml.append(f'<triangle v1="{ids[0]}" v2="{ids[1]}" v3="{ids[2]}"/>')
+    vx = ''.join(f'<vertex x="{x}" y="{y}" z="{z}"/>' for x, y, z in verts)
+    objs.append(f'<object id="{i + 2}" name="{n}" type="model" pid="1" pindex="{i}"><mesh><vertices>{vx}</vertices>'
+                f'<triangles>{"".join(tri_xml)}</triangles></mesh></object>')
+    items.append(f'<item objectid="{i + 2}"/>')
+model = ('<?xml version="1.0" encoding="UTF-8"?><model unit="millimeter" xml:lang="de-CH" '
+         'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
+         '<metadata name="Title">Laminar AirMonitor Compact V0.3 – Baugruppe</metadata>'
+         f'<resources><basematerials id="1">{mats}</basematerials>{"".join(objs)}</resources>'
+         f'<build>{"".join(items)}</build></model>')
+with zipfile.ZipFile(OUT / 'AirMonitor_Compact_Assembly_Parts_V0.3.3mf', 'w', zipfile.ZIP_DEFLATED) as z:
+    z.writestr('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+               '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+               '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/></Types>')
+    z.writestr('_rels/.rels', '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+               '<Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/></Relationships>')
+    z.writestr('3D/3dmodel.model', model)
+print(f'getrennt: {len(named)} Teile -> AirMonitor_Compact_Assembly_Parts_V0.3.3mf / .stl')
 
 xs = [p[0] for t in tris for p in t]; ys = [p[1] for t in tris for p in t]; zs = [p[2] for t in tris for p in t]
 print(f'{len(tris)} Dreiecke, Hülle X {min(xs):.1f}…{max(xs):.1f}, Y {min(ys):.1f}…{max(ys):.1f}, Z {min(zs):.1f}…{max(zs):.1f}')
