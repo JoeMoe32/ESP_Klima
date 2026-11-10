@@ -1,0 +1,5 @@
+1. CAD_COMPACT_SPEC_V0.4.md lesen.
+2. AirMonitor_Compact_Reference_With_Dummies_V0.4.step in Fusion 360 öffnen.
+3. PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.4.md in Claude einfügen.
+4. Zuerst Sensorhalter, SEN0661-Lage und unteren Gravity-Stecker prüfen.
+5. Keine Geometrie ändern, bevor die Abweichung dokumentiert und bestätigt wurde.
