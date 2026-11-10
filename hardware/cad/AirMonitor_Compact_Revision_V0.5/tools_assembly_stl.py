@@ -2,10 +2,10 @@
 
 Ohne CAD-Kern. Aufruf: python tools_assembly_stl.py
 Erzeugt in 03_Renders_Drawings/:
-  AirMonitor_Compact_Assembly_V0.3.stl              alle Teile, Haube montiert (Kalibrierbetrieb)
-  AirMonitor_Compact_Assembly_With_Dummies_V0.3.stl zusätzlich Waveshare, SEN0661, Tasterplatine als Quader
-  AirMonitor_Compact_Assembly_Parts_V0.3.3mf        alle Teile + Dummys GETRENNT, benannt und farbig
-  AirMonitor_Compact_Assembly_Parts_V0.3.stl        dasselbe als ASCII-STL mit einem solid-Block pro Teil
+  AirMonitor_Compact_Assembly_V0.5.stl              alle Teile, Haube montiert (Kalibrierbetrieb)
+  AirMonitor_Compact_Assembly_With_Dummies_V0.5.stl zusätzlich Waveshare, SEN0661, Tasterplatine als Quader
+  AirMonitor_Compact_Assembly_Parts_V0.5.3mf        alle Teile + Dummys GETRENNT, benannt und farbig
+  AirMonitor_Compact_Assembly_Parts_V0.5.stl        dasselbe als ASCII-STL mit einem solid-Block pro Teil
 """
 import struct
 import sys
@@ -59,7 +59,7 @@ def normal(a, b, c):
 
 def write_stl(path, tris):
     with path.open('wb') as f:
-        f.write(b'Laminar AirMonitor Compact V0.3 assembly'.ljust(80, b' '))
+        f.write(b'Laminar AirMonitor Compact V0.5 assembly'.ljust(80, b' '))
         f.write(struct.pack('<I', len(tris)))
         for a, b, c in tris:
             f.write(struct.pack('<12fH', *normal(a, b, c), *a, *b, *c, 0))
@@ -69,11 +69,11 @@ tris = []
 for name, tf in PARTS.items():
     tris += [tuple(tf(*p) for p in t) for t in read_stl(P / name)]
 OUT.mkdir(exist_ok=True)
-write_stl(OUT / 'AirMonitor_Compact_Assembly_V0.3.stl', tris)
+write_stl(OUT / 'AirMonitor_Compact_Assembly_V0.5.stl', tris)
 
 dummies = [C.CARRIER, (21.6, 173.4, 11.0, 101.0, 9.6, 11.2), C.SEN_PCB, C.SEN_TOP, C.SEN_CON, C.BTN_PCB_DUMMY]
 tris_d = tris + [t for d in dummies for t in box_tris(*d)]
-write_stl(OUT / 'AirMonitor_Compact_Assembly_With_Dummies_V0.3.stl', tris_d)
+write_stl(OUT / 'AirMonitor_Compact_Assembly_With_Dummies_V0.5.stl', tris_d)
 
 # ---- Getrennte Teile in einer Datei ----
 # 3MF: jedes Teil ein eigenes, benanntes Objekt mit Farbe (Windows 3D-Viewer, 3D Builder, PrusaSlicer, Fusion).
@@ -94,7 +94,7 @@ def color_of(n):
     return COLORS['Dummy'] if n.startswith('Dummy') else COLORS[n[:3]]
 
 
-with (OUT / 'AirMonitor_Compact_Assembly_Parts_V0.3.stl').open('w', encoding='ascii') as f:
+with (OUT / 'AirMonitor_Compact_Assembly_Parts_V0.5.stl').open('w', encoding='ascii') as f:
     for n, ts in named:
         f.write(f'solid {n}\n')
         for a, b, c in ts:
@@ -124,17 +124,17 @@ for i, (n, ts) in enumerate(named):
     items.append(f'<item objectid="{i + 2}"/>')
 model = ('<?xml version="1.0" encoding="UTF-8"?><model unit="millimeter" xml:lang="de-CH" '
          'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
-         '<metadata name="Title">Laminar AirMonitor Compact V0.3 – Baugruppe</metadata>'
+         '<metadata name="Title">Laminar AirMonitor Compact V0.5 – Baugruppe</metadata>'
          f'<resources><basematerials id="1">{mats}</basematerials>{"".join(objs)}</resources>'
          f'<build>{"".join(items)}</build></model>')
-with zipfile.ZipFile(OUT / 'AirMonitor_Compact_Assembly_Parts_V0.3.3mf', 'w', zipfile.ZIP_DEFLATED) as z:
+with zipfile.ZipFile(OUT / 'AirMonitor_Compact_Assembly_Parts_V0.5.3mf', 'w', zipfile.ZIP_DEFLATED) as z:
     z.writestr('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
                '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
                '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/></Types>')
     z.writestr('_rels/.rels', '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
                '<Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/></Relationships>')
     z.writestr('3D/3dmodel.model', model)
-print(f'getrennt: {len(named)} Teile -> AirMonitor_Compact_Assembly_Parts_V0.3.3mf / .stl')
+print(f'getrennt: {len(named)} Teile -> AirMonitor_Compact_Assembly_Parts_V0.5.3mf / .stl')
 
 xs = [p[0] for t in tris for p in t]; ys = [p[1] for t in tris for p in t]; zs = [p[2] for t in tris for p in t]
 print(f'{len(tris)} Dreiecke, Hülle X {min(xs):.1f}…{max(xs):.1f}, Y {min(ys):.1f}…{max(ys):.1f}, Z {min(zs):.1f}…{max(zs):.1f}')
