@@ -1,10 +1,18 @@
-"""AirMonitor Compact V0.5 – zentrale Parameter (mm).
+"""AirMonitor Compact V0.6 – zentrale Parameter (mm).
 
-Basis ist die technisch geprüfte V0.3-Geometrie. V0.5 ändert ausschliesslich
-an der rechten Rückwand die Position der vollständigen ZERO-/SPAN-Baugruppe:
-Tasterplatine, beide Microtaster, vier Halter und beide Serviceöffnungen werden
-als starre Einheit verschoben. DC5521, Sensorzelle, Kalibrierhaube, Waveshare,
-Deckel und restliches Gehäuse bleiben unverändert.
+Basis ist die technisch geprüfte V0.3-Geometrie. V0.6 korrigiert nur die
+rechte Rückwand:
+
+- Nicht ZERO/SPAN werden auf der Wand zentriert, sondern die komplette
+  80,0 × 20,0 mm Microtaster-Platine samt vier Haltern.
+- ZERO und SPAN behalten ihre gemessenen Positionen auf der Platine.
+- Die DC5521-Buchse sitzt unterhalb der beiden Microtaster, mittig zwischen
+  ZERO und SPAN.
+- Die Halter liegen dadurch frei zwischen den beiden senkrechten
+  Deckelschraubsäulen und nicht mehr hinter einer Säule.
+
+Sensorzelle, Kalibrierhaube, Waveshare, Deckel und alle übrigen Geometrien
+bleiben unverändert.
 
 Koordinaten global: Ursprung äussere untere Ecke P01, X lang, Y kurz, Z hoch.
 """
@@ -28,19 +36,22 @@ BOARD_BOTTOM_Z, BOARD_TOP_Z = 9.6, 27.6
 CARRIER = (10.0, 185.0, 11.0, 101.0, 9.6, 27.6)  # xmin,xmax,ymin,ymax,zmin,zmax
 
 # ---------- Rechte Stirnwand ----------
-# DC5521 bleibt exakt an der bisherigen Position.
-DC5521 = (15.0, 27.5, 11.2)  # y, z, d
-
-# V0.5: komplette Microtaster-Baugruppe als starre Einheit verschoben.
-# Gegenüber V0.3: delta Y = -4,0 mm, delta Z = +13,0 mm.
-# Platinen-Aussenbereich daraus: Y = 24,0…104,0 / Z = 33,0…53,0.
-# Innenansicht: Platine oben; DC5521 darunter rechts. Lochbild und Prinzip unverändert.
-ZERO = (44.0, 41.0, 3.0)
-SPAN = (60.0, 41.0, 3.0)
-BTN_HOLDER_Y = (26.0, 102.0)  # Lochbild 76,0
-BTN_HOLDER_Z = (35.0, 51.0)   # Lochbild 16,0
+# V0.6: Platinenhalterung geometrisch in der 112-mm-Wand zentriert.
+# Platinen-Aussenbereich: Y = 16,0…96,0 / Z = 33,0…53,0.
+# Lochbild bleibt 76,0 × 16,0; Halterabstand zu beiden Deckelsäulen ist symmetrisch.
+BTN_HOLDER_Y = (18.0, 94.0)  # Lochbild 76,0
+BTN_HOLDER_Z = (35.0, 51.0)  # Lochbild 16,0
 BTN_HOLDER_D, BTN_HOLDER_PILOT_D, BTN_HOLDER_LEN = 5.0, 1.6, 6.0
-BTN_PCB = (80.0, 20.0, 1.5)   # Länge Y, Höhe Z, Dicke X [gemessen]
+BTN_PCB = (80.0, 20.0, 1.5)  # Länge Y, Höhe Z, Dicke X [gemessen]
+
+# ZERO/SPAN bleiben auf der Platine bei 20,0 bzw. 36,0 mm ab deren Y-Min-Kante.
+# Sie werden nicht als Paar auf der Gehäusewand zentriert.
+ZERO = (36.0, 41.0, 3.0)
+SPAN = (52.0, 41.0, 3.0)
+
+# V0.6: DC5521 direkt unter den beiden Microtastern, mittig zwischen ZERO/SPAN.
+# Z bleibt unverändert; nur Y wird auf den Schalter-Mittelpunkt gesetzt.
+DC5521 = (44.0, 27.5, 11.2)  # y, z, d
 
 # ---------- Deckel P02 ----------
 LID_Z, LID_T = 55.0, 3.0
