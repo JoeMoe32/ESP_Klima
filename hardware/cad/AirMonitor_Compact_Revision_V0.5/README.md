@@ -1,22 +1,34 @@
-# Laminar AirMonitor HCHO – Compact Revision V0.3
+# AirMonitor Compact Revision V0.5
 
-Korrekturrevision zu V0.2 nach der digitalen Prüfung (`../AirMonitor_Compact_Revision_V0.2/PRUEFBERICHT_V0.2_DIGITAL.md`).
-Die Grundgeometrie bleibt gleich (208,0 × 132,0 × 55,0, Sensorpod oben links über dem Waveshare). Die Änderungen K01–K12 stehen in `CAD_COMPACT_SPEC_V0.3.md`.
+This revision is based on the verified V0.3 enclosure geometry.
 
-## Dateien
+## What changed
 
-| Datei | Zweck |
-|---|---|
-| `compact_params.py` | alle Masse, führend |
-| `check_clearances.py` | Abstands-/Luftwegprüfung ohne CAD-Kern (`python check_clearances.py`) |
-| `build_compact_revision.py` | erzeugt STEP/STL mit CadQuery 2.5.2, prüft vorher die Abstände und danach die Schnittvolumen |
-| `CAD_COMPACT_SPEC_V0.3.md` | Änderungen gegenüber V0.2, Abstände, offene Punkte |
-| `PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.3.md` | Prüfauftrag für Daniel und Claude |
+Only the complete ZERO/SPAN microtaster PCB assembly on the right rear wall was moved:
 
-Die Ordner `01_CAD_Global/`, `02_CAD_Print/`, `03_Renders_Drawings/` und `DIMENSIONS.csv` erzeugt die GitHub Action
-`.github/workflows/build-airmonitor-compact-cad-v03.yml` beim Push auf den Branch `cad/airmonitor-compact-v0.3`.
-Lokal ist kein CadQuery installiert (Python 3.15); STEP/STL liegen deshalb erst nach dem Action-Lauf vor.
+- PCB 80.0 × 20.0 × 1.5 mm
+- ZERO and SPAN switches
+- both Ø3.0 mm service openings
+- all four PCB holders and pilot holes
 
-## Status
+The movement is rigid and common to all listed elements:
 
-Noch keine Druckfreigabe. Abstände rechnerisch geprüft (0 NOK), Schnittvolumen-Prüfung mit CAD-Kern erst im Action-Lauf.
+```text
+ΔY = -4.0 mm
+ΔZ = +13.0 mm
+rotation = 0.0°
+```
+
+## What did not change
+
+DC5521, sensor pod, calibration hood, Waveshare position, openings, lid and the remaining enclosure geometry are unchanged.
+
+## Start here
+
+1. Open `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.5.step` in Fusion 360.
+2. Compare the inside view of the right rear wall with `03_Renders_Drawings/Drawing_RearPanel_Inside_V0.5.svg`.
+3. Verify PCB mounting, ZERO/SPAN alignment, DC5521 nut clearance and cable access.
+4. Read `CAD_COMPACT_SPEC_V0.5.md`.
+5. Use `PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.5.md` for the review with Claude.
+
+Generated STEP/STL files are produced automatically by GitHub Actions from `compact_params.py`, `build_compact_revision.py` and `build_v05.py`.

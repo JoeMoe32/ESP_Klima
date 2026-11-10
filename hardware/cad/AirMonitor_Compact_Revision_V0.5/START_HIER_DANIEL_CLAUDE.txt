@@ -1,0 +1,15 @@
+START HIER – AirMonitor Compact V0.5
+
+1. Öffne in Fusion 360:
+   01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.5.step
+
+2. Prüfe die rechte Rückwand in der Innenansicht anhand:
+   03_Renders_Drawings/Drawing_RearPanel_Inside_V0.5.svg
+
+3. V0.5 ändert nur die komplette ZERO-/SPAN-Platinenbaugruppe.
+   DC5521 und alle übrigen Bauteile bleiben unverändert.
+
+4. Lies CAD_COMPACT_SPEC_V0.5.md.
+
+5. Für Claude verwende:
+   PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.5.md
