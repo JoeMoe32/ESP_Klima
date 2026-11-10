@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="650" viewBox="-4 -4 120 63">
+<style>
+text{font-family:Arial,sans-serif;font-size:3.2px;fill:#172b3a}
+.wall{fill:#f4f5f6;stroke:#172b3a;stroke-width:.6}
+.pcb{fill:#d7e6ef;stroke:#172b3a;stroke-width:.5}
+.hole{fill:white;stroke:#172b3a;stroke-width:.45}
+.holder{fill:none;stroke:#31708f;stroke-width:.35;stroke-dasharray:1.2 0.8}
+.dim{stroke:#555;stroke-width:.25}
+</style>
+<text x="0" y="-1">AirMonitor Compact V0.5 – rechte Rückwand, Innenansicht [mm]</text>
+<rect class="wall" x="0" y="0" width="112" height="55"/>
+<!-- PCB: global Y 24..104, Z 33..53 -> inside view X 8..88, drawing Y 2..22 -->
+<rect class="pcb" x="8" y="2" width="80" height="20"/>
+<text x="10" y="7">Microtaster-Platine 80,0 × 20,0 × 1,5</text>
+<!-- Four holder axes, mirrored from global Y -->
+<circle class="holder" cx="10" cy="4" r="2.5"/>
+<circle class="holder" cx="86" cy="4" r="2.5"/>
+<circle class="holder" cx="10" cy="20" r="2.5"/>
+<circle class="holder" cx="86" cy="20" r="2.5"/>
+<!-- ZERO/SPAN service openings, rigidly moved with PCB -->
+<circle class="hole" cx="68" cy="14" r="1.5"/>
+<circle class="hole" cx="52" cy="14" r="1.5"/>
+<text x="65" y="18">ZERO</text>
+<text x="48" y="18">SPAN</text>
+<!-- DC5521 unchanged: global Y 15, Z 27.5 -> inside X 97, drawing Y 27.5 -->
+<circle class="hole" cx="97" cy="27.5" r="5.6"/>
+<text x="89" y="36">DC5521 Ø11,2</text>
+<text x="2" y="59">Nur ZERO/SPAN-Platine, beide Schalter, vier Halter und zwei Ø3,0-Serviceöffnungen verschoben. DC5521 unverändert.</text>
+</svg>
