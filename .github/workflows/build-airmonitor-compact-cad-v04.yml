@@ -1,0 +1,51 @@
+name: Build AirMonitor Compact CAD V0.4
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cad/airmonitor-compact-v0.4
+    paths:
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.4/**"
+      - ".github/workflows/build-airmonitor-compact-cad-v04.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-cad:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out V0.4 CAD branch
+        uses: actions/checkout@v4
+        with:
+          ref: cad/airmonitor-compact-v0.4
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CadQuery
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install cadquery==2.5.2
+
+      - name: Validate and generate STEP/STL
+        working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.4
+        run: |
+          python check_clearances.py
+          python build_compact_revision.py
+
+      - name: Commit generated V0.4 CAD files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hardware/cad/AirMonitor_Compact_Revision_V0.4
+          if git diff --cached --quiet; then
+            echo "V0.4 CAD outputs already current."
+            exit 0
+          fi
+          git commit -m "Generate AirMonitor compact center-left sensor CAD V0.4"
+          git push origin HEAD:cad/airmonitor-compact-v0.4
