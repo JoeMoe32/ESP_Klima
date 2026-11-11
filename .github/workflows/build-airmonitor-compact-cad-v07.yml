@@ -1,0 +1,56 @@
+name: Build AirMonitor Compact CAD V0.7
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cad/airmonitor-compact-v0.7
+    paths:
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.7/**"
+      - ".github/workflows/build-airmonitor-compact-cad-v07.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-cad:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out V0.7 CAD branch
+        uses: actions/checkout@v4
+        with:
+          ref: cad/airmonitor-compact-v0.7
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Expand V0.7 source package
+        working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.7
+        run: python bootstrap_loader.py
+
+      - name: Install CAD and PDF dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install cadquery==2.5.2 reportlab==4.2.5
+
+      - name: Validate and generate STEP STL drawings and PDF
+        working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.7
+        run: |
+          python check_clearances.py
+          python build_v07.py
+          python generate_mass_sketches_v07.py
+
+      - name: Commit generated V0.7 files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A hardware/cad/AirMonitor_Compact_Revision_V0.7
+          if git diff --cached --quiet; then
+            echo "CAD outputs already current."
+            exit 0
+          fi
+          git commit -m "Generate AirMonitor Compact V0.7 CAD and mass sketches"
+          git push origin HEAD:cad/airmonitor-compact-v0.7
