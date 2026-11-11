@@ -52,4 +52,5 @@ jobs:
             exit 0
           fi
           git commit -m "Generate AirMonitor Compact V0.7 CAD and mass sketches"
+          git pull --rebase origin cad/airmonitor-compact-v0.7
           git push origin HEAD:cad/airmonitor-compact-v0.7
