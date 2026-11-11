@@ -6,7 +6,10 @@ on:
     branches:
       - cad/airmonitor-compact-v0.7
     paths:
-      - "hardware/cad/AirMonitor_Compact_Revision_V0.7/**"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.7/compact_params.py"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.7/check_clearances.py"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.7/build_v07.py"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.7/generate_mass_sketches_v07.py"
       - ".github/workflows/build-airmonitor-compact-cad-v07.yml"
 
 permissions:
@@ -26,10 +29,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Expand V0.7 source package
-        working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.7
-        run: python bootstrap_loader.py
 
       - name: Install CAD and PDF dependencies
         run: |
