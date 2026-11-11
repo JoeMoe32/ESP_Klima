@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="-5 -6 122 67">
+<style>text{font-family:Arial,sans-serif;font-size:3.1px;fill:#172b3a}.t{font-size:4px;font-weight:bold}.wall{fill:#f4f5f6;stroke:#172b3a;stroke-width:.6}.pcb{fill:#d7e6ef;stroke:#172b3a;stroke-width:.5}.col{fill:#c6c9cc;stroke:#59636a;stroke-width:.4}.h{fill:#9cc7dc;stroke:#24566f;stroke-width:.4}.o{fill:white;stroke:#172b3a;stroke-width:.45}</style>
+<text class="t" x="0" y="-2">AirMonitor V0.7 – rechte Stirnwand innen: ZERO / SPAN</text>
+<rect class="wall" x="0" y="0" width="112" height="55"/>
+<rect class="col" x="2.5" y="0" width="9" height="55" rx="4.5"/><rect class="col" x="100.5" y="0" width="9" height="55" rx="4.5"/>
+<rect class="pcb" x="16" y="2" width="80" height="20"/>
+<circle class="h" cx="18" cy="4" r="2.5"/><circle class="h" cx="94" cy="4" r="2.5"/><circle class="h" cx="18" cy="20" r="2.5"/><circle class="h" cx="94" cy="20" r="2.5"/>
+<circle class="o" cx="76" cy="14" r="1.5"/><circle class="o" cx="60" cy="14" r="1.5"/>
+<text x="70" y="11">ZERO</text><text x="56" y="11">SPAN</text>
+<text x="15" y="27">80,0 × 20,0 × 1,5; Halter 76,0 × 16,0</text>
+<text x="2" y="61">DC5521 ist nicht mehr auf dieser Wand.</text></svg>
