@@ -1,0 +1,6 @@
+feature,global_y_mm,global_z_mm,size_or_note
+PCB outer,16.0..96.0,33.0..53.0,80.0 x 20.0 x 1.5
+Holder Y/Z,18.0 / 94.0,35.0 / 51.0,pattern 76.0 x 16.0
+ZERO,36.0,41.0,service hole dia 3.0
+SPAN,52.0,41.0,service hole dia 3.0
+DC5521,44.0,27.5,bore dia 11.2
