@@ -1,7 +1,9 @@
-feature,value,note
-LID_BOSSES,"[(7.0, 7.0), (7.0, 105.0), (201.0, 7.0), (201.0, 105.0)]",right bosses now 7 mm from edge
-STANDOFFS,"[(24.0, 25.0), (169.0, 25.0), (24.0, 87.0), (169.0, 87.0)]",annotated board mount coordinates
-POD,"(26.0, 79.5, 16.0, 98.0, 40.0, 54.0)",moved +20 X and widened +8 to right
-DC5521,left wall; Y=44.0; Z=27.5; D=11.2,opposite end wall
-P04,"{'x': (26.0, 78.0), 'y': (16.0, 98.0), 'z0': 57.4, 'h': 2.0, 'web': 3.0, 'corner_r': 4.0, 'bar_y': (51.5, 54.5)}","D-profile TPU95A, top groove"
-P08,"{'x': (26.0, 79.5), 'y': (16.0, 98.0), 'z0': 54.0, 'h': 2.0, 'web': 3.0, 'corner_r': 4.0}","D-profile TPU95A, underside groove"
+feature,value,status
+Sensor group X shift,0.0 mm; V0.6 X position retained,approved correction
+Sensor group Y centre,56.0 mm,approved correction
+P03 body,X 6.0..59.5 / Y 15.0..97.0 / Z 40.0..54.0,CAD
+P03 sealing rim,Z 54.0..55.0,CAD
+P07 plate,X 4.0..60.0 / Y 3.2..108.8 / Z 58.0..61.0,CAD
+P04A,"EPDM70 Ø45.00x1.50; centre (32.00,33.50); path 46.00x34.00 R8.00; stretch 0.12%",stocked SKU H48761
+P04B,"EPDM70 Ø50.00x1.50; centre (32.00,74.50); path 45.80x42.00 R8.00; stretch 0.05%",stocked SKU H96773
+P08,"EPDM70 Ø77.00x1.50; centre (32.75,56.00); path 51.20x79.00 R8.00; stretch 0.02%",stocked SKU H48789

@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="550" viewBox="0 0 110 55">
-<style>text{font-family:Arial,sans-serif;font-size:3px;fill:#172b3a}.t{font-size:4px;font-weight:bold}.rigid{fill:#d9dde1;stroke:#172b3a;stroke-width:.45}.seal{fill:#88c6d9;stroke:#172b3a;stroke-width:.45}.dim{stroke:#172b3a;stroke-width:.25}</style>
-<text class="t" x="2" y="5">V0.7 TPU95A D-Profil und Einbuchtung</text>
-<rect class="rigid" x="8" y="31" width="70" height="8"/><rect x="28" y="31" width="14" height="2.4" fill="white" stroke="#172b3a" stroke-width=".3"/>
-<path class="seal" d="M30 33.4 L40 33.4 L40 29.8 Q40 27.4 37.6 27.4 L32.4 27.4 Q30 27.4 30 29.8 Z"/>
-<text x="47" y="29">Gasket height 2,0</text><text x="47" y="33">Groove depth 0,6</text><text x="47" y="37">Base width 3,0</text>
-<text x="8" y="47">P08 compression 20 %; P04 compression 25 %; flat underside, rounded top.</text></svg>
