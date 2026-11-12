@@ -54,3 +54,5 @@ jobs:
           git commit -m "Generate AirMonitor Compact V0.7 CAD and mass sketches"
           git pull --rebase origin cad/airmonitor-compact-v0.7
           git push origin HEAD:cad/airmonitor-compact-v0.7
+
+# Rebuild trigger for corrected Y-centred EPDM O-ring design.
