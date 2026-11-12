@@ -1,0 +1,51 @@
+name: Build final AirMonitor V0.7 sliding lid
+
+on:
+  push:
+    branches:
+      - cad/airmonitor-compact-v0.7
+    paths:
+      - ".github/workflows/build-airmonitor-v07-sliding-lid-final.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out patched V0.7 branch
+        uses: actions/checkout@v4
+        with:
+          ref: cad/airmonitor-compact-v0.7
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CAD and PDF dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install cadquery==2.5.2 reportlab==4.2.5
+
+      - name: Validate and generate final V0.7 package
+        working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.7
+        run: |
+          python check_clearances.py
+          python build_v07.py
+          python generate_mass_sketches_v07.py
+
+      - name: Commit generated STEP STL drawings and PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A hardware/cad/AirMonitor_Compact_Revision_V0.7
+          if git diff --cached --quiet; then
+            echo "Generated V0.7 files already current."
+            exit 0
+          fi
+          git commit -m "Generate V0.7 sliding-lid CAD and updated sketches"
+          git pull --rebase origin cad/airmonitor-compact-v0.7
+          git push origin HEAD:cad/airmonitor-compact-v0.7
