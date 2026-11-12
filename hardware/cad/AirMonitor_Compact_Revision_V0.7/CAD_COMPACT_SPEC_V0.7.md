@@ -1,239 +1,149 @@
 # Laminar AirMonitor HCHO - CAD-Konstruktionsspezifikation V0.7
 
-## 1. Geltungsbereich
+## 1. Verbindlicher Stand
 
-Diese Ausgabe korrigiert den bereits erzeugten V0.7-Stand, ohne eine neue Versionsnummer einzufuehren.
+Diese Ausgabe bleibt V0.7. Sie enthaelt die zuletzt freigegebenen Korrekturen und zusaetzlich:
 
-Verbindlich sind folgende Punkte:
+- komplette ZERO-/SPAN-Platinenbaugruppe 15,0 mm tiefer;
+- Schiebedeckel mit 8,0 mm kurzem Verriegelungsweg;
+- Deckel wird von oben aufgesetzt, in offener Lage um +8,0 mm in X versetzt und danach 8,0 mm nach links (-X) geschoben;
+- am Ende rastet eine federnde Zunge am vorderen Deckelrand auf einem Raststift ein;
+- die Oberseite des Deckels bleibt ohne vorstehende Verschlussbauteile und wird beim Drucken auf das Druckbett gelegt;
+- alle bisherigen O-Ring-, Sensor-, Hauben-, Waveshare- und Anschlusskorrekturen bleiben erhalten.
 
-- Die X-Position der Sensor- und Kalibriereinheit bleibt wie in V0.6.
-- Die komplette Einheit wird nur auf der Y-Achse zentriert.
-- Der Sensorpod bleibt auf der rechten Kabelseite 8,0 mm breiter.
-- Die gedruckten TPU-Dichtungen P04 und P08 entfallen.
-- Stattdessen werden drei geschlossene Kauf-O-Ringe aus EPDM 70 Shore A verwendet.
-- Die O-Ring-Nuten liegen in P07 und P03. Der Deckel P02 bleibt ueberall 3,0 mm dick.
-
-Alle Masse sind in mm. Globales Koordinatensystem: Ursprung an der aeusseren unteren Ecke von P01 ohne Flansch; X = lange Seite, Y = kurze Seite, Z = nach oben.
-
-## 2. Korrektur gegenueber dem vorherigen V0.7-Stand
-
-| ID | Merkmal | Vorheriger V0.7-Stand | Korrigierter V0.7-Stand |
-|---|---|---|---|
-| K01 | Sensorgruppe X | irrtuemlich +20,0 | 0,0; V0.6-X-Lage bleibt |
-| K02 | Sensorgruppe Y | Mittelpunkt 57,0 | Mittelpunkt 56,0 |
-| K03 | P03 Breite | 53,5 | 53,5; 8,0 rechts zusaetzlich |
-| K04 | Dichtungen | gedrucktes TPU-D-Profil | geschlossene EPDM-Kauf-O-Ringe |
-| K05 | Nuten | beidseitig im 3,0-mm-Deckel | P04 in P07; P08 in P03 |
-| K06 | P07 Trennsteg | 3,0 | 5,0 fuer getrennte O-Ring-Nuten |
-| K07 | P03 Oberkante | Z=54,0 | erhoehter Dichtrand bis Z=55,0 |
-| K08 | Kabelschlitz | bis in den Dichtrand | endet bei Z=54,0; Dichtrand bleibt geschlossen |
-
-## 3. Hauptgeometrie
-
-### 3.1 P01 Gehaeuseboden
+## 2. Gehaeuse und Deckel
 
 ```text
 Gehaeuse ohne Flansche = 208,0 x 112,0 x 55,0
 Gesamtbreite mit Flanschen = 132,0
-Wandstaerke = 2,8
-Bodenstaerke = 2,8
+Wand/Boden = 2,8
+Deckel = 208,0 x 112,0 x 3,0
 ```
 
-Deckelbossen:
+### 2.1 Deckelauflagen
+
+Die vier bisherigen Eckpositionen bleiben als reine Auflagen erhalten:
 
 ```text
-(7,0 / 7,0)
-(7,0 / 105,0)
-(201,0 / 7,0)
-(201,0 / 105,0)
-Boss D9,0; Pilot D2,5
+(7/7), (7/105), (201/7), (201/105)
+Auflage D9,0
+keine Deckelschraube
 ```
 
-Waveshare-Aufnahmen:
+### 2.2 Schiebeverriegelung
+
+Vier Pilzbolzen stehen auf separaten Stuetzpfosten:
 
 ```text
-(24,0 / 25,0)
-(169,0 / 25,0)
-(24,0 / 87,0)
-(169,0 / 87,0)
-Raster = 145,0 x 62,0
-Auflage Z = 9,6
+Bolzen XY = (75/7), (75/105), (170/7), (170/105)
+Stuetzpfosten D8,0
+Schaft D4,0 x 0,65
+Kopf D7,0 x 0,75
 ```
 
-### 3.2 Rechte Stirnwand
+Die Deckelunterseite hat blinde zweistufige Schluessellochbahnen:
 
 ```text
-ZERO = Y36,0 / Z41,0 / D3,0
-SPAN = Y52,0 / Z41,0 / D3,0
+Schiebeweg = 8,0
+Einsetzposition = Deckel +8,0 mm in X
+Schliessrichtung = -X
+Kopfkanal = 7,6 breit
+Schaftkanal = 4,6 breit
+Gesamttiefe = 1,65
+untere Hals-Tiefe = 0,75
+verbleibende obere Haut = 1,35
+```
+
+Die Oberseite ist plan. Die Taschen und Fuehrungen liegen auf der Unterseite.
+
+### 2.3 Rastung
+
+```text
+Federzunge X=110,0..132,0 / Y=0,0..10,5
+freie Zungenkante bei X=110,0
+Restdicke Zunge = 1,20
+Rastloch = X116,0 / Y2,2 / D3,4
+Raststift = X116,0 / Y2,2 / Gesamthoehe 2,2
+```
+
+Beim Schliessen wird der Deckel 8,0 mm nach links geschoben. Der Raststift hebt die Zunge etwa 0,4 mm an und springt danach in das Rastloch. Zum Oeffnen die Zunge am vorderen Rand leicht anheben und den Deckel 8,0 mm nach rechts schieben; danach nach oben abheben.
+
+## 3. Microtaster
+
+Die gesamte Baugruppe wurde ohne Drehung 15,0 mm nach unten verschoben:
+
+```text
+ZERO = Y36,0 / Z26,0 / D3,0
+SPAN = Y52,0 / Z26,0 / D3,0
 ZERO-SPAN = 16,0 Mitte-Mitte
-Platinenhalter = Y18,0/94,0; Z35,0/51,0
-Halter-Lochbild = 76,0 x 16,0
+Halter = Y18,0/94,0; Z20,0/36,0
+Lochbild = 76,0 x 16,0
+Platine = 80,0 x 20,0 x 1,5
 ```
 
-### 3.3 Linke Stirnwand
-
-```text
-DC5521 = Y44,0 / Z27,5 / D11,2
-Markierung = 24 V DC
-Revisionsmarkierung = V0.7
-```
+ZERO, SPAN, Platine, beide Schalter, vier Halter und beide Serviceoeffnungen wurden gemeinsam verschoben.
 
 ## 4. Sensor- und Kalibriereinheit
-
-### 4.1 Lage
 
 ```text
 X-Verschiebung gegenueber V0.6 = 0,0
 Y-Mittelpunkt = 56,0
+P03 = X6,0..59,5 / Y15,0..97,0 / Z40,0..54,0
+P03 rechts 8,0 mm breiter
+P07 Grundplatte = X4,0..60,0 / Y3,2..108,8 / Z58,0..61,0
 ```
 
-### 4.2 P03 Sensorpod
+In offener Deckellage (+8 mm X) bleibt P03 innerhalb des Gehaeuses; der kurze Schiebeweg kollidiert nicht mit dem Waveshare-Board.
 
-```text
-Koerper = X6,0..59,5 / Y15,0..97,0 / Z40,0..54,0
-Koerperbreite X = 53,5
-Koerperlaenge Y = 82,0
-Wand/Boden = 3,0
-Erhoehter Dichtrand = Z54,0..55,0
-```
-
-Sensorbefestigung:
-
-```text
-2 x D3,0
-X = 16,3
-Y = 48,5 / 63,5
-Abstand = 15,0
-```
-
-Kabeldurchlass:
-
-```text
-X55,5..60,0
-Y82,0..88,0
-Z46,0..54,0
-```
-
-Der Kabeldurchlass endet unterhalb des Dichtrandes. P05 fuellt den Durchlass; die P08-Dichtlinie bleibt oben geschlossen.
-
-### 4.3 P02 Deckel
-
-```text
-Deckel = 208,0 x 112,0 x 3,0
-Lueftungsschlitze = X12,0; Y22,0 + 8,0*n; 33,0 x 4,0
-Haubenschrauben = (27,0/9,0), (27,0/103,0)
-Pod-Aufnahmen = (16,0/11,0), (42,0/11,0), (16,0/101,0), (42,0/101,0)
-```
-
-Im Deckel befinden sich keine O-Ring-Nuten. Dadurch bleibt seine Reststaerke 3,0 mm.
-
-### 4.4 P07 Kalibrierhaube
-
-```text
-Grundplatte = X4,0..60,0 / Y3,2..108,8 / Z58,0..61,0
-Grundplatte = 56,0 x 105,6 x 3,0
-Haubenmittelpunkt = X32,0 / Y56,0
-Trennsteg = Y49,5..54,5; Breite 5,0
-```
-
-Die Haubenunterseite liegt direkt auf der Deckeloberseite Z=58,0. Die beiden P04-Nuten sind in die Haubenunterseite eingelassen.
-
-## 5. O-Ring-Konzept
-
-### 5.1 Material und Nut
+## 5. EPDM-O-Ringe
 
 ```text
 Material = EPDM 70 Shore A
 Schnurstaerke = 1,50
 Nutbreite = 1,80
 Nuttiefe = 1,10
-Freie Hoehe = 1,50
-Installierte Hoehe = 1,10
 Verpressung = 0,40 = 26,7 %
-Innenradius der Pfade = R8,0
+Innenradius = R8,0
 ```
 
-### 5.2 Kaufteile
+| Pos. | Ring | SKU | Verwendung |
+|---|---:|---|---|
+| P04A | D45,00 x 1,50 | H48761 | untere Kalibrierkammer |
+| P04B | D50,00 x 1,50 | H96773 | obere Kalibrierkammer |
+| P08 | D77,00 x 1,50 | H48789 | Sensorpod gegen Deckel |
 
-| Pos. | O-Ring | REAflon SKU | Verwendung | Lagerstatus bei Pruefung |
-|---|---|---|---|---|
-| P04A | D45,00 x 1,50 | H48761 | untere Kalibrierkammer | verfuegbar |
-| P04B | D50,00 x 1,50 | H96773 | obere Kalibrierkammer | verfuegbar |
-| P08 | D77,00 x 1,50 | H48789 | Sensorpod gegen Deckel | verfuegbar |
+P04-Nuten liegen in P07, P08-Nut im erhoehten P03-Rand. Im Deckel befinden sich keine O-Ring-Nuten.
 
-Bestelllinks:
+## 6. Drucken und Montage
 
-- P04A: `https://reaflon.ch/products/o-ring-epdm-70-shore-schnurstarke-mm?variant=47875417440544`
-- P04B: `https://reaflon.ch/products/o-ring-epdm-70-shore-schnurstarke-mm?variant=47875417604384`
-- P08: `https://reaflon.ch/products/o-ring-epdm-70-shore-schnurstarke-mm?variant=47875418128672`
+P02 wird mit der sichtbaren Oberseite auf dem Druckbett gedruckt. Dadurch sind die sichtbare Flaeche und der gesamte Rand plan; die blinden Schluessellochbahnen, Pod-/Haubenaufnahmen und die duenne Rastzunge werden auf der Oberseite des Druckaufbaus erzeugt.
 
-Der zuvor verlinkte Variantencode `47845525750048` ist D2,00 x 1,25 mm. Dieser Ring ist fuer die drei Flaechendichtungen zu klein und wird nicht verwendet.
+Montagefolge:
 
-### 5.3 Installierte Pfade
+1. P03, Sensor, Kabel und P05 am Deckel montieren.
+2. P07 und O-Ringe montieren.
+3. Deckel um +8,0 mm nach rechts versetzt von oben aufsetzen.
+4. Pilzkoepfe in die grossen Einsetztaschen absenken.
+5. Deckel 8,0 mm nach links schieben, bis die Zunge einrastet.
+6. Sitz, Rastung, Kabelfreiraum und Dichtflaechen kontrollieren.
 
-| Pos. | Mittelpunkt X/Y | Mittellinien-Aussenmass | Radius | rechnerische Dehnung |
-|---|---|---|---|---|
-| P04A | 32,0 / 33,5 | 46,0 x 34,0 | R8,0 | ca. +0,12 % |
-| P04B | 32,0 / 74,5 | 45,8 x 42,0 | R8,0 | ca. +0,05 % |
-| P08 | 32,75 / 56,0 | 51,2 x 79,0 | R8,0 | ca. +0,02 % |
+## 7. Pruefung
 
-Die Ringe werden in der Montage zu abgerundeten Rechtecken geformt. Die Pfadlaengen sind so ausgelegt, dass keine relevante Ueberdehnung entsteht.
+Automatisch kontrolliert werden unter anderem:
 
-## 6. Markierungen
+- Microtaster-Verschiebung -15,0 mm;
+- Schiebeweg und Einsetzposition;
+- Kopf-/Schaftspiel in den blinden Bahnen;
+- verbleibende Deckelhaut;
+- Auslenkung der Rastzunge;
+- P03/P07-Freiraum in offener Deckellage;
+- O-Ring-Pfadlaengen, Nutmasse und Verpressung;
+- Prusa-MK4-Bauraum und unerwartete Volumenueberschneidungen.
 
-```text
-ZERO
-SPAN
-24 V DC
-V0.7
-IN
-OUT
-```
+Physisch zu pruefen:
 
-Markierungstiefe = 0,35.
-
-## 7. Druck und Montage
-
-| Teil | Materialvorschlag | Drucklage | Support |
-|---|---|---|---|
-| P01 | PETG/ASA gemaess Projektfreigabe | Boden auf Druckbett | nein |
-| P02 | PETG/ASA | Aussenseite nach unten / vorhandene Druckausrichtung | nein |
-| P03 | PETG/ASA | Boden auf Druckbett | nein |
-| P05 | PETG/TPU nach Passversuch | flach | nein |
-| P07 | PETG/ASA | Grundplatte auf Druckbett | nein |
-| P04A/P04B/P08 | Kaufteile EPDM | nicht drucken | - |
-
-Alle Teile passen in den Bauraum des Original Prusa MK4 von 250 x 210 x 220 mm.
-
-## 8. Pruefung vor Installation
-
-1. O-Ringe trocken und ohne Verdrehung einlegen.
-2. Pruefen, dass alle Ringe vollstaendig in ihren Nuten liegen.
-3. Haube gleichmaessig verschrauben; kein sichtbarer Spalt oder Verkanten.
-4. P05 und Gravity-Kabel pruefen; P08-Dichtlinie darf nicht unterbrochen sein.
-5. Nuten bei der Epoxidversiegelung abkleben.
-6. Nach Montage Lecktest mit Nullgas/Frischluft durchfuehren.
-7. Anschliessend Pruefgas aufgeben und Stabilitaet dokumentieren.
-8. Rueckkehr zum Nullpunkt und moegliche Adsorption/Desorption dokumentieren.
-
-## 9. Automatische CAD-Pruefung
-
-Die parametrische Pruefung kontrolliert 56 Masse und Freiraeume, darunter:
-
-- X-Lage unveraendert
-- Y-Zentrierung
-- O-Ring-Pfadlaengen
-- Nutabmessungen und Verpressung
-- Trennung der beiden P04-Nuten
-- Restmaterial in P03 und P07
-- Bauraum des Prusa MK4
-- unerwartete Volumenueberschneidungen zwischen Druckteilen
-
-## 10. Offene physische Pruefungen
-
-- reale Passung der drei gelieferten O-Ringe
-- Einfluss von Drucktoleranz und Epoxidschicht auf Nuttiefe
-- Gasdichtheit bei Kalibrierfluss
-- Nullpunktstabilitaet und Ausgasung
-- Drehmoment der Haubenschrauben
-- dauerhafte Formstabilitaet nach wiederholtem Oeffnen
+- Rastkraft und Entriegelung mit dem realen PETG/ASA-Druck;
+- Verschleiss nach wiederholtem Oeffnen;
+- Kabelreserve fuer 8,0 mm Schiebeweg;
+- reale O-Ring-Passung, Epoxidschicht und Leckrate;
+- Nullpunkt, Pruefgas-Stabilitaet und Rueckkehr zum Nullpunkt.

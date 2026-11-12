@@ -1,69 +1,44 @@
-# Claude-Pruefprompt fuer Daniel - AirMonitor Compact V0.7
+# Claude-/Daniel-Pruefprompt - AirMonitor Compact V0.7
 
 Oeffne zuerst:
 
 `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.7.step`
 
-## Verbindliche Korrektur
+## Verbindliche neue Punkte
 
-Der fruehere V0.7-Stand verschob die Sensor-/Kalibriereinheit irrtuemlich in X. Das ist korrigiert:
+1. ZERO und SPAN sowie Platine, vier Halter und beide Serviceoeffnungen sind gemeinsam 15,0 mm tiefer.
+2. P02 ist kein Schraubdeckel mehr. Er wird von oben aufgesetzt und nur 8,0 mm verschoben.
+3. Einsetzlage: Deckel +8,0 mm in X. Schliessen: 8,0 mm nach -X.
+4. Vier Pilzkoepfe muessen in den blinden zweistufigen Schluessellochbahnen laufen.
+5. Die sichtbare Oberseite des Deckels muss plan und ohne vorstehende Verschlussteile sein.
+6. Am Ende muss die vordere Federzunge auf dem Raststift einrasten.
+7. Zum Oeffnen muss die Zunge erreichbar sein, ohne P03, P07 oder die O-Ringe zu demontieren.
 
-```text
-X-Verschiebung gegenueber V0.6 = 0,0 mm
-Y-Mittelpunkt der Einheit = 56,0 mm
-```
-
-Bitte die X-Lage nicht erneut veraendern.
-
-## O-Ringe
-
-Drei geschlossene Kauf-O-Ringe aus EPDM 70 Shore A:
+## Sollwerte
 
 ```text
-P04A = D45,00 x 1,50 mm, SKU H48761
-P04B = D50,00 x 1,50 mm, SKU H96773
-P08  = D77,00 x 1,50 mm, SKU H48789
+ZERO/SPAN Z = 26,0
+Halter Z = 20,0 / 36,0
+Schiebeweg = 8,0
+Bolzen XY = (75/7), (75/105), (170/7), (170/105)
+Schaft = D4,0
+Kopf = D7,0
+Kopfkanal = 7,6
+Schaftkanal = 4,6
+Taschentiefe = 1,65
+obere Resthaut = 1,35
+Rastzunge = X110..132 / Y0..10,5 / Restdicke 1,20
+Rastloch/-stift = X116 / Y2,2
 ```
 
-Gemeinsame Nutdaten:
+## Pruefen
 
-```text
-Nutbreite = 1,80 mm
-Nuttiefe = 1,10 mm
-Verpressung = 26,7 %
-Pfadecken = R8,0
-```
+- Deckel in offener Lage +8 mm: P03/P07, Kabel und Board kollisionsfrei.
+- Absenken ueber alle vier Pilzkoepfe gleichzeitig moeglich.
+- Nach 8 mm Schieben kein vertikales Abheben ohne Entriegelung.
+- Rastung deutlich, aber ohne Bruchgefahr; Wiederholbarkeit mindestens 20 Zyklen im Prototypentest.
+- Deckeloberseite liegt in Druckorientierung vollstaendig plan auf dem Druckbett.
+- Blindtaschen haben keine offene Oberseite.
+- O-Ring-Nuten, Y-Zentrierung, DC5521, Waveshare und Markierungen unveraendert korrekt.
 
-P04A/P04B liegen in der Unterseite von P07. P08 liegt im erhoehten Rand von P03. P02 hat keine O-Ring-Nut und bleibt 3,0 mm dick.
-
-## Kontrollpunkte in Fusion 360
-
-1. P03 links bei X=6,0 und P07 links bei X=4,0 bestaetigen.
-2. Y-Mittelpunkt von P03, P07 und Lueftungsschlitzen = 56,0 bestaetigen.
-3. P03 Koerper X=6,0..59,5 / Y=15,0..97,0 bestaetigen.
-4. P03-Dichtrand Z=54,0..55,0 und geschlossene Dichtlinie ueber dem Kabelschlitz pruefen.
-5. P04A- und P04B-Nuten auf P07-Unterseite pruefen; keine Ueberschneidung.
-6. P08-Nut in P03 pruefen; mindestens 1,8 mm Material unter dem Nutgrund.
-7. Deckelstaerke durchgehend 3,0 mm pruefen.
-8. Schrauben, Haube, Deckel und Pod auf plane Anlage pruefen.
-9. O-Ring-Referenzkoerper einblenden und Sitz kontrollieren.
-10. STEP- und STL-Ausgaben mit `AirMonitor_V07_Massskizzen_1zu1.pdf` vergleichen.
-
-## Ergebnisformat
-
-Antworte mit einem der folgenden Ergebnisse:
-
-- `freigegeben`
-- `freigegeben mit Aenderung`
-- `nicht freigegeben`
-
-Bei jeder Abweichung angeben:
-
-```text
-Merkmal
-Soll
-Ist
-Delta
-Bewertung
-Screenshot / Messung in Fusion 360
-```
+Ergebnis: `freigegeben`, `freigegeben mit Aenderung` oder `nicht freigegeben`. Abweichungen mit Soll/Ist/Delta und Screenshot dokumentieren.

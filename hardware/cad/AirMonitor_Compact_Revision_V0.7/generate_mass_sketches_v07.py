@@ -1,11 +1,7 @@
 """Generate revised 1:1 engineering sketches for AirMonitor Compact V0.7.
 
-This drawing set reflects the corrected V0.7 state:
-- sensor/calibration unit retains the proven V0.6 X position;
-- complete unit is centred on Y=56.0 mm;
-- P03 is 8.0 mm wider on the cable side;
-- purchased EPDM 70 Shore A O-rings replace printed TPU seals;
-- grooves are located in P03 and P07, not in the 3.0 mm lid.
+Includes Y-centred sensor group, purchased EPDM O-rings, the complete
+ZERO/SPAN assembly 15 mm lower, and the flat-top 8 mm sliding snap lid.
 """
 from pathlib import Path
 
@@ -148,15 +144,19 @@ def draw_groove_section(c, x, y, title, substrate_label):
 
 def page1_base(c):
     header(c, "P01 - Gehaeuseboden / Draufsicht innen",
-           "Aussen 208 x 132 x 55 inkl. Flansche; Gehaeuse ohne Flansche 208 x 112")
+           "Eckauflagen bleiben; vier separate Pilzbolzen fuehren den 8-mm-Schiebedeckel")
     ox, oy = 38 * mm, 39 * mm
     c.rect(ox, oy - C.FLANGE * mm, C.L * mm, (C.W + 2 * C.FLANGE) * mm)
     c.rect(ox, oy, C.L * mm, C.W * mm)
     for x, y in C.WALL_MOUNT_HOLES:
         c.circle(ox + x * mm, oy + y * mm, C.WALL_MOUNT_D / 2 * mm)
-    for x, y in C.LID_BOSSES:
-        c.circle(ox + x * mm, oy + y * mm, C.LID_BOSS_D / 2 * mm)
-        c.circle(ox + x * mm, oy + y * mm, C.LID_BOSS_PILOT_D / 2 * mm)
+    c.setStrokeColor(colors.black)
+    for x, y in C.LID_SUPPORTS:
+        c.circle(ox + x * mm, oy + y * mm, C.LID_SUPPORT_D / 2 * mm)
+    c.setStrokeColor(C_CENTER)
+    for x, y in C.SLIDE_STUDS:
+        c.circle(ox + x * mm, oy + y * mm, C.SLIDE_STUD_BASE_D / 2 * mm)
+        c.circle(ox + x * mm, oy + y * mm, C.SLIDE_HEAD_D / 2 * mm)
     c.setStrokeColor(C_POD)
     for x, y in C.STANDOFFS:
         c.circle(ox + x * mm, oy + y * mm, C.STANDOFF_D / 2 * mm)
@@ -164,11 +164,10 @@ def page1_base(c):
     c.setStrokeColor(colors.black)
     dim_h(c, ox, ox + C.L * mm, oy - 17 * mm, "208")
     dim_v(c, ox + C.L * mm + 9 * mm, oy - C.FLANGE * mm, oy + (C.W + C.FLANGE) * mm, "132")
-    label(c, 12 * mm, 25 * mm, "Waveshare-Pilotloecher: (24/25), (169/25), (24/87), (169/87); Raster 145 x 62.", 7)
-    label(c, 12 * mm, 20 * mm, "Deckelbossen: (7/7), (7/105), (201/7), (201/105). Boden und Waende 2,8.", 7)
-    label(c, 12 * mm, 15 * mm, "Blau = Waveshare-Aufnahmen; Schwarz = Gehaeuse, Deckel- und Wandbefestigungen.", 7)
+    label(c, 12 * mm, 27 * mm, "Waveshare: (24/25), (169/25), (24/87), (169/87); Raster 145 x 62.", 7)
+    label(c, 12 * mm, 22 * mm, "Schwarz: Eckauflagen D9 bei (7/7),(7/105),(201/7),(201/105); keine Deckelschrauben.", 7)
+    label(c, 12 * mm, 17 * mm, "Gruen: Schiebebolzen bei (75/7),(75/105),(170/7),(170/105); Kopf D7, Schaft D4.", 7)
     footer(c, 1)
-
 
 def page2_walls(c):
     header(c, "P01 - Laengswand / Seitenansicht",
@@ -187,13 +186,13 @@ def page2_walls(c):
 
 def page3_endwalls(c):
     header(c, "P01 - Stirnwaende",
-           "Rechts ZERO/SPAN; links DC5521, 24 V DC und Revisionsmarkierung")
+           "Rechts komplette ZERO-/SPAN-Baugruppe 15,0 mm tiefer; links DC5521")
     ox, oy = 24 * mm, 61 * mm
     label(c, ox, oy + 62 * mm, "Rechte Stirnwand / Aussenansicht", 8, True)
     c.rect(ox, oy, C.W * mm, C.H * mm)
-    for text, (yy, zz, dd) in (("ZERO", C.ZERO), ("SPAN", C.SPAN)):
+    for text_label, (yy, zz, dd) in (("ZERO", C.ZERO), ("SPAN", C.SPAN)):
         c.circle(ox + yy * mm, oy + zz * mm, dd / 2 * mm)
-        c.drawCentredString(ox + yy * mm, oy + (zz + 5) * mm, text)
+        c.drawCentredString(ox + yy * mm, oy + (zz + 5) * mm, text_label)
     c.saveState()
     c.setDash(2, 2)
     c.setStrokeColor(C_POD)
@@ -201,6 +200,7 @@ def page3_endwalls(c):
         for zz in C.BTN_HOLDER_Z:
             c.circle(ox + yy * mm, oy + zz * mm, 2.5 * mm)
     c.restoreState()
+    dim_v(c, ox + C.W * mm + 7 * mm, oy, oy + C.ZERO[1] * mm, "26,0")
 
     ox2 = 160 * mm
     label(c, ox2, oy + 62 * mm, "Linke Stirnwand / Aussenansicht", 8, True)
@@ -210,19 +210,16 @@ def page3_endwalls(c):
     c.drawCentredString(ox2 + yy * mm, oy + (zz + 9) * mm, "24 V DC")
     c.drawString(ox2 + 82 * mm, oy + 7 * mm, "V0.7")
 
-    label(c, 12 * mm, 29 * mm, "ZERO: Y=36 / Z=41 / D3. SPAN: Y=52 / Z=41 / D3. Abstand 16 Mitte-Mitte.", 7)
-    label(c, 12 * mm, 24 * mm, "Platine 80 x 20 x 1,5; Halter-Lochbild Y=18/94, Z=35/51 = 76 x 16.", 7)
-    label(c, 12 * mm, 19 * mm, "DC5521 links: Y=44 / Z=27,5 / D11,2. Innenansicht jeweils horizontal gespiegelt.", 7)
+    label(c, 12 * mm, 29 * mm, "ZERO: Y=36 / Z=26 / D3. SPAN: Y=52 / Z=26 / D3. Abstand 16 Mitte-Mitte.", 7)
+    label(c, 12 * mm, 24 * mm, "Platine 80 x 20 x 1,5; Halter Y=18/94, Z=20/36; Lochbild 76 x 16.", 7)
+    label(c, 12 * mm, 19 * mm, "Platine, beide Schalter, vier Halter und beide Serviceoeffnungen gemeinsam -15,0 mm in Z.", 7, True)
     footer(c, 3)
 
-
 def page4_lid(c):
-    header(c, "P02 - Deckel / Draufsicht aussen",
-           "X-Lage wie V0.6; Sensorpod und Kalibrierhaube nur auf Y=56,0 zentriert")
+    header(c, "P02 - Flacher Schiebedeckel / Draufsicht",
+           "Oberseite plan und Druckbettseite; verdeckte Schluessellochbahnen unten, 8 mm Schiebeweg")
     ox, oy = 38 * mm, 47 * mm
     c.rect(ox, oy, C.L * mm, C.W * mm)
-    for x, y in C.LID_BOSSES:
-        c.circle(ox + x * mm, oy + y * mm, C.LID_HOLE_D / 2 * mm)
     c.setStrokeColor(C_POD)
     for x, y, lx, ly in C.VENTS:
         c.rect(ox + x * mm, oy + y * mm, lx * mm, ly * mm)
@@ -235,31 +232,36 @@ def page4_lid(c):
     c.saveState()
     c.setDash(3, 2)
     c.setLineWidth(0.55)
-    c.setStrokeColor(C_POD)
-    c.rect(ox + C.POD[0] * mm, oy + C.POD[2] * mm,
-           (C.POD[1] - C.POD[0]) * mm, (C.POD[3] - C.POD[2]) * mm)
-    c.setStrokeColor(C_HOOD)
-    c.rect(ox + C.HOOD_PLATE[0] * mm, oy + C.HOOD_PLATE[2] * mm,
-           (C.HOOD_PLATE[1] - C.HOOD_PLATE[0]) * mm,
-           (C.HOOD_PLATE[3] - C.HOOD_PLATE[2]) * mm)
+    c.setStrokeColor(C_CENTER)
+    for x, y in C.SLIDE_STUDS:
+        entry = x - C.SLIDE_TRAVEL
+        c.line(ox + entry * mm, oy + y * mm, ox + x * mm, oy + y * mm)
+        c.circle(ox + entry * mm, oy + y * mm, C.SLIDE_HEAD_CLEAR_D / 2 * mm)
+        c.circle(ox + x * mm, oy + y * mm, C.SLIDE_STEM_CLEAR_W / 2 * mm)
+    tx0, tx1 = C.LATCH_TONGUE_X
+    ty0, ty1 = C.LATCH_TONGUE_Y
+    c.rect(ox + tx0 * mm, oy + ty0 * mm, (tx1 - tx0) * mm, (ty1 - ty0) * mm)
+    hx, hy, hd = C.LATCH_HOLE
+    c.circle(ox + hx * mm, oy + hy * mm, hd / 2 * mm)
     c.restoreState()
 
     c.saveState()
-    c.setStrokeColor(C_CENTER)
-    c.setDash(5, 2)
-    c.setLineWidth(0.7)
-    c.line(ox, oy + 56 * mm, ox + 70 * mm, oy + 56 * mm)
+    c.setStrokeColor(C_ORING)
+    c.setFillColor(C_ORING)
+    c.setLineWidth(0.8)
+    c.line(ox + 150 * mm, oy + 24 * mm, ox + 142 * mm, oy + 24 * mm)
+    c.line(ox + 142 * mm, oy + 24 * mm, ox + 145 * mm, oy + 26 * mm)
+    c.line(ox + 142 * mm, oy + 24 * mm, ox + 145 * mm, oy + 22 * mm)
     c.restoreState()
-    label(c, ox + 71 * mm, oy + 54 * mm, "Y-Mittelachse 56,0", 6.5, False, C_CENTER)
-    label(c, ox + 72 * mm, oy + 96 * mm, "P03 unten (blau gestrichelt)", 6.5, False, C_POD)
-    label(c, ox + 72 * mm, oy + 89 * mm, "P07 oben (violett gestrichelt)", 6.5, False, C_HOOD)
-    label(c, ox + 72 * mm, oy + 82 * mm, "Linke X-Kante bleibt bei X=6,0 / X=4,0", 6.5)
+    label(c, ox + 151 * mm, oy + 21 * mm, "Schliessen: 8,0 mm nach -X", 7, True, C_ORING)
+    label(c, ox + 78 * mm, oy + 104 * mm, "sichtbare Oberseite plan / auf Druckbett", 7, True)
+    label(c, ox + 68 * mm, oy + 13 * mm, "gestrichelt = blinde Unterseitenbahnen", 6.5, False, C_CENTER)
+    label(c, ox + 105 * mm, oy + 15 * mm, "Federzunge + Rastloch", 6.5, False, C_CENTER)
 
-    label(c, 12 * mm, 28 * mm, "Lueftungsschlitze: X=12,0; Y=22,0 + 8,0*n; 33 x 4.", 7)
-    label(c, 12 * mm, 23 * mm, "Haubenschrauben: (27/9), (27/103). Pod-Montage: (16/11),(42/11),(16/101),(42/101).", 7)
-    label(c, 12 * mm, 18 * mm, "Deckel bleibt vollstaendig 3,0 mm dick; keine O-Ring-Nut in P02.", 7, True)
+    label(c, 12 * mm, 29 * mm, "Aufsetzen: Deckel +8,0 mm in X versetzt absenken; alle vier Pilzkoepfe in die grossen Taschen.", 7)
+    label(c, 12 * mm, 24 * mm, "Danach 8,0 mm nach links schieben. Raststift X116/Y2,2 springt in D3,4-Rastloch.", 7)
+    label(c, 12 * mm, 19 * mm, "Kopfkanal 7,6; Schaftkanal 4,6; Taschentiefe 1,65; obere geschlossene Haut 1,35.", 7, True)
     footer(c, 4)
-
 
 def page5_pod(c):
     header(c, "P03 - Sensorpod / Draufsicht innen und Schnitt",
@@ -410,85 +412,73 @@ def page8_p05(c):
 
 
 def page9_assembly(c):
-    header(c, "V0.7 - Dichtaufbau / Explosionsschema",
-           "P07 und P03 tragen die Nuten; P02 bleibt als ebene 3,0-mm-Trennplatte erhalten")
+    header(c, "V0.7 - Montage- und Verschlussschema",
+           "P03/P07 zuerst am flachen P02 montieren; danach Deckel kurz aufsetzen, schieben und einrasten")
     cx = 82 * mm
-    y_p03 = 52 * mm
-    y_lid = 101 * mm
-    y_p07 = 127 * mm
+    y_p03 = 48 * mm
+    y_lid = 95 * mm
+    y_p07 = 122 * mm
     width = 90 * mm
 
-    c.setFillColor(colors.HexColor("#EAF1F8"))
-    c.setStrokeColor(C_POD)
+    c.setFillColor(colors.HexColor("#EAF1F8")); c.setStrokeColor(C_POD)
     c.rect(cx, y_p03, width, 24 * mm, stroke=1, fill=1)
-    label(c, cx + 3 * mm, y_p03 + 9 * mm, "P03 Sensorpod - P08-Nut im erhoehten Rand", 8, True, C_POD)
-    c.setFillColor(colors.HexColor("#F6DAD8"))
-    c.setStrokeColor(C_ORING)
+    label(c, cx + 3 * mm, y_p03 + 9 * mm, "P03 Sensorpod - P08-Nut", 8, True, C_POD)
+    c.setFillColor(colors.HexColor("#F6DAD8")); c.setStrokeColor(C_ORING)
     c.rect(cx + 8 * mm, y_p03 + 21 * mm, width - 16 * mm, 3 * mm, stroke=1, fill=1)
-    label(c, cx + width + 4 * mm, y_p03 + 21 * mm, "P08", 7, True, C_ORING)
 
-    c.setFillColor(colors.HexColor("#F2F2F2"))
-    c.setStrokeColor(colors.black)
+    c.setFillColor(colors.HexColor("#F2F2F2")); c.setStrokeColor(colors.black)
     c.rect(cx - 8 * mm, y_lid, width + 16 * mm, 3 * mm, stroke=1, fill=1)
-    label(c, cx + 3 * mm, y_lid + 7 * mm, "P02 Deckel 3,0 - keine Nut", 8, True)
+    label(c, cx + 3 * mm, y_lid + 7 * mm, "P02 oben plan; Verriegelung unten", 8, True)
 
-    c.setFillColor(colors.HexColor("#F6DAD8"))
-    c.setStrokeColor(C_ORING)
+    c.setFillColor(colors.HexColor("#F6DAD8")); c.setStrokeColor(C_ORING)
     c.rect(cx + 9 * mm, y_p07 - 3 * mm, width / 2 - 14 * mm, 3 * mm, stroke=1, fill=1)
     c.rect(cx + width / 2 + 5 * mm, y_p07 - 3 * mm, width / 2 - 14 * mm, 3 * mm, stroke=1, fill=1)
-    label(c, cx + width + 4 * mm, y_p07 - 2 * mm, "P04A/B", 7, True, C_ORING)
-    c.setFillColor(colors.HexColor("#F1E8F7"))
-    c.setStrokeColor(C_HOOD)
+    c.setFillColor(colors.HexColor("#F1E8F7")); c.setStrokeColor(C_HOOD)
     c.rect(cx, y_p07, width, 25 * mm, stroke=1, fill=1)
-    label(c, cx + 3 * mm, y_p07 + 9 * mm, "P07 Kalibrierhaube - zwei Nuten in Unterseite", 8, True, C_HOOD)
+    label(c, cx + 3 * mm, y_p07 + 9 * mm, "P07 Kalibrierhaube - zwei P04-Nuten", 8, True, C_HOOD)
 
-    c.setStrokeColor(C_DIM)
-    c.setLineWidth(0.5)
-    c.line(cx + width / 2, y_p03 + 26 * mm, cx + width / 2, y_lid - 2 * mm)
-    c.line(cx + width / 2, y_lid + 5 * mm, cx + width / 2, y_p07 - 5 * mm)
-    label(c, 18 * mm, 43 * mm, "Montagereihenfolge:", 8, True)
+    label(c, 18 * mm, 43 * mm, "Montagereihenfolge", 8, True)
     steps = [
-        "P08 in P03-Nut einlegen; Kabelstopfen und Kabel pruefen.",
-        "P03 unter P02 montieren und gleichmaessig anziehen.",
-        "P04A und P04B in P07-Nuten einlegen; beide Kammern getrennt halten.",
-        "P07 auf P02 setzen und gleichmaessig verschrauben.",
-        "Lecktest mit Frischluft/Nullgas, danach Pruefgas und Nullpunktrueckkehr dokumentieren.",
+        "P08, P03, Sensor, Gravity-Kabel und P05 am Deckel montieren.",
+        "P04A/P04B und P07 montieren; Dichtungen kontrollieren.",
+        "Deckel +8,0 mm nach rechts versetzt von oben auf P01 absenken.",
+        "Deckel 8,0 mm nach links schieben, bis die Federzunge einrastet.",
+        "Zum Oeffnen Zunge leicht anheben, 8,0 mm nach rechts schieben und Deckel abheben.",
+        "Danach Lecktest, Nullpunkt, Pruefgas und Nullpunktrueckkehr dokumentieren.",
     ]
-    for i, text in enumerate(steps):
-        label(c, 22 * mm, (35 - 6 * i) * mm, f"{i+1}. {text}", 7)
+    for i, text_line in enumerate(steps):
+        label(c, 22 * mm, (35 - 5.5 * i) * mm, f"{i+1}. {text_line}", 7)
     footer(c, 9)
-
 
 def page10_summary(c):
     header(c, "V0.7 - Freigabe- und Pruefliste",
-           "Skizzenstand nach Y-Zentrierung und Umstellung auf geschlossene EPDM-Kauf-O-Ringe")
+           "Aktueller Stand: EPDM-O-Ringe, Microtaster -15 mm und flacher Schiebedeckel mit Rastung")
     label(c, 18 * mm, 160 * mm, "Umgesetzt", 8, True)
     items = [
-        "X-Lage der Sensor-/Kalibriereinheit entspricht wieder V0.6.",
-        "Gesamte Einheit ist auf der Y-Achse bei Y=56,0 zentriert.",
-        "P03 bleibt auf der rechten Kabelseite 8,0 mm breiter.",
-        "Gedruckte TPU-Dichtungen P04/P08 sind durch drei geschlossene EPDM-Ringe ersetzt.",
-        "P04-Nuten liegen in P07; P08-Nut liegt im erhoehten P03-Dichtrand.",
-        "P02 bleibt vollstaendig 3,0 mm dick und ohne O-Ring-Nut.",
-        "Markierungen ZERO, SPAN, 24 V DC, V0.7, IN und OUT bleiben erhalten.",
-        "Massskizzen zeigen jetzt Nutquerschnitt, Kaufteile und Montagereihenfolge.",
+        "Sensor-/Kalibriereinheit: V0.6-X-Lage, auf Y=56,0 zentriert.",
+        "P03 rechts 8,0 mm breiter; drei geschlossene EPDM-O-Ringe.",
+        "ZERO-/SPAN-Platine, Schalter, Halter und Serviceoeffnungen gemeinsam 15,0 mm tiefer.",
+        "P02 ohne Deckelschrauben; vier blinde zweistufige Schluessellochbahnen unten.",
+        "Deckel wird +8,0 mm versetzt aufgesetzt und 8,0 mm nach -X geschlossen.",
+        "Federzunge am vorderen Rand rastet auf Stift X116/Y2,2 ein.",
+        "Sichtbare Deckeloberseite ohne vorstehende Verschlussteile; diese Seite liegt beim Drucken unten.",
+        "O-Ring-Nuten bleiben in P03/P07; P02 bleibt ohne Dichtnut.",
     ]
-    for i, text in enumerate(items):
-        label(c, 22 * mm, (151 - 8 * i) * mm, "- " + text, 7)
+    for i, text_line in enumerate(items):
+        label(c, 22 * mm, (151 - 8 * i) * mm, "- " + text_line, 7)
 
     label(c, 18 * mm, 82 * mm, "Vor Montage pruefen", 8, True)
     checks = [
-        "[ ] Drei O-Ringe stimmen mit D45 x 1,50 / D50 x 1,50 / D77 x 1,50 ueberein.",
-        "[ ] Nuten sind sauber, frei von Epoxid und ohne Druckgrate.",
-        "[ ] Ringe liegen ohne Verdrehung, Ausbeulung oder Quetschung in den Nuten.",
-        "[ ] P03 und P07 schliessen plan gegen P02; Schrauben werden gleichmaessig angezogen.",
-        "[ ] Gravity-Kabel und P05 unterbrechen die P08-Dichtlinie nicht.",
-        "[ ] Lecktest, Nullpunkt, Pruefgas-Stabilitaet und Rueckkehr zum Nullpunkt sind dokumentiert.",
+        "[ ] Alle vier Pilzkoepfe lassen sich in offener +8-mm-Lage gleichzeitig absenken.",
+        "[ ] Deckel schiebt ohne Klemmen 8 mm nach links und kann geschlossen nicht angehoben werden.",
+        "[ ] Rastung ist deutlich; Zunge laesst sich zum Oeffnen ohne Werkzeugbruch anheben.",
+        "[ ] Kabelreserve reicht fuer 8 mm Schiebeweg; P03/P07 kollidieren nicht.",
+        "[ ] Deckeloberseite liegt in Druckorientierung plan auf dem Druckbett.",
+        "[ ] O-Ringe, Nuten, Lecktest, Nullpunkt und Pruefgas-Stabilitaet sind dokumentiert.",
     ]
-    for i, text in enumerate(checks):
-        label(c, 22 * mm, (73 - 8 * i) * mm, text, 7)
-    footer(c, 10, "CAD-Stand: V0.7 korrigiert - EPDM-O-Ringe")
-
+    for i, text_line in enumerate(checks):
+        label(c, 22 * mm, (73 - 8 * i) * mm, text_line, 7)
+    footer(c, 10, "CAD-Stand: V0.7 - Schiebedeckel / EPDM-O-Ringe")
 
 def main():
     c = canvas.Canvas(str(OUT), pagesize=PAGE)

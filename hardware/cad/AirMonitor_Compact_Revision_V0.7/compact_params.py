@@ -1,13 +1,14 @@
-"""Laminar AirMonitor HCHO – Compact V0.7 corrected parameters (mm).
+"""Laminar AirMonitor HCHO - Compact V0.7 corrected parameters (mm).
 
-This is the corrected V0.7 state:
-- The sensor/calibration group keeps the proven V0.6 X position.
-- The complete group is centred on the enclosure Y axis (Y centre = 56.0).
-- The sensor pod remains 8.0 mm wider on its right/cable side.
-- Printed TPU seals P04/P08 are replaced by stocked purchased EPDM 70 Shore A
-  O-rings, cord diameter 1.50 mm.
-- P04 uses two rings (one per calibration chamber); P08 uses one ring.
-- Grooves are placed in P07 and P03, not on both sides of the 3.0 mm lid.
+Current V0.7 state:
+- sensor/calibration group keeps the proven V0.6 X position;
+- complete group is centred on enclosure Y=56.0;
+- sensor pod is 8.0 mm wider on the right/cable side;
+- purchased EPDM 70 Shore A O-rings replace printed TPU seals;
+- ZERO/SPAN PCB assembly is moved 15.0 mm downward as one rigid group;
+- P02 is a short-travel sliding lid: place at +8 mm X, lower, slide 8 mm
+  toward -X, and the front spring tongue snaps over a detent pin;
+- the lid upper face has no protruding closure hardware and is the print-bed face.
 
 Global coordinates: origin = outer lower corner of P01 without flange,
 X = long axis, Y = short axis, Z = upward.
@@ -22,11 +23,35 @@ WALL_MOUNT_HOLES = [(37.0, -5.0), (37.0, W + 5.0),
                     (L - 37.0, -5.0), (L - 37.0, W + 5.0)]
 WALL_MOUNT_D = 4.5
 
-LID_BOSSES = [(7.0, 7.0), (7.0, W - 7.0),
-              (L - 7.0, 7.0), (L - 7.0, W - 7.0)]
-LID_BOSS_D, LID_BOSS_PILOT_D = 9.0, 2.5
+# Existing corner supports remain, but no lid screws are used in V0.7.
+LID_SUPPORTS = [(7.0, 7.0), (7.0, W - 7.0),
+                (L - 7.0, 7.0), (L - 7.0, W - 7.0)]
+LID_SUPPORT_D = 9.0
 
-# Waveshare mounting retained from the approved V0.7 correction.
+# Four mushroom studs retain the lid in blind keyhole tracks on its underside.
+SLIDE_STUDS = [(75.0, 7.0), (75.0, W - 7.0),
+               (170.0, 7.0), (170.0, W - 7.0)]
+SLIDE_STUD_BASE_D = 8.0
+SLIDE_TRAVEL = 8.0
+SLIDE_OPEN_OFFSET_X = 8.0
+SLIDE_CLOSE_DIRECTION = '-X'
+SLIDE_STEM_D, SLIDE_STEM_H = 4.0, 0.65
+SLIDE_HEAD_D, SLIDE_HEAD_H = 7.0, 0.75
+SLIDE_HEAD_CLEAR_D = 7.6
+SLIDE_STEM_CLEAR_W = 4.6
+SLIDE_POCKET_DEPTH = 1.65
+SLIDE_THROAT_DEPTH = 0.75
+
+# Snap tongue is cut into the front edge of P02. It remains flush on top.
+LATCH_TONGUE_X = (110.0, 132.0)   # free end at X=110, root at X=132
+LATCH_TONGUE_Y = (0.0, 10.5)
+LATCH_SLOT_W = 0.9
+LATCH_TONGUE_SKIN = 1.20
+LATCH_HOLE = (116.0, 2.2, 3.4)     # x, y, diameter through tongue
+LATCH_PIN = (116.0, 2.2)           # x, y on top of front long wall
+LATCH_PIN_SEGMENTS = [(3.0, 0.8), (2.2, 0.7), (1.2, 0.7)]  # d, h
+
+# Waveshare mounting retained from approved correction.
 STANDOFFS = [(24.0, 25.0), (169.0, 25.0),
              (24.0, 87.0), (169.0, 87.0)]
 STANDOFF_D, STANDOFF_PILOT_D = 9.0, 2.5
@@ -35,12 +60,15 @@ CARRIER = (10.0, 185.0, 11.0, 101.0, 9.6, 27.6)
 PCB_WAVESHARE = (20.6, 172.4, 11.0, 101.0, 9.6, 11.2)
 
 # ---------- Right end wall: ZERO / SPAN ----------
+# Entire PCB, both switches, all four holders and both service holes moved -15 mm in Z.
+BTN_ASSEMBLY_DZ = -15.0
 BTN_HOLDER_Y = (18.0, 94.0)
-BTN_HOLDER_Z = (35.0, 51.0)
+BTN_HOLDER_Z = (20.0, 36.0)
 BTN_HOLDER_D, BTN_HOLDER_PILOT_D, BTN_HOLDER_LEN = 5.0, 1.6, 6.0
 BTN_PCB = (80.0, 20.0, 1.5)
-ZERO = (36.0, 41.0, 3.0)
-SPAN = (52.0, 41.0, 3.0)
+ZERO = (36.0, 26.0, 3.0)
+SPAN = (52.0, 26.0, 3.0)
+BTN_MARK_Z = 32.5
 
 # ---------- Left end wall: DC5521 ----------
 DC5521 = (44.0, 27.5, 11.2)
@@ -53,10 +81,10 @@ MARK_FONT_SIZE = 3.8
 
 # ---------- Lid P02 ----------
 LID_Z, LID_T = 55.0, 3.0
-LID_HOLE_D, LID_CBORE_D, LID_CBORE_DEPTH = 3.3, 6.2, 1.8
+LID_TOP_FACE_FLAT = True
+LID_PRINT_TOP_FACE_DOWN = True
 
-# Corrected V0.7: X remains at the proven V0.6 position.
-# Complete sensor/calibration group moves only -1.0 mm in Y to centre at Y=56.0.
+# Sensor/calibration group remains at V0.6 X and is centred only in Y.
 SENSOR_DX = 0.0
 SENSOR_DY = -1.0
 POD_EXTRA_X = 8.0
@@ -71,10 +99,9 @@ POD_BOSS_D, POD_BOSS_Z0 = 7.0, 52.0
 POD_BOSS_PILOT_D, POD_BOSS_PILOT_TOP = 2.5, 56.0
 
 # ---------- Sensor pod P03 ----------
-# V0.6 left X edge retained; 8.0 mm added only to the right/cable side.
 POD = (6.0, 59.5, 15.0, 97.0, 40.0, 54.0)
 POD_WALL = 3.0
-POD_SEAL_RIM_TOP = 55.0  # 1.0 mm raised sealing rim contacts lid underside.
+POD_SEAL_RIM_TOP = 55.0
 SENSOR_BOSSES = [(16.3, 48.5), (16.3, 63.5)]
 SENSOR_BOSS_D, SENSOR_HOLE_D, SENSOR_BOSS_TOP = 5.6, 3.0, 46.0
 GRAVITY_SLOT = (55.5, 60.0, 82.0, 88.0, 46.0, 54.0)
@@ -93,17 +120,12 @@ ORING_GROOVE_D = 1.10
 ORING_COMPRESSION = (ORING_CORD - ORING_GROOVE_D) / ORING_CORD
 ORING_CORNER_R = 8.0
 
-# Rounded-rectangle installed centreline paths.
-# The path perimeters match the stocked circular rings with essentially zero stretch.
-# P04A: lower calibration chamber, purchased ring Ø45.00 x 1.50 mm.
 P04A_RING = dict(name='P04A', id=45.0, cord=ORING_CORD,
                  cx=32.0, cy=33.5, cw=46.0, ch=34.0, r=8.0,
                  sku='H48761')
-# P04B: upper calibration chamber, purchased ring Ø50.00 x 1.50 mm.
 P04B_RING = dict(name='P04B', id=50.0, cord=ORING_CORD,
                  cx=32.0, cy=74.5, cw=45.8, ch=42.0, r=8.0,
                  sku='H96773')
-# P08: sensor pod to lid, purchased ring Ø77.00 x 1.50 mm.
 P08_RING = dict(name='P08', id=77.0, cord=ORING_CORD,
                 cx=32.75, cy=56.0, cw=51.2, ch=79.0, r=8.0,
                 sku='H48789')
@@ -112,7 +134,6 @@ P08_RING = dict(name='P08', id=77.0, cord=ORING_CORD,
 P05 = (55.5, 59.5, 82.0, 88.0, 46.0, 54.0)
 
 # ---------- Calibration hood P07 ----------
-# Hood underside now contacts the lid top directly; O-rings protrude from grooves.
 HOOD_Z0 = LID_Z + LID_T
 HOOD_PLATE = (4.0, 60.0, 3.2, 108.8)
 HOOD_PLATE_T = 3.0
@@ -120,7 +141,6 @@ HOOD_CENTER = (32.0, 56.0)
 HOOD_OUT = ((48.0, 94.0), (36.0, 70.0), 22.0)
 HOOD_IN = ((43.0, 89.0), (31.0, 65.0), 20.2)
 HOOD_ROOF = (14.0, 21.0, 36.0, 70.0, 3.0)
-# Divider widened to 5.0 mm so the two O-ring grooves remain separate.
 HOOD_FLOOR_OPEN = (10.5, 53.5, 17.5, 94.5)
 HOOD_DIVIDER_Y = (49.5, 54.5)
 HOOD_PORTS = {'IN': (20.0, 29.0), 'OUT': (36.0, 85.0)}

@@ -2,7 +2,8 @@
 
 Generates global STEP, print-oriented STEP/STL, SVG review drawings and CSV data.
 The sensor/calibration group retains the proven V0.6 X position, is centred in Y,
-and uses purchased EPDM 70 Shore A O-rings instead of printed TPU seals.
+uses purchased EPDM 70 Shore A O-rings, lowers ZERO/SPAN by 15 mm,
+and adds a flat-top short-travel sliding lid with a snap tongue.
 """
 from __future__ import annotations
 
@@ -113,6 +114,17 @@ def installed_ring(cfg: dict, z0: float, height: float):
     return ring
 
 
+def capsule_x(x0, x1, y, width, z0, h):
+    """Capsule prism running in X, used for blind keyhole tracks."""
+    if x1 < x0:
+        x0, x1 = x1, x0
+    r = width / 2
+    s = box(x0, y - r, z0, x1 - x0, width, h)
+    s = s.union(cz(x0, y, z0, width, h))
+    s = s.union(cz(x1, y, z0, width, h))
+    return s
+
+
 def outside_text_right(text, y, z, size=None):
     plane = cq.Plane(origin=(C.L, 0, 0), xDir=(0, 1, 0), normal=(1, 0, 0))
     return cq.Workplane(plane).center(y, z).text(
@@ -147,13 +159,23 @@ for x, y in C.WALL_MOUNT_HOLES:
 for y in (-0.5, W - wall - 0.5):
     b = b.cut(box(C.OPEN_X0, y, C.OPEN_Z,
                   C.OPEN_X1 - C.OPEN_X0, wall + 1.0, H - C.OPEN_Z + 1.0))
-for x, y in C.LID_BOSSES:
-    b = b.union(cz(x, y, floor, C.LID_BOSS_D, H - floor))
-    b = b.cut(cz(x, y, floor - 0.2, C.LID_BOSS_PILOT_D, H - floor + 0.5))
+for x, y in C.LID_SUPPORTS:
+    b = b.union(cz(x, y, floor, C.LID_SUPPORT_D, H - floor))
+for x, y in C.SLIDE_STUDS:
+    b = b.union(cz(x, y, floor, C.SLIDE_STUD_BASE_D, H - floor))
+    b = b.union(cz(x, y, H, C.SLIDE_STEM_D, C.SLIDE_STEM_H))
+    b = b.union(cz(x, y, H + C.SLIDE_STEM_H, C.SLIDE_HEAD_D, C.SLIDE_HEAD_H))
 for x, y in C.STANDOFFS:
     b = b.union(cz(x, y, floor, C.STANDOFF_D, C.BOARD_BOTTOM_Z - floor))
     b = b.cut(cz(x, y, floor - 0.2, C.STANDOFF_PILOT_D,
                  C.BOARD_BOTTOM_Z - floor + 0.5))
+
+# Snap detent pin on top of the front long wall.
+px, py = C.LATCH_PIN
+pz = H
+for d, hh in C.LATCH_PIN_SEGMENTS:
+    b = b.union(cz(px, py, pz, d, hh))
+    pz += hh
 
 # DC5521 on left end wall.
 dy, dz, dd = C.DC5521
@@ -170,7 +192,7 @@ for y in C.BTN_HOLDER_Y:
                      C.BTN_HOLDER_LEN + 0.5))
 
 # Physical markings.
-for text, y, z in (('ZERO', C.ZERO[0], 47.5), ('SPAN', C.SPAN[0], 47.5)):
+for text, y, z in (('ZERO', C.ZERO[0], C.BTN_MARK_Z), ('SPAN', C.SPAN[0], C.BTN_MARK_Z)):
     try:
         b = b.cut(outside_text_right(text, y, z))
     except Exception as exc:
@@ -181,15 +203,11 @@ try:
 except Exception as exc:
     print('WARN left-wall marking skipped:', exc)
 
-# ---------------- P02 lid ----------------
+# ---------------- P02 sliding lid ----------------
 lz, lt = C.LID_Z, C.LID_T
 l = box(0, 0, lz, L, W, lt)
 for x, y, lx, ly in C.VENTS:
     l = l.cut(box(x, y, lz - 0.5, lx, ly, lt + 1.0))
-for x, y in C.LID_BOSSES:
-    l = l.cut(cz(x, y, lz - 0.5, C.LID_HOLE_D, lt + 1.0))
-    l = l.cut(cz(x, y, lz + lt - C.LID_CBORE_DEPTH,
-                 C.LID_CBORE_D, C.LID_CBORE_DEPTH + 0.3))
 for x, y in C.HOOD_SCREWS:
     l = l.union(cz(x, y, C.HOOD_SCREW_BOSS_Z0,
                    C.HOOD_SCREW_BOSS_D, lz - C.HOOD_SCREW_BOSS_Z0))
@@ -202,7 +220,32 @@ for x, y in C.POD_MOUNTS:
     l = l.cut(cz(x, y, C.POD_BOSS_Z0 - 0.1,
                  C.POD_BOSS_PILOT_D,
                  C.POD_BOSS_PILOT_TOP - C.POD_BOSS_Z0 + 0.1))
-# Important: the 3.0 mm lid remains full thickness; no opposed O-ring grooves.
+
+# Four blind, two-level keyhole tracks. Top face remains closed and planar.
+for x, y in C.SLIDE_STUDS:
+    entry_x = x - C.SLIDE_TRAVEL
+    head_z0 = lz + C.SLIDE_STEM_H - 0.05
+    head_depth = C.SLIDE_POCKET_DEPTH - (C.SLIDE_STEM_H - 0.05)
+    head_channel = capsule_x(entry_x, x, y, C.SLIDE_HEAD_CLEAR_D,
+                             head_z0, head_depth + 0.05)
+    throat = capsule_x(entry_x, x, y, C.SLIDE_STEM_CLEAR_W,
+                       lz - 0.1, C.SLIDE_THROAT_DEPTH + 0.2)
+    entry = cz(entry_x, y, lz - 0.1, C.SLIDE_HEAD_CLEAR_D,
+               C.SLIDE_POCKET_DEPTH + 0.2)
+    l = l.cut(head_channel.union(throat).union(entry))
+
+# Flush spring tongue at the front edge: top remains flat on the print bed.
+tx0, tx1 = C.LATCH_TONGUE_X
+ty0, ty1 = C.LATCH_TONGUE_Y
+l = l.cut(box(tx0, ty0, lz - 0.1, tx1 - tx0, ty1 - ty0,
+              lt - C.LATCH_TONGUE_SKIN + 0.1))
+l = l.cut(box(tx0, ty1, lz - 0.2, tx1 - tx0, C.LATCH_SLOT_W, lt + 0.4))
+l = l.cut(box(tx0 - C.LATCH_SLOT_W, ty0, lz - 0.2,
+              C.LATCH_SLOT_W, ty1 - ty0 + C.LATCH_SLOT_W, lt + 0.4))
+lhx, lhy, lhd = C.LATCH_HOLE
+l = l.cut(cz(lhx, lhy, lz - 0.2, lhd, lt + 0.4))
+
+# Important: no lid-screw holes and no O-ring grooves in P02.
 
 # ---------------- P03 sensor pod ----------------
 px0, px1, py0, py1, pz0, pz1 = C.POD
@@ -429,5 +472,25 @@ or_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" v
 <text class="s" x="64" y="149">Deckel bleibt 3,0 mm voll</text>
 </svg>'''
 (D / 'Drawing_EPDM_O_Ring_Grooves_V0.7.svg').write_text(or_svg, encoding='utf-8')
+
+slide_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="720" viewBox="-5 -8 220 132">
+{svg_style}
+<text class="t" x="0" y="-3">AirMonitor V0.7 - Schiebedeckel, Oberseite und verdeckte Unterseite [mm]</text>
+<rect class="wall" x="0" y="0" width="208" height="112"/>
+<text class="s" x="80" y="108">Oberseite plan; Druckseite</text>
+<g stroke="#24566f" fill="none" stroke-dasharray="2 1" stroke-width="0.5">
+  <path d="M67 7 H75"/><circle cx="67" cy="7" r="3.8"/><circle cx="75" cy="7" r="2.3"/>
+  <path d="M67 105 H75"/><circle cx="67" cy="105" r="3.8"/><circle cx="75" cy="105" r="2.3"/>
+  <path d="M162 7 H170"/><circle cx="162" cy="7" r="3.8"/><circle cx="170" cy="7" r="2.3"/>
+  <path d="M162 105 H170"/><circle cx="162" cy="105" r="3.8"/><circle cx="170" cy="105" r="2.3"/>
+  <rect x="110" y="0" width="22" height="10.5"/>
+  <circle cx="116" cy="2.2" r="1.7"/>
+</g>
+<line x1="145" y1="20" x2="137" y2="20" stroke="#b33" stroke-width="0.7"/>
+<text class="s" x="138" y="17">Schliessen: 8 mm nach -X, dann Rastung</text>
+<text class="s" x="82" y="12">blinde Schluessellochbahnen unten</text>
+<text class="s" x="108" y="15">Federzunge / Rastloch</text>
+</svg>'''
+(D / 'Drawing_Sliding_Lid_Flat_Top_V0.7.svg').write_text(slide_svg, encoding='utf-8')
 
 print('Generated AirMonitor Compact V0.7 corrected O-ring package:', R)
