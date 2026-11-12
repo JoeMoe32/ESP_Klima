@@ -1,0 +1,62 @@
+name: Temporary Reaflon variant lookup
+
+on:
+  push:
+    branches:
+      - tmp/reaflon-variant-lookup
+    paths:
+      - ".github/workflows/tmp-reaflon-lookup.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  lookup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/reaflon-variant-lookup
+          fetch-depth: 0
+      - name: Fetch selected variant
+        run: |
+          set -euxo pipefail
+          URL='https://reaflon.ch/products/o-ring-epdm-70-shore-schnurstarke-1-25-mm.js'
+          curl --fail --location --retry 3 "$URL" -o /tmp/product.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('/tmp/product.json').read_text())
+          wanted = '47845525750048'
+          variants = data.get('variants', [])
+          match = next((v for v in variants if str(v.get('id')) == wanted), None)
+          output = {
+              'product_title': data.get('title'),
+              'product_handle': data.get('handle'),
+              'selected_variant_id': wanted,
+              'selected_variant': match,
+              'all_variants': [
+                  {
+                      'id': v.get('id'),
+                      'title': v.get('title'),
+                      'available': v.get('available'),
+                      'price': v.get('price'),
+                      'sku': v.get('sku'),
+                  }
+                  for v in variants
+              ],
+          }
+          Path('reaflon_variant_lookup.json').write_text(
+              json.dumps(output, ensure_ascii=False, indent=2), encoding='utf-8'
+          )
+          if match is None:
+              raise SystemExit(f'Variant {wanted} not found')
+          print(json.dumps(match, ensure_ascii=False, indent=2))
+          PY
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reaflon_variant_lookup.json
+          git commit -m "Record selected Reaflon O-ring variant"
+          git push origin HEAD:tmp/reaflon-variant-lookup
