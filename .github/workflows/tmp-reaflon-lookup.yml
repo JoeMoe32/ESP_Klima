@@ -18,45 +18,50 @@ jobs:
         with:
           ref: tmp/reaflon-variant-lookup
           fetch-depth: 0
-      - name: Fetch selected variant
+      - name: Fetch stocked thin EPDM variants
         run: |
           set -euxo pipefail
-          URL='https://reaflon.ch/products/o-ring-epdm-70-shore-schnurstarke-1-25-mm.js'
-          curl --fail --location --retry 3 "$URL" -o /tmp/product.json
+          curl --fail --location --retry 3 \
+            'https://reaflon.ch/collections/o-ring-epdm-70-shore/products.json?limit=250' \
+            -o /tmp/products.json
           python - <<'PY'
-          import json
+          import json, re
           from pathlib import Path
-          data = json.loads(Path('/tmp/product.json').read_text())
-          wanted = '47845525750048'
-          variants = data.get('variants', [])
-          match = next((v for v in variants if str(v.get('id')) == wanted), None)
-          output = {
-              'product_title': data.get('title'),
-              'product_handle': data.get('handle'),
-              'selected_variant_id': wanted,
-              'selected_variant': match,
-              'all_variants': [
-                  {
-                      'id': v.get('id'),
-                      'title': v.get('title'),
-                      'available': v.get('available'),
-                      'price': v.get('price'),
-                      'sku': v.get('sku'),
-                  }
-                  for v in variants
-              ],
-          }
-          Path('reaflon_variant_lookup.json').write_text(
-              json.dumps(output, ensure_ascii=False, indent=2), encoding='utf-8'
+          data = json.loads(Path('/tmp/products.json').read_text())
+          out = []
+          pat = re.compile(r'Ø?\s*([0-9]+(?:\.[0-9]+)?)\s*x\s*([0-9]+(?:\.[0-9]+)?)\s*mm', re.I)
+          for product in data.get('products', []):
+              title = product.get('title', '')
+              if 'EPDM 70' not in title:
+                  continue
+              for v in product.get('variants', []):
+                  vt = v.get('title', '')
+                  m = pat.search(vt)
+                  if not m:
+                      continue
+                  inside = float(m.group(1)); cord = float(m.group(2))
+                  if 35.0 <= inside <= 100.0 and cord <= 2.0:
+                      out.append({
+                          'product_title': title,
+                          'handle': product.get('handle'),
+                          'variant_id': v.get('id'),
+                          'variant_title': vt,
+                          'inside_diameter_mm': inside,
+                          'cord_mm': cord,
+                          'available': v.get('available'),
+                          'price_chf_cents': v.get('price'),
+                          'sku': v.get('sku'),
+                      })
+          out.sort(key=lambda x: (x['cord_mm'], x['inside_diameter_mm']))
+          Path('reaflon_stocked_thin_o_rings.json').write_text(
+              json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8'
           )
-          if match is None:
-              raise SystemExit(f'Variant {wanted} not found')
-          print(json.dumps(match, ensure_ascii=False, indent=2))
+          print(json.dumps(out, ensure_ascii=False, indent=2))
           PY
       - name: Commit result
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reaflon_variant_lookup.json
-          git commit -m "Record selected Reaflon O-ring variant"
+          git add reaflon_stocked_thin_o_rings.json
+          git commit -m "Record stocked thin Reaflon EPDM O-rings"
           git push origin HEAD:tmp/reaflon-variant-lookup
