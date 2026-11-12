@@ -1,0 +1,39 @@
+name: Apply AirMonitor V0.7 sliding lid
+
+on:
+  push:
+    branches:
+      - cad/airmonitor-compact-v0.7
+    paths:
+      - ".github/workflows/apply-airmonitor-v07-sliding-lid.yml"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.7/apply_v07_slide_lid_patch.py"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out V0.7 branch
+        uses: actions/checkout@v4
+        with:
+          ref: cad/airmonitor-compact-v0.7
+          fetch-depth: 0
+
+      - name: Apply source, drawing and documentation changes
+        working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.7
+        run: python apply_v07_slide_lid_patch.py
+
+      - name: Commit patched V0.7 sources
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A hardware/cad/AirMonitor_Compact_Revision_V0.7
+          if git diff --cached --quiet; then
+            echo "V0.7 sliding-lid patch already applied."
+            exit 0
+          fi
+          git commit -m "Lower micro-switch assembly and add V0.7 sliding snap lid"
+          git pull --rebase origin cad/airmonitor-compact-v0.7
+          git push origin HEAD:cad/airmonitor-compact-v0.7
