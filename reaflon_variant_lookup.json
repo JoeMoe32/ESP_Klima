@@ -1,0 +1,92 @@
+{
+  "product_title": "O-Ring EPDM 70 Shore-Schnurstärke 1.25 mm",
+  "product_handle": "o-ring-epdm-70-shore-schnurstarke-1-25-mm",
+  "selected_variant_id": "47845525750048",
+  "selected_variant": {
+    "id": 47845525750048,
+    "title": "Ø2.00x1.25mm",
+    "option1": "Ø2.00x1.25mm",
+    "option2": null,
+    "option3": null,
+    "sku": "H96758",
+    "requires_shipping": true,
+    "taxable": true,
+    "featured_image": {
+      "id": 44705302348064,
+      "product_id": 9087758696736,
+      "position": 1,
+      "created_at": "2024-03-15T16:37:44+01:00",
+      "updated_at": "2024-03-15T16:37:44+01:00",
+      "alt": null,
+      "width": 1000,
+      "height": 1000,
+      "src": "https://cdn.shopify.com/s/files/1/0816/5903/5936/files/o-ring-din-11853-11864-34-x-5-mm_0032568f-768c-453b-8aa7-30098d7c2387.jpg?v=1710517064",
+      "variant_ids": [
+        47845525750048,
+        47845530534176,
+        47845530566944,
+        47845530599712
+      ]
+    },
+    "available": true,
+    "name": "O-Ring EPDM 70 Shore-Schnurstärke 1.25 mm - Ø2.00x1.25mm",
+    "public_title": "Ø2.00x1.25mm",
+    "options": [
+      "Ø2.00x1.25mm"
+    ],
+    "price": 19,
+    "weight": 0,
+    "compare_at_price": null,
+    "inventory_management": "shopify",
+    "barcode": null,
+    "featured_media": {
+      "alt": null,
+      "id": 37134512128288,
+      "position": 1,
+      "preview_image": {
+        "aspect_ratio": 1.0,
+        "height": 1000,
+        "width": 1000,
+        "src": "https://cdn.shopify.com/s/files/1/0816/5903/5936/files/o-ring-din-11853-11864-34-x-5-mm_0032568f-768c-453b-8aa7-30098d7c2387.jpg?v=1710517064"
+      }
+    },
+    "quantity_rule": {
+      "min": 1,
+      "max": null,
+      "increment": 1
+    },
+    "quantity_price_breaks": [],
+    "requires_selling_plan": false,
+    "selling_plan_allocations": []
+  },
+  "all_variants": [
+    {
+      "id": 47845525750048,
+      "title": "Ø2.00x1.25mm",
+      "available": true,
+      "price": 19,
+      "sku": "H96758"
+    },
+    {
+      "id": 47845530534176,
+      "title": "Ø8.00x1.25mm",
+      "available": true,
+      "price": 20,
+      "sku": "H50167"
+    },
+    {
+      "id": 47845530566944,
+      "title": "Ø13.00x1.25mm",
+      "available": true,
+      "price": 21,
+      "sku": "H50168"
+    },
+    {
+      "id": 47845530599712,
+      "title": "Ø14.00x1.25mm",
+      "available": true,
+      "price": 22,
+      "sku": "H96759"
+    }
+  ]
+}
