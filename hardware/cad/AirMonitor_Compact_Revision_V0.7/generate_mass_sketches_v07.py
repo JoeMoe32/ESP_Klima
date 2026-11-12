@@ -1,351 +1,281 @@
-"""Generate 1:1 A4 landscape dimensional sketches for AirMonitor V0.7."""
+"""Generate 1:1 mass sketches for AirMonitor Compact V0.7 corrected O-ring revision."""
 from pathlib import Path
-from reportlab.pdfgen import canvas
+import math
+
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import mm
-from reportlab.lib.colors import black, HexColor
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
 
 import compact_params as C
 
-OUT = Path(__file__).resolve().parent / 'AirMonitor_V07_Massskizzen_1zu1.pdf'
-PW, PH = landscape(A4)
-BLUE = HexColor('#0b5d8b')
-GRAY = HexColor('#666666')
+R = Path(__file__).resolve().parent
+OUT = R / 'AirMonitor_V07_Massskizzen_1zu1.pdf'
+PAGE = landscape(A4)
+PW, PH = PAGE
 
 
-def xpt(v):
-    return v * mm
+def header(c, title, subtitle=''):
+    c.setFont('Helvetica-Bold', 12)
+    c.drawString(12*mm, PH-12*mm, 'LAMINAR | AirMonitor HCHO | V0.7')
+    c.setFont('Helvetica-Bold', 10)
+    c.drawString(12*mm, PH-20*mm, title)
+    if subtitle:
+        c.setFont('Helvetica', 7.5)
+        c.drawString(12*mm, PH-26*mm, subtitle)
+    c.line(12*mm, PH-29*mm, PW-12*mm, PH-29*mm)
 
 
-def txt(c, x, y, s, size=8, color=black, bold=False, align='left'):
-    c.setFillColor(color)
-    c.setFont('Helvetica-Bold' if bold else 'Helvetica', size)
-    if align == 'center':
-        c.drawCentredString(xpt(x), xpt(y), s)
-    elif align == 'right':
-        c.drawRightString(xpt(x), xpt(y), s)
-    else:
-        c.drawString(xpt(x), xpt(y), s)
-
-
-def line(c, x1, y1, x2, y2, width=0.25, color=black, dash=None):
-    c.setStrokeColor(color)
-    c.setLineWidth(xpt(width))
-    c.setDash(*(dash or []))
-    c.line(xpt(x1), xpt(y1), xpt(x2), xpt(y2))
-    c.setDash()
-
-
-def rect(c, x, y, w, h, width=0.25, color=black, fill=None, radius=0):
-    c.setStrokeColor(color)
-    c.setLineWidth(xpt(width))
-    if fill:
-        c.setFillColor(fill)
-        mode = 1
-    else:
-        mode = 0
-    if radius:
-        c.roundRect(xpt(x), xpt(y), xpt(w), xpt(h), xpt(radius), stroke=1, fill=mode)
-    else:
-        c.rect(xpt(x), xpt(y), xpt(w), xpt(h), stroke=1, fill=mode)
-
-
-def circle(c, x, y, d, width=0.25, color=black, fill=None):
-    c.setStrokeColor(color)
-    c.setLineWidth(xpt(width))
-    if fill:
-        c.setFillColor(fill)
-        mode = 1
-    else:
-        mode = 0
-    c.circle(xpt(x), xpt(y), xpt(d / 2), stroke=1, fill=mode)
-
-
-def cross(c, x, y, size=2.0, color=GRAY):
-    line(c, x - size, y, x + size, y, 0.18, color)
-    line(c, x, y - size, x, y + size, 0.18, color)
-
-
-def dim_h(c, x1, x2, y, label, ext=2.5):
-    line(c, x1, y, x2, y, 0.18, GRAY)
-    line(c, x1, y - ext, x1, y + ext, 0.18, GRAY)
-    line(c, x2, y - ext, x2, y + ext, 0.18, GRAY)
-    line(c, x1 - 1.2, y - 1.2, x1 + 1.2, y + 1.2, 0.18, GRAY)
-    line(c, x2 - 1.2, y - 1.2, x2 + 1.2, y + 1.2, 0.18, GRAY)
-    txt(c, (x1 + x2) / 2, y + 2.0, label, 7, GRAY, align='center')
-
-
-def dim_v(c, x, y1, y2, label, ext=2.5):
-    line(c, x, y1, x, y2, 0.18, GRAY)
-    line(c, x - ext, y1, x + ext, y1, 0.18, GRAY)
-    line(c, x - ext, y2, x + ext, y2, 0.18, GRAY)
-    line(c, x - 1.2, y1 - 1.2, x + 1.2, y1 + 1.2, 0.18, GRAY)
-    line(c, x - 1.2, y2 - 1.2, x + 1.2, y2 + 1.2, 0.18, GRAY)
-    c.saveState()
-    c.translate(xpt(x + 2.0), xpt((y1 + y2) / 2))
-    c.rotate(90)
-    c.setFillColor(GRAY)
-    c.setFont('Helvetica', 7)
-    c.drawCentredString(0, 0, label)
-    c.restoreState()
-
-
-def header(c, subtitle, page_no, note=''):
-    txt(c, 12, 197, 'LAMINAR | AirMonitor HCHO | V0.7', 14, bold=True)
-    txt(c, 12, 187, subtitle, 10, bold=True)
+def footer(c, page_no, note=''):
+    c.setFont('Helvetica', 6.5)
+    c.drawString(12*mm, 8*mm, 'A4 quer | Massstab 1:1 | Masse in mm | Druck: 100 % / Tatsaechliche Groesse')
     if note:
-        txt(c, 12, 179, note, 7.5)
-    line(c, 12, 174, 285, 174, 0.35)
-    txt(c, 285, 8, str(page_no), 7, align='right')
-    line(c, 12, 15, 285, 15, 0.3)
-    txt(c, 12, 9, 'A4 quer | Massstab 1:1 | Masse in mm | Druck: 100 % / Tatsaechliche Groesse', 7)
-    dim_h(c, 235, 285, 23, 'Kontrolle: 50 mm')
+        c.drawCentredString(PW/2, 8*mm, note)
+    c.drawRightString(PW-12*mm, 8*mm, str(page_no))
+    # 50 mm control bar
+    x0 = PW-72*mm; y0 = 16*mm
+    c.line(x0, y0, x0+50*mm, y0)
+    c.line(x0, y0-2*mm, x0, y0+2*mm)
+    c.line(x0+50*mm, y0-2*mm, x0+50*mm, y0+2*mm)
+    c.setFont('Helvetica', 6)
+    c.drawCentredString(x0+25*mm, y0+2.5*mm, 'Kontrolle: 50 mm')
 
 
-def finish(c):
-    c.showPage()
+def dim_h(c, x0, x1, y, text, off=3):
+    c.line(x0, y, x1, y)
+    c.line(x0, y-off*mm, x0, y+off*mm)
+    c.line(x1, y-off*mm, x1, y+off*mm)
+    c.setFont('Helvetica', 6.5)
+    c.drawCentredString((x0+x1)/2, y+2*mm, text)
 
 
-c = canvas.Canvas(str(OUT), pagesize=(PW, PH))
+def dim_v(c, x, y0, y1, text, off=3):
+    c.line(x, y0, x, y1)
+    c.line(x-off*mm, y0, x+off*mm, y0)
+    c.line(x-off*mm, y1, x+off*mm, y1)
+    c.saveState(); c.translate(x+2.5*mm, (y0+y1)/2); c.rotate(90)
+    c.setFont('Helvetica', 6.5); c.drawCentredString(0, 0, text); c.restoreState()
 
-# 1 P01 top view interior
-header(c, 'P01 - Gehaeuseboden / Draufsicht innen', 1,
-       'Aussen 208 x 132 x 55 inkl. Befestigungsflansche; Gehaeuse ohne Flansche 208 x 112')
-ox, oy = 38, 32
-rect(c, ox, oy, 208, 132)
-rect(c, ox, oy + 10, 208, 112)
-# wall mount holes, global y shifted +10 for flange drawing
-for x, y in C.WALL_MOUNT_HOLES:
-    circle(c, ox + x, oy + y + 10, C.WALL_MOUNT_D)
-    cross(c, ox + x, oy + y + 10, 1.8)
-# lid bosses
-for x, y in C.LID_BOSSES:
-    circle(c, ox + x, oy + y + 10, C.LID_BOSS_D)
-    circle(c, ox + x, oy + y + 10, C.LID_BOSS_PILOT_D)
-# board standoffs
-for x, y in C.STANDOFFS:
-    circle(c, ox + x, oy + y + 10, C.STANDOFF_D)
-    circle(c, ox + x, oy + y + 10, C.STANDOFF_PILOT_D)
-# dimensions and labels
-dim_h(c, ox, ox + 208, oy - 4, '208')
-dim_v(c, ox + 216, oy, oy + 132, '132')
-dim_h(c, ox, ox + 24, oy + 76, '24')
-dim_h(c, ox, ox + 169, oy + 83, '169')
-dim_h(c, ox + 169, ox + 208, oy + 76, '39')
-dim_v(c, ox + 182, oy + 10, oy + 35, '25')
-dim_v(c, ox + 182, oy + 97, oy + 122, '25')
-txt(c, 12, 26, 'Deckelbossen rechts: X=201,0 (7,0 mm vom Rand).', 7.5)
-txt(c, 12, 21, 'Board-Pilotloecher: XY (24/25), (169/25), (24/87), (169/87); Raster 145 x 62.', 7.5)
-finish(c)
 
-# 2 long wall
-header(c, 'P01 - Laengswand / Seitenansicht', 2,
-       'Beide Laengswaende unveraendert; rechteckiger Ausschnitt')
-ox, oy = 38, 75
-rect(c, ox, oy, 208, 55)
-# cutout represented by white box over top
-c.setFillColorRGB(1, 1, 1)
-c.rect(xpt(ox + C.OPEN_X0), xpt(oy + C.OPEN_Z), xpt(C.OPEN_X1 - C.OPEN_X0), xpt(H := 55 - C.OPEN_Z), stroke=0, fill=1)
-line(c, ox + C.OPEN_X0, oy + C.OPEN_Z, ox + C.OPEN_X0, oy + 55)
-line(c, ox + C.OPEN_X1, oy + C.OPEN_Z, ox + C.OPEN_X1, oy + 55)
-line(c, ox + C.OPEN_X0, oy + C.OPEN_Z, ox + C.OPEN_X1, oy + C.OPEN_Z)
-dim_h(c, ox, ox + 208, oy - 10, '208')
-dim_v(c, ox + 216, oy, oy + 55, '55')
-dim_h(c, ox, ox + C.OPEN_X0, oy - 2, '36,6')
-dim_h(c, ox + C.OPEN_X0, ox + C.OPEN_X1, oy + 62, '122')
-dim_v(c, ox + C.OPEN_X1 + 8, oy, oy + C.OPEN_Z, '12')
-txt(c, 12, 26, 'Ausschnitt: 122 breit x 43 hoch; Beginn X=36,6; Ende X=158,6; Unterkante Z=12.', 7.5)
-finish(c)
+def page1_base(c):
+    header(c, 'P01 - Gehaeuseboden / Draufsicht innen',
+           'Aussen 208 x 132 x 55 inkl. Flansche; Gehaeuse ohne Flansche 208 x 112')
+    ox, oy = 38*mm, 39*mm
+    c.rect(ox, oy-C.FLANGE*mm, C.L*mm, (C.W+2*C.FLANGE)*mm)
+    c.rect(ox, oy, C.L*mm, C.W*mm)
+    for x, y in C.WALL_MOUNT_HOLES:
+        c.circle(ox+x*mm, oy+y*mm, C.WALL_MOUNT_D/2*mm)
+    for x, y in C.LID_BOSSES:
+        c.circle(ox+x*mm, oy+y*mm, C.LID_BOSS_D/2*mm)
+        c.circle(ox+x*mm, oy+y*mm, C.LID_BOSS_PILOT_D/2*mm)
+    c.setStrokeColor(colors.darkblue)
+    for x, y in C.STANDOFFS:
+        c.circle(ox+x*mm, oy+y*mm, C.STANDOFF_D/2*mm)
+        c.circle(ox+x*mm, oy+y*mm, C.STANDOFF_PILOT_D/2*mm)
+    c.setStrokeColor(colors.black)
+    dim_h(c, ox, ox+C.L*mm, oy-17*mm, '208')
+    dim_v(c, ox+C.L*mm+9*mm, oy-C.FLANGE*mm, oy+(C.W+C.FLANGE)*mm, '132')
+    c.setFont('Helvetica', 7)
+    c.drawString(12*mm, 22*mm, 'Waveshare-Pilotloecher: XY (24/25), (169/25), (24/87), (169/87); Raster 145 x 62.')
+    c.drawString(12*mm, 18*mm, 'Deckelbossen: XY (7/7), (7/105), (201/7), (201/105). Boden/Waende 2,8.')
+    footer(c, 1)
 
-# 3 right end wall
-header(c, 'P01 - Rechte Stirnwand / Aussenansicht', 3,
-       'ZERO / SPAN und angepasste Markierungen; DC5521 auf Gegenseite')
-ox, oy = 60, 75
-rect(c, ox, oy, 112, 55)
-for name, item in [('ZERO', C.ZERO), ('SPAN', C.SPAN)]:
-    y, z, d = item
-    circle(c, ox + y, oy + z, d)
-    txt(c, ox + y, oy + z + 7, name, 7, bold=True, align='center')
-# PCB projection dashed
-c.setDash(3, 2)
-rect(c, ox + 16, oy + 33, 80, 20, 0.2, BLUE)
-c.setDash()
-txt(c, ox + 56, oy + 38, 'Microtaster-Platine 80 x 20', 6.5, BLUE, align='center')
-dim_h(c, ox + C.ZERO[0], ox + C.SPAN[0], oy + 63, '16')
-dim_h(c, ox, ox + 112, oy - 8, '112')
-dim_v(c, ox + 120, oy, oy + 55, '55')
-txt(c, 190, 118, 'Lochmitten ab links / unten:', 8, bold=True)
-txt(c, 190, 110, 'ZERO: Y=36 / Z=41 / D3', 7.5)
-txt(c, 190, 103, 'SPAN: Y=52 / Z=41 / D3', 7.5)
-txt(c, 190, 96, 'Innenhalter: Y=18 / 94; Z=35 / 51', 7.5)
-txt(c, 190, 89, 'Halter-Lochbild: 76 x 16; Laenge 6', 7.5)
-txt(c, 12, 26, 'Aussenmarkierungen ZERO und SPAN sind in die Wand 0,35 mm vertieft.', 7.5)
-finish(c)
 
-# 4 left end wall
-header(c, 'P01 - Linke Stirnwand / Aussenansicht', 4,
-       'DC5521 auf der gegenueberliegenden Stirnwand; Hoehe unveraendert')
-ox, oy = 60, 75
-rect(c, ox, oy, 112, 55)
-y, z, d = C.DC5521
-circle(c, ox + y, oy + z, d)
-txt(c, ox + y, oy + z + 11, '24 V DC', 8, bold=True, align='center')
-txt(c, ox + 91, oy + 7, 'V0.7', 6.5, align='center')
-dim_h(c, ox, ox + y, oy + 18, '44')
-dim_v(c, ox + y + 16, oy, oy + z, '27,5')
-dim_h(c, ox, ox + 112, oy - 8, '112')
-dim_v(c, ox + 120, oy, oy + 55, '55')
-txt(c, 190, 112, 'DC5521: Y=44 / Z=27,5 / D11,2', 8)
-txt(c, 190, 102, 'Markierung: 24 V DC', 8)
-txt(c, 190, 92, 'Montage weiterhin mit Mutter gekontert.', 8)
-finish(c)
+def page2_walls(c):
+    header(c, 'P01 - Laengswand / Seitenansicht',
+           'Beide Laengswaende: Ausschnitt 122 breit x 43 hoch; Unterkante Z=12')
+    ox, oy = 38*mm, 55*mm
+    c.rect(ox, oy, C.L*mm, C.H*mm)
+    c.rect(ox+C.OPEN_X0*mm, oy+C.OPEN_Z*mm,
+           (C.OPEN_X1-C.OPEN_X0)*mm, (C.H-C.OPEN_Z)*mm)
+    dim_h(c, ox, ox+C.L*mm, oy-12*mm, '208')
+    dim_h(c, ox+C.OPEN_X0*mm, ox+C.OPEN_X1*mm, oy+C.H*mm+8*mm, '122')
+    dim_v(c, ox+C.L*mm+8*mm, oy, oy+C.H*mm, '55')
+    c.setFont('Helvetica', 7)
+    c.drawString(12*mm, 25*mm, 'Beginn X=36,6; Ende X=158,6; Unterkante Z=12,0. Wand 2,8; Boden 2,8.')
+    footer(c, 2)
 
-# 5 lid top
-header(c, 'P02 - Deckel / Draufsicht aussen', 5,
-       'Sensor-/Kalibriergruppe 20 mm Richtung Mitte; Dichtungsnut P04 oben')
-ox, oy = 38, 45
-rect(c, ox, oy, 208, 112)
-for x, y in C.LID_BOSSES:
-    circle(c, ox + x, oy + y, C.LID_HOLE_D)
-    circle(c, ox + x, oy + y, C.LID_CBORE_D)
-for x, y, lx, ly in C.VENTS:
-    rect(c, ox + x, oy + y, lx, ly)
-for x, y in C.POD_MOUNTS:
-    circle(c, ox + x, oy + y, C.POD_BOSS_D, 0.18, BLUE)
-for x, y in C.HOOD_SCREWS:
-    circle(c, ox + x, oy + y, C.HOOD_SCREW_BOSS_D, 0.18, BLUE)
-# groove outline top
-p4 = C.P04
-rect(c, ox + p4['x'][0], oy + p4['y'][0], p4['x'][1]-p4['x'][0], p4['y'][1]-p4['y'][0], 0.25, BLUE, radius=4)
-line(c, ox + p4['x'][0] + p4['web'], oy + p4['bar_y'][0], ox + p4['x'][1] - p4['web'], oy + p4['bar_y'][0], 0.25, BLUE)
-line(c, ox + p4['x'][0] + p4['web'], oy + p4['bar_y'][1], ox + p4['x'][1] - p4['web'], oy + p4['bar_y'][1], 0.25, BLUE)
-dim_h(c, ox, ox + 208, oy - 8, '208')
-dim_v(c, ox + 216, oy, oy + 112, '112')
-dim_h(c, ox + 12, ox + 32, oy + 60, 'V0.6 -> V0.7: +20')
-txt(c, 12, 29, 'Rechte Deckelschrauben jetzt ebenfalls 7 mm vom Rand: XY (201/7), (201/105).', 7.5)
-txt(c, 12, 24, 'Lueftungsschlitze starten bei X=32 statt X=12. P04-Nut: 0,6 tief.', 7.5)
-finish(c)
 
-# 6 sensor pod
-header(c, 'P03 - Sensorpod / Draufsicht innen und Seitenansicht', 6,
-       '8 mm nach rechts verbreitert; neue Nennbreite 53,5 mm')
-ox, oy = 58, 52
-# top view body and tabs
-rect(c, ox, oy + 6.5, 53.5, 82)
-rect(c, ox + 7, oy, 32, 6.5)
-rect(c, ox + 7, oy + 88.5, 32, 6.5)
-rect(c, ox + 3, oy + 9.5, 47.5, 76, 0.2, GRAY)
-for x, y in ((10, 40), (10, 55)):
-    circle(c, ox + x, oy + 6.5 + y, 3)
-    circle(c, ox + x, oy + 6.5 + y, 5.6, 0.18, BLUE)
-# slot at right wall
-rect(c, ox + 49.5, oy + 6.5 + 67, 4.0, 6.0, 0.25, BLUE)
-dim_h(c, ox, ox + 53.5, oy - 8, '53,5')
-dim_v(c, ox - 10, oy + 6.5, oy + 88.5, '82')
-dim_v(c, ox + 63, oy, oy + 95, '95')
-# side view
-sx, sy = 145, 92
-rect(c, sx, sy, 95, 14)
-dim_h(c, sx, sx + 95, sy - 8, '95')
-dim_v(c, sx + 105, sy, sy + 14, '14')
-txt(c, 145, 125, 'Verbreiterung erfolgt nur nach rechts.', 8, bold=True)
-txt(c, 145, 117, 'Sensorbohrungen bleiben relativ zur linken Kante.', 7.5)
-txt(c, 145, 109, 'Kabelschlitz wandert mit der neuen rechten Wand.', 7.5)
-finish(c)
+def page3_endwalls(c):
+    header(c, 'P01 - Stirnwaende',
+           'Rechts ZERO/SPAN; links DC5521 und 24 V DC')
+    # Right wall outside
+    ox, oy = 25*mm, 60*mm
+    c.setFont('Helvetica-Bold', 8); c.drawString(ox, oy+62*mm, 'Rechte Stirnwand / Aussenansicht')
+    c.rect(ox, oy, C.W*mm, C.H*mm)
+    for label, (y,z,d) in [('ZERO', C.ZERO), ('SPAN', C.SPAN)]:
+        c.circle(ox+y*mm, oy+z*mm, d/2*mm)
+        c.setFont('Helvetica', 6); c.drawCentredString(ox+y*mm, oy+(z+5)*mm, label)
+    # Left wall outside
+    ox2 = 160*mm
+    c.setFont('Helvetica-Bold', 8); c.drawString(ox2, oy+62*mm, 'Linke Stirnwand / Aussenansicht')
+    c.rect(ox2, oy, C.W*mm, C.H*mm)
+    y,z,d = C.DC5521
+    c.circle(ox2+y*mm, oy+z*mm, d/2*mm)
+    c.setFont('Helvetica', 6.5); c.drawCentredString(ox2+y*mm, oy+(z+9)*mm, '24 V DC')
+    c.drawString(ox2+82*mm, oy+7*mm, 'V0.7')
+    c.setFont('Helvetica', 7)
+    c.drawString(12*mm, 28*mm, 'ZERO: Y=36 / Z=41 / D3. SPAN: Y=52 / Z=41 / D3. Halter-Lochbild 76 x 16.')
+    c.drawString(12*mm, 23*mm, 'DC5521 links: Y=44 / Z=27,5 / D11,2. Innenansicht jeweils horizontal gespiegelt.')
+    footer(c, 3)
 
-# 7 P04 gasket
-header(c, 'P04 - Haubendichtung TPU95A / D-Profil und Nut', 7,
-       'eSUN eTPU-95A; flache Unterseite, gerundete Oberseite, abgerundete Ecken')
-ox, oy = 55, 55
-w = C.P04['x'][1] - C.P04['x'][0]
-h = C.P04['y'][1] - C.P04['y'][0]
-rect(c, ox, oy, w, h, radius=4)
-rect(c, ox + 3, oy + 3, w - 6, h - 6, radius=1)
-rect(c, ox + 3, oy + (C.P04['bar_y'][0] - C.P04['y'][0]), w - 6, 3)
-dim_h(c, ox, ox + w, oy - 8, f'{w:.1f}'.replace('.', ','))
-dim_v(c, ox - 10, oy, oy + h, '82')
-# Section D profile + groove
-sx, sy = 145, 98
-rect(c, sx, sy, 70, 8, fill=HexColor('#d9dde1'))
-rect(c, sx + 25, sy, 3.4, 0.6, fill=HexColor('#ffffff'))
-# D profile schematic
-c.setFillColor(HexColor('#88c6d9'))
-c.roundRect(xpt(sx + 25.2), xpt(sy + 0.2), xpt(3.0), xpt(2.0), xpt(0.9), stroke=1, fill=1)
-txt(c, 145, 125, 'Querschnitt:', 8, bold=True)
-txt(c, 145, 118, 'Dichtung 3,0 breit x 2,0 hoch', 7.5)
-txt(c, 145, 112, 'Nut 3,4 breit x 0,6 tief', 7.5)
-txt(c, 145, 106, 'Soll-Verpressung P04: 25 %', 7.5)
-txt(c, 12, 25, 'Dichtung wird flach ohne Support gedruckt; 100 % Fuellung empfohlen.', 7.5)
-finish(c)
 
-# 8 P05
-header(c, 'P05 - Kabelstopfen / drei Ansichten', 8, 'Quader 4 x 6 x 8; unveraendert, nur mit Sensorpod verschoben')
-ox, oy = 65, 95
-rect(c, ox, oy, 4, 6)
-dim_h(c, ox, ox + 4, oy - 8, '4')
-dim_v(c, ox - 8, oy, oy + 6, '6')
-rect(c, 120, 95, 4, 8)
-dim_h(c, 120, 124, 87, '4')
-dim_v(c, 112, 95, 103, '8')
-rect(c, 175, 95, 6, 8)
-dim_h(c, 175, 181, 87, '6')
-dim_v(c, 167, 95, 103, '8')
-txt(c, 64, 112, 'Draufsicht', 7.5)
-txt(c, 117, 112, 'Vorderansicht', 7.5)
-txt(c, 173, 112, 'Seitenansicht', 7.5)
-finish(c)
+def page4_lid(c):
+    header(c, 'P02 - Deckel / Draufsicht aussen',
+           'X-Position der Sensorgruppe unveraendert; komplette Gruppe auf Y=56,0 zentriert')
+    scale=1.0
+    ox, oy = 38*mm, 48*mm
+    c.rect(ox, oy, C.L*mm, C.W*mm)
+    for x,y in C.LID_BOSSES:
+        c.circle(ox+x*mm, oy+y*mm, C.LID_HOLE_D/2*mm)
+    c.setStrokeColor(colors.darkblue)
+    for x,y,lx,ly in C.VENTS:
+        c.rect(ox+x*mm, oy+y*mm, lx*mm, ly*mm)
+    for x,y in C.HOOD_SCREWS:
+        c.circle(ox+x*mm, oy+y*mm, 1.1*mm)
+    for x,y in C.POD_MOUNTS:
+        c.circle(ox+x*mm, oy+y*mm, 1.5*mm)
+    c.line(ox, oy+56*mm, ox+C.L*mm, oy+56*mm)
+    c.setStrokeColor(colors.black)
+    c.setFont('Helvetica', 7)
+    c.drawString(12*mm, 26*mm, 'Lueftungsschlitze: X=12,0; Y=22,0 + 8,0*n. Haubenschrauben: (27/9), (27/103).')
+    c.drawString(12*mm, 21*mm, 'Pod-Montage: (16/11),(42/11),(16/101),(42/101). Deckel bleibt 3,0 mm voll - keine O-Ring-Nuten im Deckel.')
+    footer(c, 4)
 
-# 9 hood
-header(c, 'P07 - Kalibrierhaube / Draufsicht und Laengsansicht', 9,
-       'Mit Sensorgruppe +20 mm verschoben und 8 mm nach rechts verbreitert')
-ox, oy = 55, 43
-rect(c, ox, oy, 56, 105.6)
-rect(c, ox + 10, oy + 14, 48, 94)
-for name, (x, y) in C.HOOD_PORTS.items():
-    lx = x - C.HOOD_PLATE[0]
-    ly = y - C.HOOD_PLATE[2]
-    circle(c, ox + lx, oy + ly, 8)
-    txt(c, ox + lx + 8, oy + ly, name, 7, bold=True)
-dim_h(c, ox, ox + 56, oy - 8, '56')
-dim_v(c, ox - 10, oy, oy + 105.6, '105,6')
-# side view simplified
-sx, sy = 145, 75
-rect(c, sx, sy, 105.6, 3)
-line(c, sx + 10, sy + 3, sx + 18, sy + 25)
-line(c, sx + 95.6, sy + 3, sx + 87.6, sy + 25)
-line(c, sx + 18, sy + 25, sx + 87.6, sy + 25)
-# nozzles
-for xx in (sx + 30, sx + 75):
-    rect(c, xx, sy + 25, 8, 4)
-    rect(c, xx + 0.5, sy + 29, 7, 4)
-    rect(c, xx + 1, sy + 33, 6, 5)
-dim_h(c, sx, sx + 105.6, sy - 8, '105,6')
-dim_v(c, sx + 114, sy, sy + 41, '41')
-txt(c, 145, 126, 'Markierungen IN / OUT auf dem Haubendach angepasst.', 7.5)
-finish(c)
 
-# 10 P08
-header(c, 'P08 - Pod-Deckeldichtung TPU95A / D-Profil und Nut', 10,
-       'Aussenkontur folgt dem verbreiterten Sensorpod; Nut auf Deckelunterseite')
-ox, oy = 55, 55
-w = C.P08['x'][1] - C.P08['x'][0]
-h = C.P08['y'][1] - C.P08['y'][0]
-rect(c, ox, oy, w, h, radius=4)
-rect(c, ox + 3, oy + 3, w - 6, h - 6, radius=1)
-dim_h(c, ox, ox + w, oy - 8, f'{w:.1f}'.replace('.', ','))
-dim_v(c, ox - 10, oy, oy + h, '82')
-# Section
-sx, sy = 145, 98
-rect(c, sx, sy, 70, 8, fill=HexColor('#d9dde1'))
-rect(c, sx + 25, sy + 7.4, 3.4, 0.6, fill=HexColor('#ffffff'))
-c.setFillColor(HexColor('#88c6d9'))
-c.roundRect(xpt(sx + 25.2), xpt(sy + 6.0), xpt(3.0), xpt(2.0), xpt(0.9), stroke=1, fill=1)
-txt(c, 145, 125, 'Querschnitt Deckelunterseite:', 8, bold=True)
-txt(c, 145, 118, 'Dichtung 3,0 breit x 2,0 hoch', 7.5)
-txt(c, 145, 112, 'Nut 3,4 breit x 0,6 tief', 7.5)
-txt(c, 145, 106, 'Soll-Verpressung P08: 20 %', 7.5)
-txt(c, 12, 25, 'Prototyp nach Montage auf Dichtheit pruefen; FDM-TPU ist nicht automatisch gasdicht.', 7.5)
-finish(c)
+def page5_pod(c):
+    header(c, 'P03 - Sensorpod / Draufsicht innen',
+           'V0.6-X-Lage beibehalten; rechts 8,0 mm breiter; Dichtnut im erhoehten Rand')
+    ox, oy = 45*mm, 45*mm
+    w=(C.POD[1]-C.POD[0]); h=(C.POD[3]-C.POD[2])
+    c.rect(ox, oy, w*mm, h*mm)
+    c.rect(ox+C.POD_WALL*mm, oy+C.POD_WALL*mm,
+           (w-2*C.POD_WALL)*mm, (h-2*C.POD_WALL)*mm)
+    # P08 groove centerline and channel envelope
+    r=C.P08_RING
+    gx=ox+(r['cx']-C.POD[0]-r['cw']/2)*mm
+    gy=oy+(r['cy']-C.POD[2]-r['ch']/2)*mm
+    c.setStrokeColor(colors.red)
+    c.roundRect(gx, gy, r['cw']*mm, r['ch']*mm, r['r']*mm)
+    c.setStrokeColor(colors.black)
+    for x,y in C.SENSOR_BOSSES:
+        c.circle(ox+(x-C.POD[0])*mm, oy+(y-C.POD[2])*mm, C.SENSOR_HOLE_D/2*mm)
+    dim_h(c, ox, ox+w*mm, oy-10*mm, f'{w:.1f}')
+    dim_v(c, ox+w*mm+10*mm, oy, oy+h*mm, f'{h:.1f}')
+    c.setFont('Helvetica', 7)
+    c.drawString(120*mm, 120*mm, 'P08 O-Ring: EPDM 70, D77,0 x 1,50')
+    c.drawString(120*mm, 114*mm, 'Nut: 1,80 breit x 1,10 tief')
+    c.drawString(120*mm, 108*mm, 'Rand Z=54,0..55,0; Deckelunterseite Z=55,0')
+    c.drawString(120*mm, 102*mm, 'Verpressung: 0,40 mm = 26,7 %')
+    c.drawString(12*mm, 22*mm, 'Sensorbohrungen D3, Abstand 15. Kabelschlitz 4,5 x 6,0 x 8,0; oberer Dichtrand bleibt geschlossen.')
+    footer(c, 5)
 
-c.save()
-print(OUT)
+
+def page6_hood(c):
+    header(c, 'P07 - Kalibrierhaube / Unterseite',
+           'Zwei getrennte EPDM-O-Ringe; einer pro Kammer')
+    ox, oy = 42*mm, 38*mm
+    w=C.HOOD_PLATE[1]-C.HOOD_PLATE[0]; h=C.HOOD_PLATE[3]-C.HOOD_PLATE[2]
+    c.rect(ox, oy, w*mm, h*mm)
+    fx0,fx1,fy0,fy1=C.HOOD_FLOOR_OPEN; d0,d1=C.HOOD_DIVIDER_Y
+    # openings local to hood plate
+    c.rect(ox+(fx0-C.HOOD_PLATE[0])*mm, oy+(fy0-C.HOOD_PLATE[2])*mm,
+           (fx1-fx0)*mm, (d0-fy0)*mm)
+    c.rect(ox+(fx0-C.HOOD_PLATE[0])*mm, oy+(d1-C.HOOD_PLATE[2])*mm,
+           (fx1-fx0)*mm, (fy1-d1)*mm)
+    c.setStrokeColor(colors.red)
+    for ring in (C.P04A_RING,C.P04B_RING):
+        x=ox+(ring['cx']-C.HOOD_PLATE[0]-ring['cw']/2)*mm
+        y=oy+(ring['cy']-C.HOOD_PLATE[2]-ring['ch']/2)*mm
+        c.roundRect(x,y,ring['cw']*mm,ring['ch']*mm,ring['r']*mm)
+    c.setStrokeColor(colors.black)
+    c.setFont('Helvetica', 7)
+    c.drawString(125*mm, 135*mm, 'P04A unten: EPDM 70, D45,0 x 1,50')
+    c.drawString(125*mm, 128*mm, 'P04B oben: EPDM 70, D50,0 x 1,50')
+    c.drawString(125*mm, 121*mm, 'Beide Nuten: 1,80 breit x 1,10 tief')
+    c.drawString(125*mm, 114*mm, 'Trennsteg: 5,0 mm')
+    c.drawString(125*mm, 107*mm, 'Haubenunterseite liegt plan auf Deckel')
+    c.drawString(12*mm, 22*mm, 'Grundplatte 56,0 x 105,6 x 3,0. O-Ring-Nuten liegen in P07, nicht im Deckel.')
+    footer(c, 6)
+
+
+def page7_orings(c):
+    header(c, 'Kaufteile - EPDM-O-Ringe und Nutdaten',
+           'Lagernde Standardringe; keine geklebte Rundschnur im Gasweg')
+    x0=18*mm; y=155*mm
+    cols=[0,35,75,115,155,195]
+    headers=['Pos.','Abmessung','SKU','Nut B x T','Verpressung','Verwendung']
+    c.setFont('Helvetica-Bold',7)
+    for i,h in enumerate(headers): c.drawString(x0+cols[i]*mm,y,h)
+    c.line(x0,y-2*mm,PW-18*mm,y-2*mm)
+    rows=[
+        ('P04A','D45,0 x 1,50','H48761','1,80 x 1,10','26,7 %','untere Kammer'),
+        ('P04B','D50,0 x 1,50','H96773','1,80 x 1,10','26,7 %','obere Kammer'),
+        ('P08','D77,0 x 1,50','H48789','1,80 x 1,10','26,7 %','Pod / Deckel'),
+    ]
+    c.setFont('Helvetica',7)
+    for r,row in enumerate(rows):
+        yy=y-(9+8*r)*mm
+        for i,val in enumerate(row): c.drawString(x0+cols[i]*mm,yy,val)
+    c.setFont('Helvetica-Bold',8); c.drawString(18*mm,105*mm,'Konstruktionshinweise')
+    c.setFont('Helvetica',7)
+    notes=[
+        'Material: EPDM 70 Shore A, schwarz; Ring als geschlossenes Kaufteil.',
+        'O-Ring-Pfade haben weniger als 0,2 % rechnerische Dehnung.',
+        'Innenradien R8,0; damit deutlich groesser als 3 x Schnurstaerke.',
+        'Nuten beim Epoxidieren abdecken; Harz im Nutgrund veraendert die Verpressung.',
+        'Vor Installation: Sitz, Leckrate, Nullpunkt und Rueckkehr nach Pruefgas testen.',
+    ]
+    for i,n in enumerate(notes): c.drawString(22*mm,(96-7*i)*mm,u'• '+n)
+    footer(c, 7)
+
+
+def page8_p05(c):
+    header(c, 'P05 - Kabelstopfen / drei Ansichten', 'Quader 4 x 6 x 8; keine Bohrungen')
+    ox,oy=50*mm,85*mm
+    c.rect(ox,oy,4*mm,6*mm); c.drawString(ox-5*mm,oy+10*mm,'Draufsicht 4 x 6')
+    c.rect(ox+55*mm,oy,4*mm,8*mm); c.drawString(ox+45*mm,oy+12*mm,'Vorderansicht 4 x 8')
+    c.rect(ox+110*mm,oy,6*mm,8*mm); c.drawString(ox+100*mm,oy+12*mm,'Seitenansicht 6 x 8')
+    c.setFont('Helvetica',7)
+    c.drawString(12*mm,30*mm,'Kabelschlitz endet bei Z=54,0. Der neue P08-Dichtrand Z=54,0..55,0 bleibt dadurch durchgehend.')
+    footer(c, 8)
+
+
+def page9_summary(c):
+    header(c, 'V0.7 - Freigabe- und Pruefliste', 'Aenderungen gegenueber dem vorherigen V0.7-Stand')
+    c.setFont('Helvetica-Bold',8); c.drawString(18*mm,160*mm,'Umgesetzt')
+    items=[
+        'X-Lage der Sensor-/Kalibriereinheit auf V0.6 zurueckgesetzt.',
+        'Gesamte Einheit exakt auf Y=56,0 zentriert.',
+        'Pod rechts 8,0 mm breiter beibehalten.',
+        'Gedruckte TPU-Dichtungen P04/P08 entfallen.',
+        'Drei geschlossene EPDM-70-O-Ringe als Kaufteile vorgesehen.',
+        'P04-Nuten in P07; P08-Nut im erhoehten P03-Rand; Deckel bleibt vollstaendig 3,0 mm dick.',
+        'ZERO, SPAN, 24 V DC, V0.7, IN und OUT bleiben markiert.',
+    ]
+    c.setFont('Helvetica',7)
+    for i,t in enumerate(items): c.drawString(22*mm,(151-8*i)*mm,u'• '+t)
+    c.setFont('Helvetica-Bold',8); c.drawString(18*mm,82*mm,'Vor Montage pruefen')
+    checks=[
+        'Alle drei O-Ringe liegen ohne Verdrehung und ohne Ausbeulung in den Nuten.',
+        'Haube und Deckel schliessen plan; Schrauben gleichmaessig anziehen.',
+        'Gravity-Kabel und Kabelstopfen sitzen, ohne den P08-Ring zu unterbrechen.',
+        'Lecktest mit Nullgas/Frischluft und anschliessend Pruefgas durchfuehren.',
+        'Nach dem Pruefgas Rueckkehr zum Nullpunkt und Totzeit dokumentieren.',
+    ]
+    c.setFont('Helvetica',7)
+    for i,t in enumerate(checks): c.drawString(22*mm,(73-8*i)*mm,u'□ '+t)
+    footer(c, 9, 'CAD-Stand: V0.7 korrigiert - EPDM-O-Ringe')
+
+
+def main():
+    c=canvas.Canvas(str(OUT),pagesize=PAGE)
+    pages=[page1_base,page2_walls,page3_endwalls,page4_lid,page5_pod,
+           page6_hood,page7_orings,page8_p05,page9_summary]
+    for fn in pages:
+        fn(c); c.showPage()
+    c.save()
+    print(OUT)
+
+
+if __name__=='__main__': main()

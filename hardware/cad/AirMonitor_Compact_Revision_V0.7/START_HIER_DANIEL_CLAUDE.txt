@@ -1,21 +1,22 @@
-START HIER – AirMonitor Compact V0.7
+START HIER - AirMonitor Compact V0.7
 
-1. Fusion 360 öffnen:
+1. In Fusion 360 oeffnen:
    01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.7.step
 
-2. CAD_COMPACT_SPEC_V0.7.md lesen.
+2. Wichtig:
+   X-Lage bleibt wie V0.6.
+   Nur Y ist auf 56,0 mm zentriert.
 
-3. 1:1-Massskizzen bei 100 % prüfen:
-   AirMonitor_V07_Massskizzen_1zu1.pdf
+3. Dichtung:
+   P04A D45 x 1,50 EPDM 70
+   P04B D50 x 1,50 EPDM 70
+   P08  D77 x 1,50 EPDM 70
 
-4. Besondere Prüfpunkte:
-   - Board-Halter X=24/169, Y=25/87
-   - rechte Deckelbossen 7 mm vom Rand
-   - Sensorgruppe +20 mm Richtung Mitte
-   - Sensorpod 53,5 mm breit, Erweiterung nach rechts
-   - DC5521 auf linker Stirnwand
-   - P04/P08 D-Profil TPU95A mit 0,6-mm-Nut
-   - Markierungen ZERO/SPAN/24 V DC/V0.7/IN/OUT
+4. Spezifikation lesen:
+   CAD_COMPACT_SPEC_V0.7.md
 
-5. Claude-Prompt:
+5. Claude-Prompt verwenden:
    PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.7.md
+
+6. 1:1-Kontrolle:
+   AirMonitor_V07_Massskizzen_1zu1.pdf bei 100 % drucken.

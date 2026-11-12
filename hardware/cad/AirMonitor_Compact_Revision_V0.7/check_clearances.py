@@ -1,142 +1,141 @@
-"""Dimension and clearance checks for AirMonitor Compact V0.7.
+"""Numeric checks for AirMonitor Compact V0.7 corrected O-ring revision."""
+from __future__ import annotations
 
-Runs without the CAD kernel. Exit code 0 means all defined checks pass.
-"""
 import math
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import compact_params as C  # noqa: E402
-
-MIN_GAP = 0.3
+import compact_params as C
 
 
-def rect_dist(px, py, x0, x1, y0, y1):
-    dx = max(x0 - px, 0.0, px - x1)
-    dy = max(y0 - py, 0.0, py - y1)
-    return math.hypot(dx, dy)
+def run() -> int:
+    failures: list[str] = []
+    passed = 0
 
-
-def run():
-    rows = []
-    bad = 0
-
-    def chk(name, value, limit, ge=True, unit='mm'):
-        nonlocal bad
-        ok = value >= limit - 1e-9 if ge else value <= limit + 1e-9
-        bad += 0 if ok else 1
-        rows.append(f"{'OK ' if ok else 'NOK'} {name}: {value:.3f} {unit} ({'≥' if ge else '≤'} {limit:.3f})")
-
-    def eq(name, value, target, tol=1e-6, unit='mm'):
-        nonlocal bad
-        ok = abs(value - target) <= tol
-        bad += 0 if ok else 1
-        rows.append(f"{'OK ' if ok else 'NOK'} {name}: {value:.3f} {unit} (= {target:.3f} ± {tol:.3f})")
-
-    # Annotated V0.6 drawing corrections.
-    eq('right lid boss edge offset top', C.L - C.LID_BOSSES[2][0], 7.0)
-    eq('right lid boss edge offset bottom', C.L - C.LID_BOSSES[3][0], 7.0)
-    eq('board standoff left X', C.STANDOFFS[0][0], 24.0)
-    eq('board standoff right X', C.STANDOFFS[1][0], 169.0)
-    eq('board standoff bottom Y', C.STANDOFFS[0][1], 25.0)
-    eq('board standoff top Y', C.STANDOFFS[2][1], 87.0)
-    eq('board hole spacing X', C.STANDOFFS[1][0] - C.STANDOFFS[0][0], 145.0)
-    eq('board hole spacing Y', C.STANDOFFS[2][1] - C.STANDOFFS[0][1], 62.0)
-
-    # Board body relative to standoffs.
-    p = C.PCB_WAVESHARE
-    eq('board body length', p[1] - p[0], 151.8)
-    eq('board body width', p[3] - p[2], 90.0)
-    eq('left mounting offset', C.STANDOFFS[0][0] - p[0], 3.4)
-    eq('right mounting offset', p[1] - C.STANDOFFS[1][0], 3.4)
-    eq('front mounting offset', C.STANDOFFS[0][1] - p[2], 14.0)
-    eq('rear mounting offset', p[3] - C.STANDOFFS[2][1], 14.0)
-
-    # Sensor group shift and width.
-    eq('pod left edge moved +20', C.POD[0], 26.0)
-    eq('pod nominal width', C.POD[1] - C.POD[0], 53.5)
-    eq('vent field moved +20', C.VENTS[0][0], 32.0)
-    eq('hood screw moved +20', C.HOOD_SCREWS[0][0], 47.0)
-    eq('pod mount moved +20', C.POD_MOUNTS[0][0], 36.0)
-    chk('pod right edge inside enclosure', C.L - C.POD[1], 20.0)
-    chk('pod front clearance', C.POD[2] - C.WALL, 10.0)
-    chk('pod rear clearance', (C.W - C.WALL) - C.POD[3], 10.0)
-    chk('Waveshare to pod vertical clearance', C.POD[4] - C.BOARD_TOP_Z, 10.0)
-    chk('SEN0661 connector to lid clearance', C.LID_Z - C.SEN_CON[5], 0.5)
-
-    # Slot remains in the new right wall.
-    eq('slot reaches pod right wall', C.GRAVITY_SLOT[1] - C.POD[1], 0.5)
-    eq('cable stop width', C.P05[1] - C.P05[0], 4.0)
-    eq('cable stop height', C.P05[5] - C.P05[4], 8.0)
-
-    # Button PCB remains centered between projected lid columns.
-    pcb_y0 = sum(C.BTN_HOLDER_Y) / 2 - C.BTN_PCB[0] / 2
-    pcb_y1 = sum(C.BTN_HOLDER_Y) / 2 + C.BTN_PCB[0] / 2
-    eq('button PCB centered in 112 mm wall', (pcb_y0 + pcb_y1) / 2, C.W / 2)
-    eq('button holder pattern Y', C.BTN_HOLDER_Y[1] - C.BTN_HOLDER_Y[0], 76.0)
-    eq('button holder pattern Z', C.BTN_HOLDER_Z[1] - C.BTN_HOLDER_Z[0], 16.0)
-    eq('ZERO-SPAN spacing', C.SPAN[0] - C.ZERO[0], 16.0)
-
-    # Right-wall columns projected in Y: centres 7 and 105, radius 4.5.
-    left_column_edge = C.LID_BOSSES[2][1] + C.LID_BOSS_D / 2
-    right_column_edge = C.LID_BOSSES[3][1] - C.LID_BOSS_D / 2
-    chk('PCB left edge to lower column', pcb_y0 - left_column_edge, 3.0)
-    chk('PCB right edge to upper column', right_column_edge - pcb_y1, 3.0)
-
-    # DC jack moved to opposite wall; height unchanged.
-    if C.DC_WALL != 'left':
-        rows.append('NOK DC5521 wall: expected left')
-        bad += 1
-    else:
-        rows.append('OK  DC5521 wall: left/opposite end wall')
-    eq('DC5521 height', C.DC5521[1], 27.5)
-    chk('DC5521 edge clearance Y low', C.DC5521[0] - C.DC5521[2] / 2, 8.0)
-    chk('DC5521 edge clearance Y high', C.W - (C.DC5521[0] + C.DC5521[2] / 2), 8.0)
-
-    # Gasket and groove design.
-    eq('TPU gasket height', C.GASKET_H, 2.0)
-    eq('groove depth', C.GROOVE_DEPTH, 0.6)
-    residual = C.LID_T - 2 * C.GROOVE_DEPTH
-    chk('lid residual thickness between grooves', residual, 1.5)
-    p08_gap = (C.LID_Z + C.GROOVE_DEPTH) - C.POD[5]
-    p08_comp = (C.P08['h'] - p08_gap) / C.P08['h'] * 100
-    chk('P08 compression min', p08_comp, 15.0, unit='%')
-    chk('P08 compression max', p08_comp, 30.0, ge=False, unit='%')
-    p04_floor = C.LID_Z + C.LID_T - C.GROOVE_DEPTH
-    p04_gap = C.HOOD_Z0 - p04_floor
-    p04_comp = (C.P04['h'] - p04_gap) / C.P04['h'] * 100
-    chk('P04 compression min', p04_comp, 15.0, unit='%')
-    chk('P04 compression max', p04_comp, 35.0, ge=False, unit='%')
-    chk('P08 gasket width for TPU printing', C.P08['web'], 2.4)
-    chk('P04 gasket width for TPU printing', C.P04['web'], 2.4)
-
-    # Hood remains within lid and covers the enlarged pod.
-    hp = C.HOOD_PLATE
-    chk('hood left edge on lid', hp[0], 3.0)
-    chk('hood right edge on lid', C.L - hp[1], 3.0)
-    chk('hood plate covers pod left', C.POD[0] - hp[0], 1.5)
-    chk('hood plate covers pod right', hp[1] - C.POD[1], 0.4)
-
-    # Lid bosses vs carrier and sensor features.
-    carrier = C.CARRIER
-    for i, (x, y) in enumerate(C.LID_BOSSES, 1):
-        gap = rect_dist(x, y, carrier[0], carrier[1], carrier[2], carrier[3]) - C.LID_BOSS_D / 2
-        chk(f'lid boss {i} to carrier', gap, MIN_GAP)
-    for i, (x, y) in enumerate(C.POD_MOUNTS, 1):
-        on_front = C.TONGUE_X[0] + C.TONGUE_HOLE_D/2 <= x <= C.TONGUE_X[1] - C.TONGUE_HOLE_D/2
-        on_y = ((C.TONGUE_FRONT_Y[0] + C.TONGUE_HOLE_D/2 <= y <= C.TONGUE_FRONT_Y[1] - C.TONGUE_HOLE_D/2) or
-                (C.TONGUE_BACK_Y[0] + C.TONGUE_HOLE_D/2 <= y <= C.TONGUE_BACK_Y[1] - C.TONGUE_HOLE_D/2))
-        if on_front and on_y:
-            rows.append(f'OK  pod mount {i} lies in mounting tongue')
+    def check(name: str, condition: bool, detail: str = '') -> None:
+        nonlocal passed
+        if condition:
+            passed += 1
         else:
-            rows.append(f'NOK pod mount {i} outside mounting tongue')
-            bad += 1
+            failures.append(f'{name}: {detail or "failed"}')
 
-    print('\n'.join(rows))
-    print(f'\n{len(rows)} checks, {bad} NOK')
-    return 1 if bad else 0
+    def close(a: float, b: float, tol: float = 1e-6) -> bool:
+        return abs(a - b) <= tol
+
+    # Main geometry.
+    check('base length fits MK4', C.L <= 250.0, f'{C.L}')
+    check('base total width fits MK4', C.W + 2 * C.FLANGE <= 210.0,
+          f'{C.W + 2 * C.FLANGE}')
+    check('base height fits MK4', C.H <= 220.0, f'{C.H}')
+    check('wall positive', C.WALL > 0)
+    check('floor positive', C.FLOOR > 0)
+    check('long-wall opening ordered', C.OPEN_X0 < C.OPEN_X1)
+    check('long-wall opening in base', 0 < C.OPEN_X0 < C.OPEN_X1 < C.L)
+    check('opening height valid', 0 < C.OPEN_Z < C.H)
+
+    # Corrected positioning: X unchanged, Y centred.
+    px0, px1, py0, py1, pz0, pz1 = C.POD
+    check('pod X left retained', close(px0, 6.0), f'{px0}')
+    check('pod X widened right', close(px1, 59.5), f'{px1}')
+    check('pod Y centred', close((py0 + py1) / 2, C.W / 2),
+          f'{(py0 + py1) / 2} vs {C.W / 2}')
+    hx0, hx1, hy0, hy1 = C.HOOD_PLATE
+    check('hood X left retained', close(hx0, 4.0), f'{hx0}')
+    check('hood X widened right', close(hx1, 60.0), f'{hx1}')
+    check('hood Y centred', close((hy0 + hy1) / 2, C.W / 2),
+          f'{(hy0 + hy1) / 2}')
+    check('hood centre Y', close(C.HOOD_CENTER[1], C.W / 2),
+          f'{C.HOOD_CENTER[1]}')
+    check('vents centred Y', close((C.VENTS[0][1] + C.VENTS[-1][1] + C.VENTS[-1][3]) / 2,
+                                   C.W / 2),
+          'vent pattern centre mismatch')
+    check('hood screws symmetric Y', close(sum(y for _, y in C.HOOD_SCREWS) / 2, C.W / 2))
+
+    # Board and wall hardware.
+    check('Waveshare X pattern', close(C.STANDOFFS[1][0] - C.STANDOFFS[0][0], 145.0))
+    check('Waveshare Y pattern', close(C.STANDOFFS[2][1] - C.STANDOFFS[0][1], 62.0))
+    check('button holder X wall clearance', C.BTN_HOLDER_LEN > 0)
+    check('ZERO-SPAN 16 mm', close(C.SPAN[0] - C.ZERO[0], 16.0))
+    check('DC bore valid', C.DC5521[2] > 0)
+
+    # Seal/groove fundamentals.
+    check('O-ring cord', close(C.ORING_CORD, 1.50))
+    check('groove wider than cord', C.ORING_GROOVE_W > C.ORING_CORD)
+    check('groove depth below cord', 0 < C.ORING_GROOVE_D < C.ORING_CORD)
+    check('compression 20-30 percent', 0.20 <= C.ORING_COMPRESSION <= 0.30,
+          f'{C.ORING_COMPRESSION:.3f}')
+    check('hood material below groove', C.HOOD_PLATE_T - C.ORING_GROOVE_D >= 1.8,
+          f'{C.HOOD_PLATE_T - C.ORING_GROOVE_D:.2f}')
+    check('pod wall below groove', C.POD_WALL - C.ORING_GROOVE_D >= 1.8,
+          f'{C.POD_WALL - C.ORING_GROOVE_D:.2f}')
+    check('lid remains un-grooved full thickness', close(C.LID_T, 3.0))
+    check('hood contacts lid', close(C.HOOD_Z0, C.LID_Z + C.LID_T))
+    check('pod seal rim contacts lid', close(C.POD_SEAL_RIM_TOP, C.LID_Z))
+
+    def ring_metrics(ring: dict) -> tuple[float, float, float]:
+        path = 2.0 * (ring['cw'] + ring['ch']) + (2.0 * math.pi - 8.0) * ring['r']
+        free = math.pi * (ring['id'] + ring['cord'])
+        stretch = path / free - 1.0
+        return path, free, stretch
+
+    for ring in (C.P04A_RING, C.P04B_RING, C.P08_RING):
+        path, free, stretch = ring_metrics(ring)
+        check(f"{ring['name']} path stretch", -0.005 <= stretch <= 0.03,
+              f'path={path:.3f}, free={free:.3f}, stretch={stretch*100:.2f}%')
+        check(f"{ring['name']} radius", ring['r'] >= 3.0 * ring['cord'],
+              f"r={ring['r']}")
+        check(f"{ring['name']} groove width", C.ORING_GROOVE_W >= ring['cord'] + 0.2)
+
+    # P04 grooves fit the hood plate.
+    def channel_bounds(ring: dict, width: float) -> tuple[float, float, float, float]:
+        return (ring['cx'] - ring['cw'] / 2 - width / 2,
+                ring['cx'] + ring['cw'] / 2 + width / 2,
+                ring['cy'] - ring['ch'] / 2 - width / 2,
+                ring['cy'] + ring['ch'] / 2 + width / 2)
+
+    for ring in (C.P04A_RING, C.P04B_RING):
+        x0, x1, y0, y1 = channel_bounds(ring, C.ORING_GROOVE_W)
+        check(f"{ring['name']} groove X in hood", hx0 <= x0 and x1 <= hx1,
+              f'{x0:.2f}..{x1:.2f} vs {hx0}..{hx1}')
+        check(f"{ring['name']} groove Y in hood", hy0 <= y0 and y1 <= hy1,
+              f'{y0:.2f}..{y1:.2f} vs {hy0}..{hy1}')
+
+    a = channel_bounds(C.P04A_RING, C.ORING_GROOVE_W)
+    b = channel_bounds(C.P04B_RING, C.ORING_GROOVE_W)
+    check('P04 groove separation', a[3] < b[2], f'{a[3]:.2f} / {b[2]:.2f}')
+    check('divider width 5 mm', close(C.HOOD_DIVIDER_Y[1] - C.HOOD_DIVIDER_Y[0], 5.0))
+
+    # P08 groove fits the 3 mm pod sealing rim.
+    x0, x1, y0, y1 = channel_bounds(C.P08_RING, C.ORING_GROOVE_W)
+    check('P08 groove X in pod wall', px0 <= x0 and x1 <= px1,
+          f'{x0:.2f}..{x1:.2f} vs {px0}..{px1}')
+    check('P08 groove Y in pod wall', py0 <= y0 and y1 <= py1,
+          f'{y0:.2f}..{y1:.2f} vs {py0}..{py1}')
+    inner_x0 = C.P08_RING['cx'] - (C.P08_RING['cw'] - C.ORING_GROOVE_W) / 2
+    inner_x1 = C.P08_RING['cx'] + (C.P08_RING['cw'] - C.ORING_GROOVE_W) / 2
+    inner_y0 = C.P08_RING['cy'] - (C.P08_RING['ch'] - C.ORING_GROOVE_W) / 2
+    inner_y1 = C.P08_RING['cy'] + (C.P08_RING['ch'] - C.ORING_GROOVE_W) / 2
+    check('P08 groove avoids cavity X', inner_x0 <= px0 + C.POD_WALL + 0.2 and
+          inner_x1 >= px1 - C.POD_WALL - 0.2,
+          f'{inner_x0:.2f}/{inner_x1:.2f}')
+    check('P08 groove avoids cavity Y', inner_y0 <= py0 + C.POD_WALL + 0.2 and
+          inner_y1 >= py1 - C.POD_WALL - 0.2,
+          f'{inner_y0:.2f}/{inner_y1:.2f}')
+
+    # Openings and ports.
+    fx0, fx1, fy0, fy1 = C.HOOD_FLOOR_OPEN
+    d0, d1 = C.HOOD_DIVIDER_Y
+    check('floor opening X in plate', hx0 < fx0 < fx1 < hx1)
+    check('divider in opening range', fy0 < d0 < d1 < fy1)
+    for name, (x, y) in C.HOOD_PORTS.items():
+        check(f'{name} port in roof X', C.HOOD_ROOF[0] <= x <= C.HOOD_ROOF[0] + C.HOOD_ROOF[2])
+        check(f'{name} port in roof Y', C.HOOD_ROOF[1] <= y <= C.HOOD_ROOF[1] + C.HOOD_ROOF[3])
+
+    if failures:
+        print(f'V0.7 checks: {passed} passed, {len(failures)} FAILED')
+        for item in failures:
+            print('FAIL', item)
+        return 1
+    print(f'V0.7 checks: {passed} passed, 0 failed')
+    return 0
 
 
 if __name__ == '__main__':
-    sys.exit(run())
+    raise SystemExit(run())

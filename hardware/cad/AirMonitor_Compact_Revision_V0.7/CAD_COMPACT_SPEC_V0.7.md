@@ -1,155 +1,239 @@
-# Laminar AirMonitor HCHO – CAD Compact Specification V0.7
+# Laminar AirMonitor HCHO - CAD-Konstruktionsspezifikation V0.7
 
-## 1. Scope
+## 1. Geltungsbereich
 
-V0.7 is based on V0.6 and implements the handwritten corrections in `AirMonitor_V06_Massskizzen_1zu1.pdf`. In addition, P04 and P08 are redesigned for eSUN eTPU-95A as rounded D-profile seals seated in locating grooves.
+Diese Ausgabe korrigiert den bereits erzeugten V0.7-Stand, ohne eine neue Versionsnummer einzufuehren.
 
-All dimensions are in mm. Global coordinates: origin at the outer lower corner of P01 without flange; X = long axis, Y = short axis, Z = upward.
+Verbindlich sind folgende Punkte:
 
-## 2. Changes from V0.6
+- Die X-Position der Sensor- und Kalibriereinheit bleibt wie in V0.6.
+- Die komplette Einheit wird nur auf der Y-Achse zentriert.
+- Der Sensorpod bleibt auf der rechten Kabelseite 8,0 mm breiter.
+- Die gedruckten TPU-Dichtungen P04 und P08 entfallen.
+- Stattdessen werden drei geschlossene Kauf-O-Ringe aus EPDM 70 Shore A verwendet.
+- Die O-Ring-Nuten liegen in P07 und P03. Der Deckel P02 bleibt ueberall 3,0 mm dick.
 
-| ID | Change | V0.7 value |
-|---|---|---:|
-| C01 | Right lid bosses moved to the edge like the left side | X=201; Y=7/105 |
-| C02 | Waveshare standoffs moved to annotated coordinates | X=24/169; Y=25/87 |
-| C03 | Complete sensor/calibration group moved toward centre | +20 in X |
-| C04 | Sensor pod widened to the right | 45.5 -> 53.5 nominal |
-| C05 | DC5521 moved to opposite end wall | left wall; Y=44; Z=27.5; D11.2 |
-| C06 | P04 and P08 changed to rounded TPU D-profile | 3.0 wide x 2.0 high |
-| C07 | Matching locating grooves added to lid | 3.4 wide x 0.6 deep |
-| C08 | Physical markings updated | ZERO, SPAN, 24 V DC, V0.7, IN, OUT |
+Alle Masse sind in mm. Globales Koordinatensystem: Ursprung an der aeusseren unteren Ecke von P01 ohne Flansch; X = lange Seite, Y = kurze Seite, Z = nach oben.
 
-### Interpretation of the page-5 annotation
+## 2. Korrektur gegenueber dem vorherigen V0.7-Stand
 
-The red `46.3` is treated as a measured actual size of the V0.6 test/print. The explicit instruction `8 mm wider to the right` controls the CAD nominal change, therefore V0.7 uses 53.5 mm nominal width (45.5 + 8.0). Daniel must compare this with the real component before release.
+| ID | Merkmal | Vorheriger V0.7-Stand | Korrigierter V0.7-Stand |
+|---|---|---|---|
+| K01 | Sensorgruppe X | irrtuemlich +20,0 | 0,0; V0.6-X-Lage bleibt |
+| K02 | Sensorgruppe Y | Mittelpunkt 57,0 | Mittelpunkt 56,0 |
+| K03 | P03 Breite | 53,5 | 53,5; 8,0 rechts zusaetzlich |
+| K04 | Dichtungen | gedrucktes TPU-D-Profil | geschlossene EPDM-Kauf-O-Ringe |
+| K05 | Nuten | beidseitig im 3,0-mm-Deckel | P04 in P07; P08 in P03 |
+| K06 | P07 Trennsteg | 3,0 | 5,0 fuer getrennte O-Ring-Nuten |
+| K07 | P03 Oberkante | Z=54,0 | erhoehter Dichtrand bis Z=55,0 |
+| K08 | Kabelschlitz | bis in den Dichtrand | endet bei Z=54,0; Dichtrand bleibt geschlossen |
 
-## 3. P01 enclosure base
+## 3. Hauptgeometrie
 
-### 3.1 Lid bosses
-
-```text
-(7,7), (7,105), (201,7), (201,105)
-Boss D9; pilot D2.5
-```
-
-### 3.2 Waveshare mounting
+### 3.1 P01 Gehaeuseboden
 
 ```text
-Standoffs: (24,25), (169,25), (24,87), (169,87)
-Pattern: 145 x 62
-Standoff D9; pilot D2.5
-Board support Z=9.6
-Board body reference: 151.8 x 90 x 1.6
+Gehaeuse ohne Flansche = 208,0 x 112,0 x 55,0
+Gesamtbreite mit Flanschen = 132,0
+Wandstaerke = 2,8
+Bodenstaerke = 2,8
 ```
 
-### 3.3 Right end wall
-
-- ZERO: Y=36 / Z=41 / D3
-- SPAN: Y=52 / Z=41 / D3
-- PCB: 80 x 20 x 1.5
-- Holder pattern: 76 x 16
-- Engraved markings: `ZERO`, `SPAN`, depth 0.35
-- No DC5521 bore on this wall.
-
-### 3.4 Left end wall
-
-- DC5521: Y=44 / Z=27.5 / D11.2
-- Engraved marking: `24 V DC`, depth 0.35
-- Engraved revision marking: `V0.7`
-
-## 4. Sensor and calibration group
-
-The complete group is shifted +20 in X.
-
-### 4.1 P03 sensor pod
+Deckelbossen:
 
 ```text
-Body: X=26.0..79.5 / Y=16.0..98.0 / Z=40.0..54.0
-Nominal body width: 53.5
-Body length: 82.0
-Overall including tabs: 95.0
-Wall/floor: 3.0
+(7,0 / 7,0)
+(7,0 / 105,0)
+(201,0 / 7,0)
+(201,0 / 105,0)
+Boss D9,0; Pilot D2,5
 ```
 
-The extra 8.0 mm is added on the right/cable side. The sensor holes remain referenced to the former left edge. The cable slot moves with the new right wall.
-
-### 4.2 P02 lid features
-
-- Vent starts: X=32 instead of X=12
-- Hood screws: X=47 / Y=10 and 104
-- Pod mounts: X=36/62 / Y=12/102
-- Right lid screw holes: X=201 / Y=7/105
-
-### 4.3 P07 calibration hood
-
-- Base plate: 56.0 x 105.6 x 3.0
-- Overall height including ports: 41.0
-- IN/OUT locations retained relative to the left plate edge
-- Engraved `IN` and `OUT` markings on the roof
-
-## 5. TPU seals and grooves
-
-Material basis: **eSUN eTPU-95A, 1.75 mm**.
-
-### 5.1 Seal cross-section
+Waveshare-Aufnahmen:
 
 ```text
-Base width = 3.0
-Overall height = 2.0
-Flat underside
-Rounded top edges, fillet R0.85
-Rounded plan corners R4.0
+(24,0 / 25,0)
+(169,0 / 25,0)
+(24,0 / 87,0)
+(169,0 / 87,0)
+Raster = 145,0 x 62,0
+Auflage Z = 9,6
 ```
 
-The profile is D-shaped rather than a fully round O-ring so it can be printed flat without support.
-
-### 5.2 Groove
+### 3.2 Rechte Stirnwand
 
 ```text
-Groove width = 3.4
-Groove depth = 0.6
-Lateral clearance = 0.2 per side
+ZERO = Y36,0 / Z41,0 / D3,0
+SPAN = Y52,0 / Z41,0 / D3,0
+ZERO-SPAN = 16,0 Mitte-Mitte
+Platinenhalter = Y18,0/94,0; Z35,0/51,0
+Halter-Lochbild = 76,0 x 16,0
 ```
 
-The lid has a top groove for P04 and an underside groove for P08. Remaining lid material between both grooves is 1.8 mm.
+### 3.3 Linke Stirnwand
 
-### 5.3 Compression
+```text
+DC5521 = Y44,0 / Z27,5 / D11,2
+Markierung = 24 V DC
+Revisionsmarkierung = V0.7
+```
 
-| Seal | Free height | Installed height | Compression |
-|---|---:|---:|---:|
-| P04 hood/lid | 2.0 | 1.5 | 25% |
-| P08 pod/lid | 2.0 | 1.6 | 20% |
+## 4. Sensor- und Kalibriereinheit
 
-### 5.4 Printing recommendation
+### 4.1 Lage
 
-- Print flat, no support
-- 0.20 mm layer height
-- 100% infill
-- Low speed suitable for TPU 95A
-- Dry filament before printing
-- Test dimensions and airtightness before final assembly
+```text
+X-Verschiebung gegenueber V0.6 = 0,0
+Y-Mittelpunkt = 56,0
+```
 
-FDM-printed TPU is not automatically gas-tight. The assembled calibration path must be leak-tested.
+### 4.2 P03 Sensorpod
 
-## 6. Verification status
+```text
+Koerper = X6,0..59,5 / Y15,0..97,0 / Z40,0..54,0
+Koerperbreite X = 53,5
+Koerperlaenge Y = 82,0
+Wand/Boden = 3,0
+Erhoehter Dichtrand = Z54,0..55,0
+```
 
-Automated checks cover 58 dimensions/clearances and CAD-kernel part intersections. The generator stops on a failed check or unexpected intersection.
+Sensorbefestigung:
 
-The following remain physical-test items:
+```text
+2 x D3,0
+X = 16,3
+Y = 48,5 / 63,5
+Abstand = 15,0
+```
 
-1. Real Waveshare mounting-hole positions and connector clearances
-2. DC5521 nut, solder tabs and cable bend on the left end wall
-3. Fit of the 53.5 mm sensor pod around the real SEN0661 and Gravity cable
-4. TPU groove fit, compression and removal without damage
-5. Leak test under calibration flow
-6. Readability of all engraved markings after printing
+Kabeldurchlass:
 
-## 7. Deliverables
+```text
+X55,5..60,0
+Y82,0..88,0
+Z46,0..54,0
+```
 
-- Global STEP assembly and reference assembly with dummies
-- Individual STEP files
-- Print-oriented STEP and STL files
-- `AirMonitor_V07_Massskizzen_1zu1.pdf`
-- Review SVG drawings
-- `DIMENSIONS.csv` and `V07_COORDINATES.csv`
-- Claude/Daniel review prompt
+Der Kabeldurchlass endet unterhalb des Dichtrandes. P05 fuellt den Durchlass; die P08-Dichtlinie bleibt oben geschlossen.
+
+### 4.3 P02 Deckel
+
+```text
+Deckel = 208,0 x 112,0 x 3,0
+Lueftungsschlitze = X12,0; Y22,0 + 8,0*n; 33,0 x 4,0
+Haubenschrauben = (27,0/9,0), (27,0/103,0)
+Pod-Aufnahmen = (16,0/11,0), (42,0/11,0), (16,0/101,0), (42,0/101,0)
+```
+
+Im Deckel befinden sich keine O-Ring-Nuten. Dadurch bleibt seine Reststaerke 3,0 mm.
+
+### 4.4 P07 Kalibrierhaube
+
+```text
+Grundplatte = X4,0..60,0 / Y3,2..108,8 / Z58,0..61,0
+Grundplatte = 56,0 x 105,6 x 3,0
+Haubenmittelpunkt = X32,0 / Y56,0
+Trennsteg = Y49,5..54,5; Breite 5,0
+```
+
+Die Haubenunterseite liegt direkt auf der Deckeloberseite Z=58,0. Die beiden P04-Nuten sind in die Haubenunterseite eingelassen.
+
+## 5. O-Ring-Konzept
+
+### 5.1 Material und Nut
+
+```text
+Material = EPDM 70 Shore A
+Schnurstaerke = 1,50
+Nutbreite = 1,80
+Nuttiefe = 1,10
+Freie Hoehe = 1,50
+Installierte Hoehe = 1,10
+Verpressung = 0,40 = 26,7 %
+Innenradius der Pfade = R8,0
+```
+
+### 5.2 Kaufteile
+
+| Pos. | O-Ring | REAflon SKU | Verwendung | Lagerstatus bei Pruefung |
+|---|---|---|---|---|
+| P04A | D45,00 x 1,50 | H48761 | untere Kalibrierkammer | verfuegbar |
+| P04B | D50,00 x 1,50 | H96773 | obere Kalibrierkammer | verfuegbar |
+| P08 | D77,00 x 1,50 | H48789 | Sensorpod gegen Deckel | verfuegbar |
+
+Bestelllinks:
+
+- P04A: `https://reaflon.ch/products/o-ring-epdm-70-shore-schnurstarke-mm?variant=47875417440544`
+- P04B: `https://reaflon.ch/products/o-ring-epdm-70-shore-schnurstarke-mm?variant=47875417604384`
+- P08: `https://reaflon.ch/products/o-ring-epdm-70-shore-schnurstarke-mm?variant=47875418128672`
+
+Der zuvor verlinkte Variantencode `47845525750048` ist D2,00 x 1,25 mm. Dieser Ring ist fuer die drei Flaechendichtungen zu klein und wird nicht verwendet.
+
+### 5.3 Installierte Pfade
+
+| Pos. | Mittelpunkt X/Y | Mittellinien-Aussenmass | Radius | rechnerische Dehnung |
+|---|---|---|---|---|
+| P04A | 32,0 / 33,5 | 46,0 x 34,0 | R8,0 | ca. +0,12 % |
+| P04B | 32,0 / 74,5 | 45,8 x 42,0 | R8,0 | ca. +0,05 % |
+| P08 | 32,75 / 56,0 | 51,2 x 79,0 | R8,0 | ca. +0,02 % |
+
+Die Ringe werden in der Montage zu abgerundeten Rechtecken geformt. Die Pfadlaengen sind so ausgelegt, dass keine relevante Ueberdehnung entsteht.
+
+## 6. Markierungen
+
+```text
+ZERO
+SPAN
+24 V DC
+V0.7
+IN
+OUT
+```
+
+Markierungstiefe = 0,35.
+
+## 7. Druck und Montage
+
+| Teil | Materialvorschlag | Drucklage | Support |
+|---|---|---|---|
+| P01 | PETG/ASA gemaess Projektfreigabe | Boden auf Druckbett | nein |
+| P02 | PETG/ASA | Aussenseite nach unten / vorhandene Druckausrichtung | nein |
+| P03 | PETG/ASA | Boden auf Druckbett | nein |
+| P05 | PETG/TPU nach Passversuch | flach | nein |
+| P07 | PETG/ASA | Grundplatte auf Druckbett | nein |
+| P04A/P04B/P08 | Kaufteile EPDM | nicht drucken | - |
+
+Alle Teile passen in den Bauraum des Original Prusa MK4 von 250 x 210 x 220 mm.
+
+## 8. Pruefung vor Installation
+
+1. O-Ringe trocken und ohne Verdrehung einlegen.
+2. Pruefen, dass alle Ringe vollstaendig in ihren Nuten liegen.
+3. Haube gleichmaessig verschrauben; kein sichtbarer Spalt oder Verkanten.
+4. P05 und Gravity-Kabel pruefen; P08-Dichtlinie darf nicht unterbrochen sein.
+5. Nuten bei der Epoxidversiegelung abkleben.
+6. Nach Montage Lecktest mit Nullgas/Frischluft durchfuehren.
+7. Anschliessend Pruefgas aufgeben und Stabilitaet dokumentieren.
+8. Rueckkehr zum Nullpunkt und moegliche Adsorption/Desorption dokumentieren.
+
+## 9. Automatische CAD-Pruefung
+
+Die parametrische Pruefung kontrolliert 56 Masse und Freiraeume, darunter:
+
+- X-Lage unveraendert
+- Y-Zentrierung
+- O-Ring-Pfadlaengen
+- Nutabmessungen und Verpressung
+- Trennung der beiden P04-Nuten
+- Restmaterial in P03 und P07
+- Bauraum des Prusa MK4
+- unerwartete Volumenueberschneidungen zwischen Druckteilen
+
+## 10. Offene physische Pruefungen
+
+- reale Passung der drei gelieferten O-Ringe
+- Einfluss von Drucktoleranz und Epoxidschicht auf Nuttiefe
+- Gasdichtheit bei Kalibrierfluss
+- Nullpunktstabilitaet und Ausgasung
+- Drehmoment der Haubenschrauben
+- dauerhafte Formstabilitaet nach wiederholtem Oeffnen

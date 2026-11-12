@@ -1,60 +1,69 @@
-# Claude review prompt – Laminar AirMonitor HCHO V0.7
+# Claude-Pruefprompt fuer Daniel - AirMonitor Compact V0.7
 
-Daniel, review the V0.7 CAD in Fusion 360. Begin with:
+Oeffne zuerst:
 
 `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.7.step`
 
-Do not redesign parts before reporting the checks below.
+## Verbindliche Korrektur
 
-## A. Verify the annotated corrections
+Der fruehere V0.7-Stand verschob die Sensor-/Kalibriereinheit irrtuemlich in X. Das ist korrigiert:
 
-1. Right lid bosses are at X=201 and Y=7/105, exactly 7 mm from the right edge.
-2. Waveshare standoffs are at (24/25), (169/25), (24/87), (169/87), pattern 145 x 62.
-3. Complete sensor/calibration group is shifted +20 mm in X.
-4. P03 body is 53.5 mm wide and is widened only to the right.
-5. Sensor holes retain their position relative to the old left edge.
-6. DC5521 is removed from the right end wall and placed on the left end wall at Y=44 / Z=27.5 / D11.2.
-7. ZERO/SPAN remain on the right end wall with the existing PCB holder principle.
+```text
+X-Verschiebung gegenueber V0.6 = 0,0 mm
+Y-Mittelpunkt der Einheit = 56,0 mm
+```
 
-## B. Verify TPU sealing design
+Bitte die X-Lage nicht erneut veraendern.
 
-1. P04 and P08 have a flat underside and rounded top (D-profile).
-2. Free profile is 3.0 mm wide x 2.0 mm high.
-3. Lid grooves are 3.4 mm wide x 0.6 mm deep.
-4. P04 target compression is 25%; P08 target compression is 20%.
-5. Top and underside grooves leave 1.8 mm lid material between them.
-6. Rounded plan corners do not create thin or unsupported sections.
-7. Both seals lie flat for support-free printing in eSUN eTPU-95A.
+## O-Ringe
 
-## C. Verify markings
+Drei geschlossene Kauf-O-Ringe aus EPDM 70 Shore A:
 
-- Right wall: ZERO and SPAN
-- Left wall: 24 V DC and V0.7
-- Hood roof: IN and OUT
-- Engraving depth: 0.35 mm
-- Text must remain legible with a 0.4 mm nozzle.
+```text
+P04A = D45,00 x 1,50 mm, SKU H48761
+P04B = D50,00 x 1,50 mm, SKU H96773
+P08  = D77,00 x 1,50 mm, SKU H48789
+```
 
-## D. Physical-risk checks
+Gemeinsame Nutdaten:
 
-- Real Waveshare hole pattern and board envelope
-- Screwdriver access to all terminals
-- DC5521 nut, solder tabs and cable bend
-- SEN0661 and Gravity cable fit in the 53.5 mm pod
-- No cable pinch at the moved slot
-- TPU seals remain captive in their grooves during assembly
-- Hood and pod can be removed without tearing TPU
-- Calibration path can be leak-tested
+```text
+Nutbreite = 1,80 mm
+Nuttiefe = 1,10 mm
+Verpressung = 26,7 %
+Pfadecken = R8,0
+```
 
-## Required response
+P04A/P04B liegen in der Unterseite von P07. P08 liegt im erhoehten Rand von P03. P02 hat keine O-Ring-Nut und bleibt 3,0 mm dick.
 
-Return one of:
+## Kontrollpunkte in Fusion 360
+
+1. P03 links bei X=6,0 und P07 links bei X=4,0 bestaetigen.
+2. Y-Mittelpunkt von P03, P07 und Lueftungsschlitzen = 56,0 bestaetigen.
+3. P03 Koerper X=6,0..59,5 / Y=15,0..97,0 bestaetigen.
+4. P03-Dichtrand Z=54,0..55,0 und geschlossene Dichtlinie ueber dem Kabelschlitz pruefen.
+5. P04A- und P04B-Nuten auf P07-Unterseite pruefen; keine Ueberschneidung.
+6. P08-Nut in P03 pruefen; mindestens 1,8 mm Material unter dem Nutgrund.
+7. Deckelstaerke durchgehend 3,0 mm pruefen.
+8. Schrauben, Haube, Deckel und Pod auf plane Anlage pruefen.
+9. O-Ring-Referenzkoerper einblenden und Sitz kontrollieren.
+10. STEP- und STL-Ausgaben mit `AirMonitor_V07_Massskizzen_1zu1.pdf` vergleichen.
+
+## Ergebnisformat
+
+Antworte mit einem der folgenden Ergebnisse:
 
 - `freigegeben`
-- `freigegeben mit Änderung`
+- `freigegeben mit Aenderung`
 - `nicht freigegeben`
 
-For each deviation provide: component, Soll, Ist, Delta, collision/functional consequence, and a Fusion 360 screenshot with visible dimensions.
+Bei jeder Abweichung angeben:
 
-### Important interpretation
-
-The annotation `46.3` is treated as a measured V0.6 actual size. The explicit `8 mm wider to the right` instruction defines the V0.7 CAD nominal width of 53.5 mm. Flag this if the real component suggests a different target.
+```text
+Merkmal
+Soll
+Ist
+Delta
+Bewertung
+Screenshot / Messung in Fusion 360
+```
