@@ -28,7 +28,18 @@ jobs:
 
       - name: Apply captured-guide redesign
         working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.8
-        run: python apply_v08_45deg_side_guides.py
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('apply_v08_45deg_side_guides.py')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace(
+              're.subn(pattern, repl, text, count=1, flags=re.S)',
+              're.subn(pattern, lambda _m: repl, text, count=1, flags=re.S)',
+          )
+          p.write_text(s, encoding='utf-8')
+          PY
+          python apply_v08_45deg_side_guides.py
 
       - name: Install CAD PDF and render dependencies
         run: |
