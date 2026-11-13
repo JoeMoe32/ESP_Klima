@@ -6,6 +6,7 @@ is replaced by blind internal diagonal tracks. The enclosure centre stays free.
 from pathlib import Path
 
 SKETCH_UPDATE_45DEG_DETAIL_V08 = True
+PAGE10_LAYOUT_FIX_V2 = True
 
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import mm
@@ -528,20 +529,19 @@ def page10_print_detail(c):
     header(c, "V0.8 - Druckdetail der 45-Grad-Randfuehrung",
            "Vergroesserter Y/Z-Schnitt; keine waagerechte C-Decke; Aussenhaut bleibt geschlossen")
 
-    # Enlarged normal guide section.
-    sx = 18 * mm
-    sy = 54 * mm
-    scale = 18 * mm
+    # Enlarged sections kept fully below the header and above the notes.
+    sy = 48 * mm
+    scale = 9.2 * mm
 
     def draw_section(x, title, snap=False):
-        label(c, x, sy + 104 * mm, title, 8, True)
+        label(c, x, sy + 98 * mm, title, 8, True)
 
-        # Lid skirt: 0..2.5 mm in Y, Z45..55 mm.
+        # P02 skirt: physical Y=0..2.50 and Z=45..55 mm.
         c.setFillColor(colors.HexColor("#F5CBA7"))
         c.setStrokeColor(C_HOOD)
         c.rect(x, sy, C.LID_SKIRT_W * scale, 10.0 * scale, stroke=1, fill=1)
 
-        # Blind diagonal groove (white cut-out).
+        # Blind diagonal groove.
         inner = C.GUIDE_GROOVE_INNER_Y_FRONT
         outer = C.GUIDE_GROOVE_OUTER_Y_FRONT
         if snap:
@@ -558,7 +558,7 @@ def page10_print_detail(c):
         c.setFillColor(colors.white)
         c.drawPath(p, stroke=1, fill=1)
 
-        # P01 shoulder and support-free diagonal tongue.
+        # P01 shoulder and diagonal guide tongue.
         wall_x = x + C.SHOULDER_INSET * scale
         c.setFillColor(colors.HexColor("#A9DFBF"))
         c.setStrokeColor(C_POD)
@@ -575,43 +575,48 @@ def page10_print_detail(c):
         p.close()
         c.drawPath(p, stroke=1, fill=1)
 
-        # 45-degree indication.
+        # Angle note.
         c.saveState()
         c.setStrokeColor(C_CENTER)
         c.setFillColor(C_CENTER)
-        c.line(x + 4.6 * scale, sy + 2.0 * scale,
-               x + 4.6 * scale + 0.9 * scale, sy + 2.9 * scale)
+        c.line(x + 4.3 * scale, sy + 2.0 * scale,
+               x + 5.2 * scale, sy + 2.9 * scale)
         c.restoreState()
-        label(c, x + 5.7 * scale, sy + 2.8 * scale, "45 Grad", 7, True, C_CENTER)
+        label(c, x + 5.4 * scale, sy + 2.7 * scale, "45 Grad", 7, True, C_CENTER)
 
-        dim_h(c, x, x + C.LID_SKIRT_W * scale, sy - 6 * mm, "2,50", 1.5)
+        # Main dimensions.
+        dim_h(c, x, x + C.LID_SKIRT_W * scale, sy - 5 * mm, "2,50", 1.2)
         dim_h(c, x, x + C.GUIDE_OUTER_SKIN * scale,
-              sy + 10.0 * scale + 6 * mm, "Aussenhaut 1,60", 1.5)
+              sy + 10.0 * scale + 5 * mm, "Haut 1,60", 1.2)
         dim_h(c, x + tip * scale, x + C.SHOULDER_INSET * scale,
-              sy + 1.0 * scale, fmt(proj, 2), 1.2)
-        dim_v(c, x + 7.2 * scale, sy + z0 * scale,
-              sy + (z0 + proj) * scale, fmt(proj, 2), 1.2)
+              sy + 1.0 * scale, fmt(proj, 2), 1.0)
+        dim_v(c, x + 7.0 * scale, sy + z0 * scale,
+              sy + (z0 + proj) * scale, fmt(proj, 2), 1.0)
 
-    draw_section(sx, "Normalfuehrung X18 / X190", snap=False)
+    draw_section(24 * mm, "Normalfuehrung X18 / X190", snap=False)
     draw_section(151 * mm, "Endrastung vorne rechts X190", snap=True)
 
-    label(c, 18 * mm, 42 * mm, "Verbindliche Zusatzmasse", 8, True)
-    details = [
-        f"Fuehrungszunge: Breite X {fmt(C.GUIDE_LUG_W, 2)}; Projektion/Anstieg normal {fmt(C.GUIDE_PROJ, 2)} / {fmt(C.GUIDE_RISE, 2)}.",
-        f"Blinde Innennut: Z {fmt(C.GUIDE_GROOVE_Z0, 2)}..{fmt(C.GUIDE_GROOVE_Z1, 2)}; diagonaler Anstieg {fmt(C.GUIDE_GROOVE_RISE, 2)}.",
-        f"Einfuehrtasche: Breite X {fmt(C.GUIDE_ENTRY_W, 2)}; Z {fmt(C.GUIDE_ENTRY_BOTTOM_Z, 2)}..{fmt(C.GUIDE_ENTRY_TOP_Z, 2)}.",
-        f"Geschlossene Aussenhaut: normal {fmt(C.GUIDE_OUTER_SKIN, 2)}; an Einfuehrtasche mindestens {fmt(C.GUIDE_ENTRY_OUTER_SKIN, 2)}.",
-        f"Verdeckte Rastung: nominelle lokale Auslenkung {fmt(C.SNAP_INTERFERENCE, 2)}; Endtasche tiefer, keine sichtbare Rastzunge.",
-        f"Schiebeweg {fmt(C.SLIDE_TRAVEL, 2)}; Fuehrungen nur X18/X190 vorne und hinten; Gehaeusemitte frei.",
+    # Compact notes in two columns; kept clear of footer/control scale.
+    label(c, 18 * mm, 39 * mm, "Verbindliche Masse", 8, True)
+    left_notes = [
+        f"Zunge X-Breite {fmt(C.GUIDE_LUG_W, 2)}; normal proj./Anstieg {fmt(C.GUIDE_PROJ, 2)} / {fmt(C.GUIDE_RISE, 2)}.",
+        f"Nut Z {fmt(C.GUIDE_GROOVE_Z0, 2)}..{fmt(C.GUIDE_GROOVE_Z1, 2)}; diagonal {fmt(C.GUIDE_GROOVE_RISE, 2)}.",
+        f"Einfuehrtasche X-Breite {fmt(C.GUIDE_ENTRY_W, 2)}; Z {fmt(C.GUIDE_ENTRY_BOTTOM_Z, 2)}..{fmt(C.GUIDE_ENTRY_TOP_Z, 2)}.",
     ]
-    for i, line in enumerate(details):
-        label(c, 22 * mm, (34 - 5.3 * i) * mm, "- " + line, 6.6)
+    for i, line in enumerate(left_notes):
+        label(c, 22 * mm, (33 - 6 * i) * mm, "- " + line, 6.5)
 
-    label(c, 151 * mm, 42 * mm, "Drucklage", 8, True)
-    label(c, 155 * mm, 34 * mm, "P01: Boden auf Druckbett", 7)
-    label(c, 155 * mm, 28 * mm, "P02: sichtbare Oberseite auf Druckbett", 7)
-    label(c, 155 * mm, 22 * mm, "45-Grad-Flaechen bauen sich schichtweise auf", 7)
-    label(c, 155 * mm, 16 * mm, "Supportfrei vorgesehen - Probedruck bleibt erforderlich", 7, True, C_ORING)
+    label(c, 151 * mm, 39 * mm, "Druck und Rastung", 8, True)
+    right_notes = [
+        f"Aussenhaut normal {fmt(C.GUIDE_OUTER_SKIN, 2)}, Einfuehrtasche min. {fmt(C.GUIDE_ENTRY_OUTER_SKIN, 2)}.",
+        f"Rastung: lokale Auslenkung {fmt(C.SNAP_INTERFERENCE, 2)}; Schiebeweg {fmt(C.SLIDE_TRAVEL, 2)}.",
+        "P01 Boden unten; P02 sichtbare Oberseite unten; keine Slicer-Stuetzen vorgesehen.",
+    ]
+    for i, line in enumerate(right_notes):
+        label(c, 155 * mm, (33 - 6 * i) * mm, "- " + line, 6.5)
+
+    label(c, 155 * mm, 15 * mm,
+          "Supportfrei vorgesehen - Probedruck bleibt erforderlich", 7, True, C_ORING)
     footer(c, 10, "Vergroessert - Schnitt nicht 1:1")
 
 
