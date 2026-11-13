@@ -1,5 +1,6 @@
 name: Build final AirMonitor V0.8 edge-guided enclosure
 
+# Rebuild after correcting the open insertion-side skirt clearance.
 on:
   push:
     branches:
