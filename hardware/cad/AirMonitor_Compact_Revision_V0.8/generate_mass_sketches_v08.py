@@ -7,6 +7,7 @@ from pathlib import Path
 
 SKETCH_UPDATE_45DEG_DETAIL_V08 = True
 PAGE10_LAYOUT_FIX_V2 = True
+PAGE10_LABEL_SPACING_FIX_V3 = True
 
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import mm
@@ -534,7 +535,7 @@ def page10_print_detail(c):
     scale = 9.2 * mm
 
     def draw_section(x, title, snap=False):
-        label(c, x, sy + 98 * mm, title, 8, True)
+        label(c, x, sy + 106 * mm, title, 8, True)
 
         # P02 skirt: physical Y=0..2.50 and Z=45..55 mm.
         c.setFillColor(colors.HexColor("#F5CBA7"))
@@ -587,7 +588,7 @@ def page10_print_detail(c):
         # Main dimensions.
         dim_h(c, x, x + C.LID_SKIRT_W * scale, sy - 5 * mm, "2,50", 1.2)
         dim_h(c, x, x + C.GUIDE_OUTER_SKIN * scale,
-              sy + 10.0 * scale + 5 * mm, "Haut 1,60", 1.2)
+              sy + 10.0 * scale + 2 * mm, "Haut 1,60", 1.2)
         dim_h(c, x + tip * scale, x + C.SHOULDER_INSET * scale,
               sy + 1.0 * scale, fmt(proj, 2), 1.0)
         dim_v(c, x + 7.0 * scale, sy + z0 * scale,
