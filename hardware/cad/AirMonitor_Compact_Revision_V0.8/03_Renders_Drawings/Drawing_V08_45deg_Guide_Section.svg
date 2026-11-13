@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="650" viewBox="0 43 16 15">
+<style>text{font-family:Arial,sans-serif;fill:#172b3a}.t{font-size:.55px;font-weight:bold}.s{font-size:.42px}.lid{fill:#f0b27a;stroke:#7d4e24;stroke-width:.08}.body{fill:#a9dfbf;stroke:#246b3d;stroke-width:.08}.cut{fill:white;stroke:#b33;stroke-width:.10}.dim{stroke:#b33;stroke-width:.08}</style>
+<text class="t" x="0.3" y="44.0">V0.8 Schnitt: innenliegende 45-Grad-Schiebefuehrung</text>
+<rect class="lid" x="0" y="45" width="2.6" height="10"/>
+<polygon class="cut" points="2.75,46.4 1.60,47.55 1.60,51.35 2.75,50.2"/>
+<rect class="body" x="2.9" y="45" width="4.0" height="10"/>
+<polygon class="body" points="2.9,46.8 2.0,47.7 2.0,50.7 2.9,49.8"/>
+<text class="s" x="7.2" y="47.2">Deckelaussenhaut bleibt geschlossen</text>
+<text class="s" x="7.2" y="48.2">diagonale Nut und Zunge: 45 Grad</text>
+<text class="s" x="7.2" y="49.2">0,30 mm Schulterspiel</text>
+<text class="s" x="7.2" y="50.2">kein horizontaler C-Kanal</text>
+<text class="s" x="7.2" y="51.2">P02 sichtbare Oberseite auf Druckbett</text>
+</svg>

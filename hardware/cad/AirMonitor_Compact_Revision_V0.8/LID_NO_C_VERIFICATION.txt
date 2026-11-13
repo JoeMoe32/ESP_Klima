@@ -1,7 +1,0 @@
-AirMonitor Compact V0.8 - no-C verification
-Both visible side notches run straight to the lower skirt edge.
-Notch X positions: (18.0, 190.0) mm
-Notch width: 8.00 mm
-Cut Z: 44.60..51.20 mm
-Lower-bar CAD probe: 0.000 mm3 at both positions (build aborts otherwise).
-No C-channel, no closed horizontal slot roof, no lower return lip.

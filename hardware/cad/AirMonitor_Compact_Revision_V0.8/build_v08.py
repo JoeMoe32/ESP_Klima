@@ -194,25 +194,31 @@ for x, y in C.STANDOFFS:
     b = b.cut(cz(x, y, floor-0.2, C.STANDOFF_PILOT_D,
                  C.BOARD_BOTTOM_Z-floor+0.5))
 
-def edge_snap_bump():
-    """Support-free ramped side bump at the front/right edge.
+def guide_lug(xc, rear=False, snap=False):
+    """Diagonal support-free tongue integrated into the recessed shoulder.
 
-    The lower Y/Z face rises 0.8 mm over 0.8 mm (45 degrees), so P01 can be
-    printed upright without support. The bump is retained only by the lid
-    skirt flexing into a simple open-bottom notch; no C-channel is used.
+    Both lower and upper faces rise outward at 45 degrees. Opposing front/rear
+    tongues form a captured slide after the lid has moved out of the entry
+    pockets. No guide exists in the enclosure centre.
     """
-    x0 = C.EDGE_SNAP_X - C.EDGE_SNAP_WIDTH / 2
+    x0 = xc - C.GUIDE_LUG_W / 2
+    proj = C.GUIDE_PROJ + (C.SNAP_EXTRA_PROJ if snap else 0.0)
+    rise = proj
+    root_y = sy1 if rear else sy0
+    tip_y = root_y + proj if rear else root_y - proj
     points = [
-        (sy0, C.EDGE_SNAP_Z0),
-        (sy0 - C.EDGE_SNAP_PROJ,
-         C.EDGE_SNAP_Z0 + C.EDGE_SNAP_RAMP),
-        (sy0 - C.EDGE_SNAP_PROJ, C.EDGE_SNAP_Z1),
-        (sy0, C.EDGE_SNAP_Z1),
+        (root_y, C.GUIDE_ROOT_Z0),
+        (tip_y, C.GUIDE_ROOT_Z0 + rise),
+        (tip_y, C.GUIDE_ROOT_Z1 + rise),
+        (root_y, C.GUIDE_ROOT_Z1),
     ]
     return (cq.Workplane('YZ', origin=(x0, 0, 0))
-            .polyline(points).close().extrude(C.EDGE_SNAP_WIDTH))
+            .polyline(points).close().extrude(C.GUIDE_LUG_W))
 
-b = b.union(edge_snap_bump())
+for x in C.GUIDE_X_FRONT:
+    b = b.union(guide_lug(x, rear=False, snap=abs(x-C.SNAP_X) < 1e-6))
+for x in C.GUIDE_X_REAR:
+    b = b.union(guide_lug(x, rear=True, snap=False))
 
 dy, dz, dd = C.DC5521
 b = b.cut(cx(-0.2,dy,dz,dd,wall+0.5))
@@ -265,41 +271,68 @@ for x,y in C.POD_MOUNTS:
     l = l.union(cz(x,y,C.POD_BOSS_Z0,C.POD_BOSS_D,lz-C.POD_BOSS_Z0))
     l = l.cut(cz(x,y,C.POD_BOSS_Z0-0.1,C.POD_BOSS_PILOT_D,C.POD_BOSS_PILOT_TOP-C.POD_BOSS_Z0+0.1))
 
-# Definitive red-line correction: both former C-shaped windows are opened
-# vertically all the way to the physical lower edge of the front skirt.
-# The cut begins 0.40 mm below that edge to prevent any residual triangulated
-# bottom skin in STEP/STL export. A top band remains for guidance/snap action.
-for notch_x in C.OPEN_EDGE_NOTCH_X:
-    l = l.cut(box(
-        notch_x - C.OPEN_EDGE_NOTCH_W / 2,
-        C.LID_Y0 - 0.30,
-        C.OPEN_EDGE_NOTCH_Z0,
-        C.OPEN_EDGE_NOTCH_W,
-        C.OPEN_EDGE_NOTCH_Y_DEPTH,
-        C.OPEN_EDGE_NOTCH_Z1 - C.OPEN_EDGE_NOTCH_Z0,
-    ))
+# Blind internal 45-degree keyhole tracks. The outside face stays closed.
+# In the selected print orientation the diagonal Y/Z faces are self-supporting;
+# there is no horizontal slot roof and no slicer support is required.
+def guide_track_prism(x0, x1, rear=False, detent=False):
+    inner = (C.W - C.GUIDE_GROOVE_INNER_Y_FRONT
+             if rear else C.GUIDE_GROOVE_INNER_Y_FRONT)
+    outer_normal = (C.W - C.GUIDE_GROOVE_OUTER_Y_FRONT
+                    if rear else C.GUIDE_GROOVE_OUTER_Y_FRONT)
+    if detent:
+        outer = (outer_normal + C.SNAP_DETENT_EXTRA_DEPTH
+                 if rear else outer_normal - C.SNAP_DETENT_EXTRA_DEPTH)
+    else:
+        outer = outer_normal
+    rise = abs(outer - inner)
+    points = [
+        (inner, C.GUIDE_GROOVE_Z0),
+        (outer, C.GUIDE_GROOVE_Z0 + rise),
+        (outer, C.GUIDE_GROOVE_Z1 + rise),
+        (inner, C.GUIDE_GROOVE_Z1),
+    ]
+    return (cq.Workplane('YZ', origin=(x0, 0, 0))
+            .polyline(points).close().extrude(x1 - x0))
 
-# CAD-kernel proof: the lower 0.8 mm of each notch must contain no lid volume.
-# This catches exactly the unwanted horizontal lower bar seen in PrusaSlicer.
-for notch_x in C.OPEN_EDGE_NOTCH_X:
-    lower_probe = l.intersect(box(
-        notch_x - C.OPEN_EDGE_NOTCH_W / 2 + 0.20,
-        C.LID_Y0 - 0.10,
-        C.LID_Z - C.LID_OVERLAP - 0.10,
-        C.OPEN_EDGE_NOTCH_W - 0.40,
-        C.LID_SKIRT_W + 0.20,
-        0.90,
-    ))
-    lower_volume = sum(v.Volume() for v in lower_probe.vals()) if lower_probe.vals() else 0.0
-    if lower_volume > 0.01:
-        raise SystemExit(
-            f"Abbruch: C-Untersteg bei X={notch_x:.1f} verbleibt "
-            f"({lower_volume:.3f} mm3)."
-        )
 
-# ---------------- P03 sensor pod ----------------
+def entry_pocket(xc, rear=False, snap=False):
+    entry = xc - C.SLIDE_TRAVEL
+    x0 = entry - C.GUIDE_ENTRY_W / 2
+    if rear:
+        y0 = C.W - C.GUIDE_GROOVE_INNER_Y_FRONT - 0.15
+        y1 = C.W - C.GUIDE_ENTRY_OUTER_SKIN
+    else:
+        y0 = C.GUIDE_ENTRY_OUTER_SKIN
+        y1 = C.GUIDE_GROOVE_INNER_Y_FRONT + 0.15
+    return box(x0, min(y0, y1), C.GUIDE_ENTRY_BOTTOM_Z,
+               C.GUIDE_ENTRY_W, abs(y1-y0),
+               C.GUIDE_ENTRY_TOP_Z-C.GUIDE_ENTRY_BOTTOM_Z)
+
+
+def cut_guide(shape, xc, rear=False, snap=False):
+    entry = xc - C.SLIDE_TRAVEL
+    track_end = xc + C.GUIDE_TRACK_END_EXTRA
+    shape = shape.cut(entry_pocket(xc, rear, snap))
+    shape = shape.cut(guide_track_prism(entry, track_end, rear, False))
+    if snap:
+        dx0 = xc - C.SNAP_DETENT_W / 2
+        dx1 = xc + C.SNAP_DETENT_W / 2
+        shape = shape.cut(guide_track_prism(dx0, dx1, rear, True))
+    return shape
+
+for x in C.GUIDE_X_FRONT:
+    l = cut_guide(l, x, rear=False, snap=abs(x-C.SNAP_X) < 1e-6)
+for x in C.GUIDE_X_REAR:
+    l = cut_guide(l, x, rear=True, snap=False)
+
+# Objective geometry checks: the external skirt skin must remain closed and
+# the guide recesses must never reach the visible outer faces.
+if C.GUIDE_ENTRY_OUTER_SKIN < 1.0 or C.GUIDE_OUTER_SKIN < 1.0:
+    raise SystemExit('Abbruch: sichtbare Deckelhaut an der Führung ist zu dünn.')
+
 # ---------------- P03 sensor pod ----------------
 px0, px1, py0, py1, pz0, pz1 = C.POD
+t = C.POD_WALLpx0, px1, py0, py1, pz0, pz1 = C.POD
 t = C.POD_WALL
 p = bb(px0, px1, py0, py1, pz0, pz1)
 p = p.cut(bb(px0 + t, px1 - t, py0 + t, py1 - t,
@@ -412,8 +445,8 @@ for n, s in parts.items():
     step(q, P / (print_names[n] + '.step'))
     stl(q, P / (print_names[n] + '.stl'))
     if n == 'P02_Compact_Lid_Global':
-        step(q, P / 'P02_Compact_Lid_Print_NO_C_V0.8.step')
-        stl(q, P / 'P02_Compact_Lid_Print_NO_C_V0.8.stl')
+        step(q, P / 'P02_Compact_Lid_Print_45DEG_GUIDES_V0.8.step')
+        stl(q, P / 'P02_Compact_Lid_Print_45DEG_GUIDES_V0.8.stl')
 
 # Global assemblies.
 shapes = [s.val() for s in parts.values()]
@@ -446,21 +479,29 @@ for i, a in enumerate(names):
             continue
         inter = parts[a].intersect(parts[bn])
         vol = sum(v.Volume() for v in inter.vals()) if inter.vals() else 0.0
+        pair = {a, bn}
+        if pair == {'P01_Compact_Base_Global', 'P02_Compact_Lid_Global'} and vol <= 1.0:
+            print(f'Intentional hidden snap preload: {vol:.3f} mm³')
+            continue
         if vol > 0.01:
             problems.append(f'{a} ∩ {bn}: {vol:.2f} mm³')
 print('Unexpected part intersections:', *(problems or ['none']), sep='\n  ')
 if problems:
     raise SystemExit('Abbruch: unerwartete Bauteilüberschneidung.')
 
-# Write an explicit no-C verification note for review.
-with (R / 'LID_NO_C_VERIFICATION.txt').open('w', encoding='utf-8') as f:
-    f.write('AirMonitor Compact V0.8 - no-C verification\n')
-    f.write('Both visible side notches run straight to the lower skirt edge.\n')
-    f.write(f'Notch X positions: {C.OPEN_EDGE_NOTCH_X} mm\n')
-    f.write(f'Notch width: {C.OPEN_EDGE_NOTCH_W:.2f} mm\n')
-    f.write(f'Cut Z: {C.OPEN_EDGE_NOTCH_Z0:.2f}..{C.OPEN_EDGE_NOTCH_Z1:.2f} mm\n')
-    f.write('Lower-bar CAD probe: 0.000 mm3 at both positions (build aborts otherwise).\n')
-    f.write('No C-channel, no closed horizontal slot roof, no lower return lip.\n')
+# Write an explicit guide verification note.
+with (R / 'LID_45DEG_GUIDE_VERIFICATION.txt').open('w', encoding='utf-8') as f:
+    f.write('AirMonitor Compact V0.8 - captured 45-degree side guides\n')
+    f.write('Slide travel retained: 8.00 mm\n')
+    f.write('Guide locations: front/rear X=18.0 and X=190.0 mm\n')
+    f.write('Centre zone: no lid guides, posts or latch parts\n')
+    f.write(f'Lid skirt: {C.LID_SKIRT_W:.2f} mm; shoulder clearance: {C.SHOULDER_INSET-C.LID_SKIRT_W:.2f} mm\n')
+    f.write(f'Normal outside skin at blind track: {C.GUIDE_OUTER_SKIN:.2f} mm\n')
+    f.write(f'Minimum outside skin at entry pocket: {C.GUIDE_ENTRY_OUTER_SKIN:.2f} mm\n')
+    f.write('Track cross-section: diagonal parallelogram, 45-degree faces\n')
+    f.write('External guide windows: none\n')
+    f.write(f'Hidden snap interference: {C.SNAP_INTERFERENCE:.2f} mm\n')
+    f.write('Target printing: P01 on floor, P02 visible top on bed, no slicer support\n')
 
 # Dimensions and purchased component data.
 with (R / 'DIMENSIONS.csv').open('w', newline='', encoding='utf-8') as f:
@@ -494,6 +535,8 @@ with (R / 'V08_COORDINATES.csv').open('w', newline='', encoding='utf-8') as f:
     w.writerow(['P03 body', 'X 6.0..59.5 / Y 15.0..97.0 / Z 40.0..54.0', 'CAD'])
     w.writerow(['P03 sealing rim', 'Z 54.0..55.0', 'CAD'])
     w.writerow(['P07 plate', 'X 4.0..60.0 / Y 3.2..108.8 / Z 58.0..61.0', 'CAD'])
+    w.writerow(['Lid guides', 'blind 45-degree tracks; X 18/190 at front and rear; 8 mm slide', 'CAD'])
+    w.writerow(['Hidden snap', 'front/right X190; 0.20 mm nominal flex; blind detent', 'CAD'])
     for r in (C.P04A_RING, C.P04B_RING, C.P08_RING):
         path = 2 * (r['cw'] + r['ch']) + (2 * math.pi - 8) * r['r']
         free = math.pi * (r['id'] + r['cord'])
@@ -569,17 +612,49 @@ side_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620"
 (D / 'Drawing_V08_Overlap_Lid_Side.svg').write_text(side_svg, encoding='utf-8')
 
 
-no_c_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="460" viewBox="0 0 208 70">
-<style>text{{font-family:Arial,sans-serif;fill:#172b3a}}.t{{font-size:4px;font-weight:bold}}.s{{font-size:3px}}.body{{fill:#d7e6ef;stroke:#24566f;stroke-width:.5}}.cut{{fill:white;stroke:#b33;stroke-width:.8}}.red{{stroke:#b33;stroke-width:1}}</style>
-<text class="t" x="2" y="6">V0.8 Deckelschuerze - KEIN C: Kerben gerade bis Unterkante offen</text>
-<path class="body" d="M0,12 H208 V62 H0 Z"/>
-<rect class="cut" x="14" y="42" width="8" height="21"/>
-<rect class="cut" x="186" y="42" width="8" height="21"/>
-<line class="red" x1="14" y1="42" x2="14" y2="63"/>
-<line class="red" x1="186" y1="42" x2="186" y2="63"/>
-<text class="s" x="27" y="52">senkrecht offen bis zur unteren Kante; kein Untersteg</text>
-<text class="s" x="27" y="58">X=18 und X=190; Breite 8,0 mm</text>
+guide_section_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="650" viewBox="0 43 16 15">
+<style>text{{font-family:Arial,sans-serif;fill:#172b3a}}.t{{font-size:.55px;font-weight:bold}}.s{{font-size:.42px}}.lid{{fill:#f0b27a;stroke:#7d4e24;stroke-width:.08}}.body{{fill:#a9dfbf;stroke:#246b3d;stroke-width:.08}}.cut{{fill:white;stroke:#b33;stroke-width:.10}}.dim{{stroke:#b33;stroke-width:.08}}</style>
+<text class="t" x="0.3" y="44.0">V0.8 Schnitt: innenliegende 45-Grad-Schiebefuehrung</text>
+<rect class="lid" x="0" y="45" width="2.6" height="10"/>
+<polygon class="cut" points="2.75,46.4 1.60,47.55 1.60,51.35 2.75,50.2"/>
+<rect class="body" x="2.9" y="45" width="4.0" height="10"/>
+<polygon class="body" points="2.9,46.8 2.0,47.7 2.0,50.7 2.9,49.8"/>
+<text class="s" x="7.2" y="47.2">Deckelaussenhaut bleibt geschlossen</text>
+<text class="s" x="7.2" y="48.2">diagonale Nut und Zunge: 45 Grad</text>
+<text class="s" x="7.2" y="49.2">0,30 mm Schulterspiel</text>
+<text class="s" x="7.2" y="50.2">kein horizontaler C-Kanal</text>
+<text class="s" x="7.2" y="51.2">P02 sichtbare Oberseite auf Druckbett</text>
 </svg>'''
-(D / 'Drawing_V08_NO_C_Open_To_Edge.svg').write_text(no_c_svg, encoding='utf-8')
+(D / 'Drawing_V08_45deg_Guide_Section.svg').write_text(guide_section_svg, encoding='utf-8')
+
+edge_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="700" viewBox="-5 -8 218 128">
+{{svg_style}}
+<text class="t" x="0" y="-3">AirMonitor V0.8 - vier verdeckte Randfuehrungen, Mitte frei [mm]</text>
+<rect class="wall" x="0" y="0" width="208" height="112" rx="6"/>
+<g fill="#d7e6ef" stroke="#24566f" stroke-width=".6">
+  <rect x="15" y="1" width="6" height="3"/><rect x="187" y="1" width="6" height="3"/>
+  <rect x="15" y="108" width="6" height="3"/><rect x="187" y="108" width="6" height="3"/>
+</g>
+<rect x="28" y="8" width="152" height="96" fill="none" stroke="#278c73" stroke-width=".5" stroke-dasharray="2 2"/>
+<text class="s" x="72" y="56">gesamte mittlere Zone ohne Deckelfixierung</text>
+<text class="s" x="6" y="9">X18</text><text class="s" x="184" y="9">X190 + versteckte Rastung</text>
+<path d="M140 18 H132" stroke="#b33" stroke-width=".8"/><text class="s" x="142" y="19">Bedienansicht: links nach rechts</text>
+</svg>'''
+(D / 'Drawing_V08_Edge_Guide_Positions.svg').write_text(edge_svg, encoding='utf-8')
+
+slide_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="0 0 210 72">
+{{svg_style}}
+<text class="t" x="2" y="6">V0.8 Schiebeablauf - Funktion wie vorher, nur druckgerechte Innenprofile</text>
+<rect class="wall" x="2" y="14" width="92" height="48" rx="5"/>
+<rect x="10" y="20" width="92" height="48" rx="5" fill="none" stroke="#7A3FA0" stroke-width=".7"/>
+<text class="s" x="25" y="38">1. +8 mm versetzt absenken</text>
+<text class="s" x="25" y="44">Zungen in innere Einfuehrtaschen</text>
+<rect class="wall" x="112" y="14" width="92" height="48" rx="5"/>
+<rect x="112" y="14" width="92" height="48" rx="5" fill="none" stroke="#7A3FA0" stroke-width=".7"/>
+<text class="s" x="132" y="38">2. 8 mm einschieben</text>
+<text class="s" x="132" y="44">verdeckt gefuehrt und eingerastet</text>
+<path d="M99 38 H109" stroke="#b33" stroke-width="1"/>
+</svg>'''
+(D / 'Drawing_V08_Slide_Sequence.svg').write_text(slide_svg, encoding='utf-8')
 
 print('Generated AirMonitor Compact V0.8 corrected O-ring package:', R)

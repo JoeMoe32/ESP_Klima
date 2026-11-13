@@ -1,14 +1,18 @@
 START HIER - AirMonitor Compact V0.8
 
-Neu kontrollieren:
-- Deckelkerbe senkrecht gerade bis zur Unterkante offen
-- kein C-Kanal / keine geschlossene horizontale Nut
-- Schulter fuehrt den Deckel
-- Rastnase nur am vorderen rechten Rand
-- Druck ohne Stuetzstruktur in PrusaSlicer pruefen
-
 Fusion 360:
 01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step
+
+Druckdeckel:
+02_CAD_Print/P02_Compact_Lid_Print_45DEG_GUIDES_V0.8.stl
+
+Neu kontrollieren:
+- +8 mm absenken, danach 8 mm einschieben
+- vier verdeckte Randfuehrungen X18/X190
+- keine sichtbaren C-Fenster
+- 45-Grad-Nut/Zunge ohne Slicer-Stuetzen
+- versteckte Rastung vorne rechts
+- Mitte frei
 
 Massskizzen:
 AirMonitor_V08_Massskizzen_1zu1.pdf

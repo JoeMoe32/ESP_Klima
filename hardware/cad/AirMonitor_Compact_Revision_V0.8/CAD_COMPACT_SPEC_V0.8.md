@@ -1,58 +1,62 @@
 # Laminar AirMonitor HCHO - CAD-Konstruktionsspezifikation V0.8
 
-## Aktuelle Korrektur: supportfreie Kerbe
+## Verbindliche Korrektur
 
-Die bisherige C-foermige Seitenfuehrung wird nicht verwendet. Ein geschlossener
-horizontaler Kanal wuerde in der gewaehlten Druckorientierung eine Bruecke bzw.
-Stuetzstruktur erfordern.
+Der funktionierende Absenk-/Schiebeablauf des frueheren V0.8-Entwurfs bleibt
+erhalten. Geaendert wird nur die Druckbarkeit der seitlichen Fuehrung.
 
-Der Deckel wird jetzt durch die durchgehende, 10 mm hohe Gehaeuseschulter
-gefuehrt. Die Gehaeusemitte bleibt frei. Am vorderen rechten Rand befindet sich
-nur eine kleine 45-Grad-Rastnase. Im Deckel liegt dazu eine einfache rechteckige
-Kerbe, die **senkrecht gerade bis zur unteren Schuerzenkante offen ist**.
+- Deckel +8,0 mm versetzt absenken.
+- Vier Randzungen in innere Einfuehrtaschen setzen.
+- Deckel 8,0 mm in die Endstellung schieben.
+- Front/rechts verdeckt einrasten.
+
+## Aussenform
 
 ```text
-Schiebeweg                 8,0 mm
-Bedienansicht              links nach rechts
-Rastnase X                 190,0 mm
-Rastnasenbreite            6,0 mm
-Rastnasenvorsprung         0,80 mm
-Rastnase Z                 47,0..50,0 mm
-Unterseite Rastnase        45 Grad
-Kerbenbreite               7,40 mm
-Kerbe Z                    45,0..50,6 mm
-lokale Auslenkung Schuerze ca. 0,50 mm
+P01 ohne Flansche       208,0 x 112,0 x 55,0 mm
+P01 Wand/Boden          3,2 mm
+Aussenradius            R6,0 mm
+Schulterbeginn          Z45,0 mm
+Schulterruecksprung     2,8 mm
+P02 Topplatte           3,0 mm
+P02 Uebergriff          10,0 mm
+P02 Schuerzenwand       2,5 mm
+Schulterspiel           0,30 mm je Seite
 ```
+
+## Fuehrung
+
+```text
+Positionen vorn/hinten  X18,0 und X190,0 mm
+Schiebeweg              8,0 mm
+Zungenbreite            6,0 mm
+Normaler Vorsprung      0,90 mm
+Normaler Anstieg        0,90 mm = 45 Grad
+Nutquerschnitt          blindes Parallelogramm, 45 Grad
+Aussenhaut an Nut       mindestens 1,65 mm
+Aussenhaut Einfuehrung  mindestens 1,15 mm
+```
+
+Die Einfuehrtaschen sind nur zur Innenseite und zur unteren Schuerzenkante
+offen. Die sichtbare Aussenwand bleibt geschlossen. Nach dem Einschieben liegen
+die Zungen in den blinden Diagonalnuten und verhindern das vertikale Abheben.
+
+## Rastung
+
+Die vordere rechte Zunge bei X190 besitzt 0,55 mm mehr Vorsprung. Im normalen
+Track entsteht ca. 0,20 mm lokale Auslenkung; in der tieferen Endtasche bleibt
+ca. 0,20 mm Spiel. Die Rastung ist aussen nicht sichtbar.
 
 ## Druckbarkeit
 
-- P01 steht auf seinem Boden.
-- P02 liegt mit der sichtbaren flachen Oberseite auf dem Druckbett.
-- Die Kerbe ist in dieser Drucklage nach oben offen.
-- Es gibt keinen C-Kanal, keine geschlossene Nutdecke und keine horizontale
-  Fanglippe, die frei in der Luft begonnen werden muesste.
-- Die Rastnase am P01 besitzt eine 45-Grad-Unterseite.
-- Slicer-Stuetzen sind fuer Deckelfuehrung und Rastung nicht vorgesehen.
+P01 wird auf dem Boden gedruckt. Die Zungenunterseiten steigen nach aussen mit
+45 Grad an. P02 wird mit der sichtbaren Oberseite auf dem Druckbett gedruckt.
+Die Innennuten besitzen ausschliesslich diagonale 45-Grad-Flaechen; es gibt
+keine waagerechte C-Kanal-Decke. Die Einfuehrtaschen reichen bis zur offenen
+Schuerzenkante. Slicer-Stuetzen sind konstruktiv nicht vorgesehen.
 
 ## Unveraendert
 
-Microtaster, Waveshare-Position, DC5521, Sensorpod, Pruefstation,
-EPDM-O-Ringe, Y-Zentrierung und die 10-mm-Deckelueberdeckung bleiben erhalten.
-Die Pruefstation bleibt bis zur physischen Kontrolle vorlaeufig.
-
-## Physische Pruefung
-
-- Deckelspiel und Verzug;
-- lokale Federwirkung der 2,0-mm-Schuerze;
-- Rastkraft und Loesbarkeit an der offenen Kerbe;
-- mindestens 20 Oeffnungs-/Schliesszyklen;
-- keine Weissbruchbildung oder Risse;
-- Kabelreserve, O-Ring-Sitz und Gasdichtheit.
-
-## Verbindliche No-C-Korrektur
-
-An den beiden sichtbaren Randpositionen X=18,0 und X=190,0 gibt es keinen
-C-foermigen Ausschnitt mehr. Die 8,0-mm-Aussparungen laufen vom Kerbendach
-senkrecht bis ueber die physische Unterkante der 10-mm-Deckelschuerze. Ein
-unterer horizontaler Ruecksteg ist geometrisch ausgeschlossen und wird im
-CAD-Kernel mit einem Volumenpruefkoerper kontrolliert.
+Microtaster, Boardposition, DC5521, Sensorpod, Kalibrierhaube, EPDM-O-Ringe,
+Y-Zentrierung und Markierungen bleiben unveraendert. Die Pruefstation bleibt bis
+zur physischen Kontrolle vorlaeufig.

@@ -1,7 +1,7 @@
-"""Generate revised 1:1 engineering sketches for AirMonitor Compact V0.8.
+"""Generate V0.8 engineering sketches with blind 45-degree side guides.
 
-Includes Y-centred sensor group, purchased EPDM O-rings, the complete
-ZERO/SPAN assembly 15 mm lower, and the edge-guided flush sliding lid.
+The previous captured 8 mm slide is retained, while the rectangular C-window
+is replaced by blind internal diagonal tracks. The enclosure centre stays free.
 """
 from pathlib import Path
 
@@ -144,7 +144,7 @@ def draw_groove_section(c, x, y, title, substrate_label):
 
 def page1_base(c):
     header(c,"P01 - abgerundeter Gehaeuseboden / Draufsicht innen",
-           "3,2-mm-Wand; R6; Schulter fuehrt den Deckel; Mitte ohne Deckelfixierung")
+           "3,2-mm-Wand; R6; vier 45-Grad-Fuehrungen nur am Rand; Mitte frei")
     ox,oy=38*mm,39*mm
     c.roundRect(ox,oy-C.FLANGE*mm,C.L*mm,(C.W+2*C.FLANGE)*mm,2*mm)
     c.roundRect(ox,oy,C.L*mm,C.W*mm,C.BODY_CORNER_R*mm)
@@ -160,15 +160,21 @@ def page1_base(c):
         c.circle(ox+x*mm,oy+y*mm,C.STANDOFF_D/2*mm)
         c.circle(ox+x*mm,oy+y*mm,C.STANDOFF_PILOT_D/2*mm)
     c.setStrokeColor(C_ORING)
-    c.rect(ox+(C.EDGE_SNAP_X-C.EDGE_SNAP_WIDTH/2)*mm,
-           oy+(C.SHOULDER_INSET-C.EDGE_SNAP_PROJ)*mm,
-           C.EDGE_SNAP_WIDTH*mm,C.EDGE_SNAP_PROJ*mm)
+    for x in C.GUIDE_X_FRONT:
+        c.rect(ox+(x-C.GUIDE_LUG_W/2)*mm,oy+(C.SHOULDER_INSET-C.GUIDE_PROJ)*mm,
+               C.GUIDE_LUG_W*mm,C.GUIDE_PROJ*mm)
+    for x in C.GUIDE_X_REAR:
+        c.rect(ox+(x-C.GUIDE_LUG_W/2)*mm,oy+(C.W-C.SHOULDER_INSET)*mm,
+               C.GUIDE_LUG_W*mm,C.GUIDE_PROJ*mm)
+    c.saveState(); c.setDash(2,2); c.setStrokeColor(C_CENTER)
+    c.rect(ox+28*mm,oy+8*mm,152*mm,96*mm)
+    c.restoreState()
     c.setStrokeColor(colors.black)
     dim_h(c,ox,ox+C.L*mm,oy-17*mm,"208")
     dim_v(c,ox+C.L*mm+9*mm,oy-C.FLANGE*mm,oy+(C.W+C.FLANGE)*mm,"132")
-    label(c,12*mm,27*mm,"Violett: durchgehende Schulter je 2,3 zurueckgesetzt; Beginn Z45,0.",7)
-    label(c,12*mm,22*mm,"Rot: nur eine kleine 45-Grad-Rastnase am rechten Rand; keine C-Fuehrung.",7)
-    label(c,12*mm,17*mm,"Mitte frei; Deckel wird durch die Schulter gefuehrt. Waveshare-Bossen bleiben notwendig.",7)
+    label(c,12*mm,27*mm,"Rot: Fuehrungen vorn/hinten bei X18 und X190; alle innerhalb der Randzonen.",7)
+    label(c,12*mm,22*mm,"Gruen gestrichelt: gesamte mittlere Zone ohne Deckelfixierung oder Rastmechanik.",7)
+    label(c,12*mm,17*mm,"Schulter 2,8 zurueckgesetzt; Deckelschuerze 2,5; nominelles Spiel 0,30.",7)
     footer(c,1)
 
 def page2_walls(c):
@@ -224,42 +230,42 @@ def page3_endwalls(c):
 
 def page4_lid(c):
     header(c,"P02 - abgerundeter Ueberwurf-Schiebedeckel",
-           "208 x 112; R6; 10-mm-Schuerze; Kerbe offen gerade bis zur Unterkante")
+           "Aussen geschlossen; innen vier 45-Grad-Keyhole-Fuehrungen; 8-mm-Schiebeweg")
     ox,oy=37.5*mm,46.5*mm
     w=C.LID_X1-C.LID_X0; h=C.LID_Y1-C.LID_Y0
     c.roundRect(ox,oy,w*mm,h*mm,C.LID_CORNER_R*mm)
     c.saveState(); c.setDash(3,2); c.setStrokeColor(C_HOOD)
     c.roundRect(ox+C.LID_SKIRT_W*mm,oy+C.LID_SKIRT_W*mm,
                 (w-2*C.LID_SKIRT_W)*mm,(h-2*C.LID_SKIRT_W)*mm,
-                (C.LID_CORNER_R-C.LID_SKIRT_W)*mm)
+                max(0.8,(C.LID_CORNER_R-C.LID_SKIRT_W))*mm)
+    for x in C.GUIDE_X_FRONT:
+        entry=x-C.SLIDE_TRAVEL
+        c.rect(ox+(entry-C.GUIDE_ENTRY_W/2)*mm,oy+C.GUIDE_ENTRY_OUTER_SKIN*mm,
+               C.GUIDE_ENTRY_W*mm,(C.GUIDE_GROOVE_INNER_Y_FRONT-C.GUIDE_ENTRY_OUTER_SKIN)*mm)
+        c.line(ox+entry*mm,oy+C.GUIDE_GROOVE_INNER_Y_FRONT*mm,
+               ox+(x+C.GUIDE_TRACK_END_EXTRA)*mm,oy+C.GUIDE_GROOVE_INNER_Y_FRONT*mm)
+    for x in C.GUIDE_X_REAR:
+        entry=x-C.SLIDE_TRAVEL
+        c.rect(ox+(entry-C.GUIDE_ENTRY_W/2)*mm,
+               oy+(C.W-C.GUIDE_GROOVE_INNER_Y_FRONT)*mm,
+               C.GUIDE_ENTRY_W*mm,(C.GUIDE_GROOVE_INNER_Y_FRONT-C.GUIDE_ENTRY_OUTER_SKIN)*mm)
+        c.line(ox+entry*mm,oy+(C.W-C.GUIDE_GROOVE_INNER_Y_FRONT)*mm,
+               ox+(x+C.GUIDE_TRACK_END_EXTRA)*mm,oy+(C.W-C.GUIDE_GROOVE_INNER_Y_FRONT)*mm)
     c.restoreState()
     c.setStrokeColor(C_POD)
     for x,y,lx,ly in C.VENTS:
-        c.rect(ox+(x-C.LID_X0)*mm,oy+(y-C.LID_Y0)*mm,lx*mm,ly*mm)
-    c.setStrokeColor(C_ORING)
-    nx0=C.EDGE_SNAP_X-C.EDGE_SNAP_NOTCH_W/2
-    c.line(ox+(nx0-C.LID_X0)*mm,oy,
-           ox+(nx0-C.LID_X0)*mm,oy+8*mm)
-    c.line(ox+(nx0+C.EDGE_SNAP_NOTCH_W-C.LID_X0)*mm,oy,
-           ox+(nx0+C.EDGE_SNAP_NOTCH_W-C.LID_X0)*mm,oy+8*mm)
-    c.line(ox+(nx0-C.LID_X0)*mm,oy+8*mm,
-           ox+(nx0+C.EDGE_SNAP_NOTCH_W-C.LID_X0)*mm,oy+8*mm)
-    dim_h(c,ox,ox+w*mm,oy-10*mm,"208,0")
-    dim_v(c,ox+w*mm+8*mm,oy,oy+h*mm,"112,0")
-
-    # Enlarged side section explaining the red-line correction.
-    sx,sy=170*mm,25*mm
+        c.rect(ox+x*mm,oy+y*mm,lx*mm,ly*mm)
+    for x,y in C.POD_MOUNTS:
+        c.circle(ox+x*mm,oy+y*mm,1.5*mm)
+    c.setStrokeColor(C_HOOD)
+    for x,y in C.HOOD_SCREWS:
+        c.circle(ox+x*mm,oy+y*mm,1.1*mm)
     c.setStrokeColor(colors.black)
-    c.rect(sx,sy,38*mm,18*mm)
-    c.setStrokeColor(C_ORING); c.setLineWidth(1.1)
-    c.line(sx+10*mm,sy,sx+10*mm,sy+10*mm)
-    c.line(sx+10*mm,sy+10*mm,sx+28*mm,sy+10*mm)
-    label(c,sx,sy+22*mm,"Schnitt: offene Kerbe",7,True)
-    label(c,sx,sy-5*mm,"Rot: senkrecht gerade bis Unterkante; kein C-Kanal.",6.5)
-
-    label(c,12*mm,29*mm,"Aufsetzen: +8,0 mm in X; Schliessen in Bedienansicht von links nach rechts.",7)
-    label(c,12*mm,24*mm,"Schulter fuehrt. Rechte Seitenwand federt ueber 45-Grad-Nase und rastet in Kerbe ein.",7)
-    label(c,12*mm,19*mm,"Druck: Oberseite auf Bett; Kerbe ist in Drucklage nach oben offen, daher ohne Stuetze.",7,True)
+    dim_h(c,ox,ox+w*mm,oy-11*mm,"208")
+    dim_v(c,ox+w*mm+9*mm,oy,oy+h*mm,"112")
+    label(c,12*mm,29*mm,"Aussen keine C-Fenster: sichtbare Schuerze bleibt durchgehend geschlossen.",7,True)
+    label(c,12*mm,24*mm,"Aufsetzen: Deckel +8,0 mm versetzt; Fuehrungszungen in innere Einfuehrtaschen absenken.",7)
+    label(c,12*mm,19*mm,"Dann 8,0 mm einschieben; front/rechts rastet verdeckt in einer tieferen Innentasche ein.",7)
     footer(c,4)
 
 def page5_pod(c):
@@ -412,56 +418,59 @@ def page8_p05(c):
 
 def page9_assembly(c):
     header(c,"V0.8 - Gehaeuse- und Deckelmontage",
-           "Pruefstation bleibt auf P02; P02 wird als 10-mm-Kappe auf die Schulter gesetzt")
+           "Funktion wie frueher: absenken und 8 mm einschieben; neue Fuehrung nur druckgerecht")
     label(c,18*mm,158*mm,"Schliessablauf",8,True)
     steps=[
         "P03, Sensor, Kabel, P05, P07 und O-Ringe am Deckel montieren.",
-        "Deckel +8,0 mm in X versetzt ueber die Schulter absenken.",
-        "Alle vier Wandlaschen durch die offenen Einfuehrungen fuehren.",
-        "Deckel 8,0 mm nach links schieben; Laschen halten die Kappe vertikal.",
-        "Federzunge einrasten und umlaufenden 0,30-mm-Spalt kontrollieren.",
-        "Zum Oeffnen Zunge loesen, 8,0 mm nach rechts schieben und abheben.",
+        "Deckel +8,0 mm versetzt ueber P01 absenken.",
+        "Vier 45-Grad-Zungen in die innen offenen Einfuehrtaschen setzen.",
+        "Deckel 8,0 mm einschieben; Zungen laufen in den blinden Diagonalnuten.",
+        "Front/rechts federt die Schuerze ca. 0,20 mm und rastet verdeckt ein.",
+        "Zum Oeffnen mit gleichmaessigem Zug 8,0 mm zurueckschieben und abheben.",
     ]
     for i,t in enumerate(steps): label(c,22*mm,(148-9*i)*mm,f"{i+1}. {t}",7)
-    label(c,18*mm,85*mm,"Schematischer Schnitt",8,True)
-    x=52*mm; y=40*mm
-    c.setFillColor(colors.HexColor("#EAF1F8")); c.setStrokeColor(C_POD)
-    c.roundRect(x,y,150*mm,45*mm,6*mm,stroke=1,fill=1)
-    c.setFillColor(colors.white)
-    c.roundRect(x+3.2*mm,y+3.2*mm,143.6*mm,42*mm,3*mm,stroke=1,fill=1)
-    c.setFillColor(colors.HexColor("#F1E8F7")); c.setStrokeColor(C_HOOD)
-    c.roundRect(x-0.5*mm,y+35*mm,151*mm,13*mm,6.5*mm,stroke=1,fill=1)
-    label(c,x+154*mm,y+40*mm,"P02: 3 mm Top + 10 mm Schuerze",7)
-    label(c,x+154*mm,y+31*mm,"P01: Schulter ab Z45",7)
-    label(c,x+154*mm,y+22*mm,"keine Deckelsaeulen",7,True)
+    label(c,18*mm,85*mm,"Schnitt Fuehrung (vergroessert)",8,True)
+    x=55*mm; y=42*mm; s=8*mm
+    c.setFillColor(colors.HexColor("#F5CBA7")); c.setStrokeColor(C_HOOD)
+    c.rect(x,y,2.5*s,10*s,stroke=1,fill=1)
+    p=c.beginPath(); p.moveTo(x+2.75*s,y+1.4*s); p.lineTo(x+1.60*s,y+2.55*s); p.lineTo(x+1.60*s,y+6.35*s); p.lineTo(x+2.75*s,y+5.2*s); p.close()
+    c.setFillColor(colors.white); c.drawPath(p,stroke=1,fill=1)
+    c.setFillColor(colors.HexColor("#A9DFBF")); c.setStrokeColor(C_POD)
+    c.rect(x+2.8*s,y,4*s,10*s,stroke=1,fill=1)
+    p=c.beginPath(); p.moveTo(x+2.8*s,y+1.8*s); p.lineTo(x+1.9*s,y+2.7*s); p.lineTo(x+1.9*s,y+5.7*s); p.lineTo(x+2.8*s,y+4.8*s); p.close()
+    c.drawPath(p,stroke=1,fill=1)
+    label(c,x+62*mm,y+56*mm,"Aussenhaut bleibt geschlossen",7,True)
+    label(c,x+62*mm,y+48*mm,"Nut/Zunge diagonal 45 Grad",7)
+    label(c,x+62*mm,y+40*mm,"kein horizontaler C-Kanal",7)
+    label(c,x+62*mm,y+32*mm,"P01 Boden unten; P02 Sichtseite unten drucken",7)
     footer(c,9)
 
 def page10_summary(c):
     header(c,"V0.8 - Freigabe- und Pruefliste",
-           "Abgerundete 10-mm-Kappe, dickere Waende und wandintegrierte Schiebefuehrung")
+           "8-mm-Schiebefunktion beibehalten; nur die Fuehrungsprofile druckgerecht geaendert")
     label(c,18*mm,160*mm,"Umgesetzt",8,True)
     items=[
-        "Microtaster und Pruefstation aus V0.7 unveraendert uebernommen.",
-        "P01 Wand/Boden 3,2; Ecken R6,0; Schulter R4,0.",
-        "P02 209 x 113 mit R6,5 und 10,0-mm-Uebergriff.",
-        "Keine zusaetzlichen Deckelstuetzen oder Verschlusssaeulen in der Mitte.",
-        "Vier wandintegrierte 45-Grad-Laschen und offene Einfuehrschlitze.",
-        "8-mm-Schiebeweg mit Federzunge am Ende.",
-        "P01/P02 ohne Slicer-Stuetzen vorgesehen.",
-        "Seitliche freie Oeffnung 122 x 33 unterhalb des Uebergriffs.",
+        "Microtaster, Waveshare, Sensorpod, Pruefstation und O-Ringe unveraendert.",
+        "P01 208 x 112 x 55; Wand/Boden 3,2; Ecken R6,0.",
+        "P02 aussen 208 x 112; 3,0-mm-Top; 10,0-mm-Uebergriff; Schuerze 2,5.",
+        "Vier Fuehrungspunkte ausschliesslich bei X18 und X190; Mitte frei.",
+        "Blinde Innennuten mit 45-Grad-Parallelogrammprofil; aussen keine Fenster.",
+        "8-mm-Absenk-/Schiebeprinzip aus dem funktionierenden Vorentwurf bleibt bestehen.",
+        "Verdeckte Endrastung front/rechts mit ca. 0,20 mm lokaler Auslenkung.",
+        "P01 auf Boden und P02 mit sichtbarer Oberseite auf Bett, ohne Slicer-Stuetzen vorgesehen.",
     ]
     for i,t in enumerate(items): label(c,22*mm,(151-8*i)*mm,"- "+t,7)
     label(c,18*mm,82*mm,"Vor Freigabe praktisch pruefen",8,True)
     checks=[
-        "[ ] Deckel senkt sich in +8-mm-Lage ohne Verkanten ab.",
-        "[ ] Vier Laschen greifen gleichzeitig; kein Klappern oder Klemmen.",
-        "[ ] offene Seitenkerbe funktioniert mindestens 20 Zyklen ohne Riss.",
-        "[ ] P03/P07 und Kabel haben in beiden Lagen Freiraum.",
-        "[ ] Deckel ist plan; Schuerze und Ecken sind unverzogen.",
-        "[ ] O-Ring-Sitz, Pruefstation, Leckrate und Nullpunkt sind dokumentiert.",
+        "[ ] Alle vier Zungen lassen sich in +8-mm-Lage gleichzeitig absenken.",
+        "[ ] Deckel schiebt leicht, bleibt aber vertikal sicher gefangen.",
+        "[ ] Verdeckte Rastung ist loesbar und uebersteht mindestens 20 Zyklen.",
+        "[ ] PrusaSlicer fordert an Fuehrung und Einfuehrtaschen keine Stuetzen.",
+        "[ ] Aussenfuge ist gleichmaessig; keine sichtbaren C-Ausschnitte.",
+        "[ ] Kabelreserve, O-Ringe, Leckrate und Nullpunkt sind dokumentiert.",
     ]
     for i,t in enumerate(checks): label(c,22*mm,(73-8*i)*mm,t,7)
-    footer(c,10,"CAD-Stand: V0.8 - abgerundeter Ueberwurf-Schiebedeckel")
+    footer(c,10,"CAD-Stand: V0.8 - verdeckte 45-Grad-Randfuehrung")
 
 def main():
     c = canvas.Canvas(str(OUT), pagesize=PAGE)

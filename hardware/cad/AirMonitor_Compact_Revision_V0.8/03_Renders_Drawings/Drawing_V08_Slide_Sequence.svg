@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="0 0 210 72">
+{svg_style}
+<text class="t" x="2" y="6">V0.8 Schiebeablauf - Funktion wie vorher, nur druckgerechte Innenprofile</text>
+<rect class="wall" x="2" y="14" width="92" height="48" rx="5"/>
+<rect x="10" y="20" width="92" height="48" rx="5" fill="none" stroke="#7A3FA0" stroke-width=".7"/>
+<text class="s" x="25" y="38">1. +8 mm versetzt absenken</text>
+<text class="s" x="25" y="44">Zungen in innere Einfuehrtaschen</text>
+<rect class="wall" x="112" y="14" width="92" height="48" rx="5"/>
+<rect x="112" y="14" width="92" height="48" rx="5" fill="none" stroke="#7A3FA0" stroke-width=".7"/>
+<text class="s" x="132" y="38">2. 8 mm einschieben</text>
+<text class="s" x="132" y="44">verdeckt gefuehrt und eingerastet</text>
+<path d="M99 38 H109" stroke="#b33" stroke-width="1"/>
+</svg>

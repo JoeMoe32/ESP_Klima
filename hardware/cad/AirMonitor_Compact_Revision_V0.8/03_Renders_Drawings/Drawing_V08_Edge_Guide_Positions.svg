@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="700" viewBox="-5 -8 218 128">
+{svg_style}
+<text class="t" x="0" y="-3">AirMonitor V0.8 - vier verdeckte Randfuehrungen, Mitte frei [mm]</text>
+<rect class="wall" x="0" y="0" width="208" height="112" rx="6"/>
+<g fill="#d7e6ef" stroke="#24566f" stroke-width=".6">
+  <rect x="15" y="1" width="6" height="3"/><rect x="187" y="1" width="6" height="3"/>
+  <rect x="15" y="108" width="6" height="3"/><rect x="187" y="108" width="6" height="3"/>
+</g>
+<rect x="28" y="8" width="152" height="96" fill="none" stroke="#278c73" stroke-width=".5" stroke-dasharray="2 2"/>
+<text class="s" x="72" y="56">gesamte mittlere Zone ohne Deckelfixierung</text>
+<text class="s" x="6" y="9">X18</text><text class="s" x="184" y="9">X190 + versteckte Rastung</text>
+<path d="M140 18 H132" stroke="#b33" stroke-width=".8"/><text class="s" x="142" y="19">Bedienansicht: links nach rechts</text>
+</svg>

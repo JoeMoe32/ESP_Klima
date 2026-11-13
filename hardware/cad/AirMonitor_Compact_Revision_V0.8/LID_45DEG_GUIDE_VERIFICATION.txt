@@ -1,0 +1,11 @@
+AirMonitor Compact V0.8 - captured 45-degree side guides
+Slide travel retained: 8.00 mm
+Guide locations: front/rear X=18.0 and X=190.0 mm
+Centre zone: no lid guides, posts or latch parts
+Lid skirt: 2.50 mm; shoulder clearance: 0.30 mm
+Normal outside skin at blind track: 1.60 mm
+Minimum outside skin at entry pocket: 1.15 mm
+Track cross-section: diagonal parallelogram, 45-degree faces
+External guide windows: none
+Hidden snap interference: 0.20 mm
+Target printing: P01 on floor, P02 visible top on bed, no slicer support

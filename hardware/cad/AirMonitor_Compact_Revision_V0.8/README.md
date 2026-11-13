@@ -1,35 +1,30 @@
 # AirMonitor Compact Revision V0.8
 
-Aktueller V0.8-Stand:
+Aktueller Stand:
 
-- abgerundeter, aussen buendiger 10-mm-Ueberwurfdeckel
-- Deckelfuehrung nur durch die umlaufende Gehaeuseschulter
-- Gehaeusemitte ohne Deckelfixierung
-- kein C-Kanal und keine geschlossene horizontale Fuehrungsnut
-- eine 45-Grad-Rastnase am vorderen rechten Rand
-- passende Deckelkerbe offen und senkrecht bis zur Unterkante
-- Ziel: P01 und P02 ohne Slicer-Stuetzen drucken
-- bestaetigte Microtasterposition und bestehende Pruefstation beibehalten
+- abgerundeter, aussen buendiger 10-mm-Ueberwurfdeckel;
+- funktionierender 8-mm-Absenk-/Schiebeablauf beibehalten;
+- vier Fuehrungspunkte nur an den Aussenraendern X18/X190;
+- Gehaeusemitte ohne Deckelfixierungen;
+- verdeckte 45-Grad-Fuehrungszungen und blinde Innennuten;
+- keine sichtbaren C-Fenster und keine waagerechte Kanaldecke;
+- versteckte Endrastung vorne rechts;
+- P01 und P02 fuer den Druck ohne Slicer-Stuetzen ausgelegt.
 
 ## Bedienung
 
-Deckel in der Serviceposition um 8 mm versetzt aufsetzen und in der definierten
-Bedienansicht von links nach rechts einschieben. Die Seitenwand federt ueber die
-Rastnase und springt am Ende in die offene Kerbe. Zum Oeffnen die Schuerze an
-der Kerbe leicht nach aussen ziehen und den Deckel zurueckschieben.
+1. Deckel +8 mm versetzt von oben aufsetzen.
+2. Vier Fuehrungszungen in die inneren Einfuehrtaschen absenken.
+3. Deckel 8 mm bis zur verdeckten Rastung einschieben.
+4. Zum Oeffnen gleichmaessig zurueckschieben und abheben.
 
-## Dateien
+## Wichtige Dateien
 
-- Baugruppe: `01_CAD_Global/AirMonitor_Compact_Assembly_V0.8.step`
-- Referenz: `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step`
-- Druckteile: `02_CAD_Print/`
-- Massskizzen: `AirMonitor_V08_Massskizzen_1zu1.pdf`
-- Spezifikation: `CAD_COMPACT_SPEC_V0.8.md`
-
-## Korrektur der sichtbaren C-Ausschnitte
-
-Die beiden bisherigen C-foermigen Seitenfenster sind entfernt. Bei X=18 mm
-und X=190 mm laeuft die Aussparung jetzt senkrecht und ohne unteren Steg bis
-zur unteren Deckelschuerzenkante. Die CAD-Erzeugung bricht ab, falls in diesem
-Bereich noch Material verbleibt. Fuer eine cache-sichere Kontrolle liegt der
-Deckel zusaetzlich als `P02_Compact_Lid_Print_NO_C_V0.8.stl` vor.
+- `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step`
+- `02_CAD_Print/P01_Compact_Base_Print.stl`
+- `02_CAD_Print/P02_Compact_Lid_Print_45DEG_GUIDES_V0.8.stl`
+- `AirMonitor_V08_Massskizzen_1zu1.pdf`
+- `03_Renders_Drawings/Render_V08_Closed.png`
+- `03_Renders_Drawings/Render_V08_Open_8mm.png`
+- `03_Renders_Drawings/Render_V08_Guide_Section.png`
+- `CAD_COMPACT_SPEC_V0.8.md`

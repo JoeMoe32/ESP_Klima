@@ -1,17 +1,17 @@
 """Laminar AirMonitor HCHO - Compact V0.8 parameters (mm).
 
-V0.8 retains the confirmed V0.7 electronics, micro-switch and calibration
-station geometry, but redesigns the outer enclosure and service lid:
-- rounded external corners;
-- slightly thicker 3.2 mm enclosure walls and floor;
-- a continuous recessed upper shoulder instead of lid-support columns;
-- a cap lid that overlaps the enclosure by 10.0 mm;
-- all lid guides moved to the outer edge zones; the enclosure centre stays free;
-- continuous shoulder guidance with no C-shaped side channels;
-- one support-free edge snap with a notch open straight down to the skirt edge;
-- visually flush outer contour with matching body/lid radius;
-- 8.0 mm short slide in the operating view from left to right;
-- support-free target orientation: base on its floor, lid on its visible top.
+V0.8 keeps the confirmed electronics, micro-switch and calibration-station
+geometry. Only the lid retention is revised again:
+- rounded outer housing and 10 mm overlapping cap remain;
+- the 8 mm captured slide function from the earlier V0.8 is retained;
+- all four guide points stay in the outer edge zones at X=18 and X=190;
+- the enclosure centre contains no lid guides, posts or latch parts;
+- the former rectangular C-window is replaced by a blind internal keyhole
+  track with a 45-degree diagonal cross-section;
+- the lid exterior remains closed and visually flush;
+- entry pockets are open only toward the inside and lower skirt edge;
+- a hidden detent at the front/right guide provides the end snap;
+- P01 prints on its floor and P02 on its visible top without slicer supports.
 
 Global coordinates: origin = outer lower corner of P01 without flange,
 X = long axis, Y = short axis, Z = upward.
@@ -24,8 +24,8 @@ FLANGE = 10.0
 BODY_CORNER_R = 6.0
 SHOULDER_Z0 = 45.0
 SHOULDER_H = H - SHOULDER_Z0
-SHOULDER_INSET = 2.3
-SHOULDER_CORNER_R = 3.7
+SHOULDER_INSET = 2.8
+SHOULDER_CORNER_R = 3.2
 NO_LID_COLUMNS = True
 NO_CENTER_FIXINGS = True
 
@@ -43,50 +43,53 @@ BOARD_BOTTOM_Z, BOARD_TOP_Z = 9.6, 27.6
 CARRIER = (10.0, 185.0, 11.0, 101.0, 9.6, 27.6)
 PCB_WAVESHARE = (20.6, 172.4, 11.0, 101.0, 9.6, 11.2)
 
-# Support-free shoulder slide and open-bottom edge snap.
-# The 10 mm skirt is guided by the continuous recessed shoulder. There are no
-# C-shaped channels and no closed horizontal slot roofs. The only positive
-# fixation is a small ramped bump at the front/right edge. Its matching lid
-# notch runs vertically straight down to the lower skirt edge (red-line idea).
+# Edge-only, captured 45-degree slide guides.
+# The user-visible motion remains the earlier 8 mm slide. The guide tongue is
+# diagonal in Y/Z, and the matching track is blind from the outside. This keeps
+# the lid captured while avoiding a horizontal C-channel roof.
 SLIDE_TRAVEL = 8.0
 SLIDE_OPEN_OFFSET_X = 8.0
 SLIDE_CLOSE_DIRECTION = '-X'
 SLIDE_USER_DIRECTION = 'left-to-right in operating view'
-GUIDE_MODE = 'continuous shoulder with open-bottom edge snap'
-NO_C_CHANNELS = True
-NO_CLOSED_SIDE_CHANNELS = True
+GUIDE_MODE = 'blind internal 45-degree captured keyhole tracks at outer edges'
+NO_CENTER_FIXINGS = True
+NO_VISIBLE_GUIDE_WINDOWS = True
 NO_HORIZONTAL_SLOT_ROOFS = True
+GUIDE_PRINT_ANGLE_DEG = 45.0
 
-# Compatibility: former guide-lug collections are intentionally empty.
-SIDE_LUG_X_FRONT = ()
-SIDE_LUG_X_REAR = ()
-SIDE_LUG_X = ()
+# Four edge locations. The front/right location also carries the hidden detent.
+GUIDE_X_FRONT = (18.0, 190.0)
+GUIDE_X_REAR = (18.0, 190.0)
+GUIDE_X_ALL = (18.0, 190.0)
+GUIDE_LUG_W = 6.0
+GUIDE_ROOT_Z0 = 46.8
+GUIDE_ROOT_Z1 = 49.8
+GUIDE_PROJ = 0.90
+GUIDE_RISE = 0.90
 
-EDGE_SNAP_X = 190.0
-EDGE_SNAP_SIDE = 'front'
-EDGE_SNAP_WIDTH = 6.0
-EDGE_SNAP_PROJ = 0.80
-EDGE_SNAP_Z0 = 47.0
-EDGE_SNAP_Z1 = 50.0
-EDGE_SNAP_RAMP = 0.80
-EDGE_SNAP_NOTCH_W = 7.40
-EDGE_SNAP_NOTCH_Z0 = SHOULDER_Z0
-EDGE_SNAP_NOTCH_Z1 = 50.60
-EDGE_SNAP_RELEASE_FLEX = 0.50
+# Blind groove on the inside of the 2.6 mm skirt. The groove is a diagonal
+# parallelogram, not a rectangular tunnel. The outside skin remains closed.
+GUIDE_GROOVE_INNER_Y_FRONT = 2.75
+GUIDE_GROOVE_OUTER_Y_FRONT = 1.60
+GUIDE_GROOVE_RISE = 1.15
+GUIDE_GROOVE_Z0 = 46.4
+GUIDE_GROOVE_Z1 = 50.2
+GUIDE_OUTER_SKIN = 1.60
+GUIDE_ENTRY_OUTER_SKIN = 1.15
+GUIDE_ENTRY_W = 7.60
+GUIDE_ENTRY_BOTTOM_Z = 44.60
+GUIDE_ENTRY_TOP_Z = 55.20
+GUIDE_TRACK_END_EXTRA = 3.80
 
-# Former top-surface spring tongue is removed. The side skirt itself flexes
-# locally over the ramped bump and snaps into the open-bottom notch.
+# Hidden end detent at the front/right guide. The enlarged lug flexes the front
+# skirt by about 0.20 mm while sliding, then relaxes in the deeper final pocket.
+SNAP_X = 190.0
+SNAP_EXTRA_PROJ = 0.55
+SNAP_DETENT_EXTRA_DEPTH = 0.40
+SNAP_DETENT_W = 6.40
+SNAP_INTERFERENCE = 0.20
+SNAP_FINAL_CLEARANCE = 0.20
 NO_TOP_LATCH_TONGUE = True
-
-# Definitive no-C correction. At both visible former window positions the cut
-# runs vertically from the physical lower skirt edge upward. There is no lower
-# return/lip, so the side profile is U-shaped/open to the edge, never C-shaped.
-OPEN_EDGE_NOTCH_X = (18.0, 190.0)
-OPEN_EDGE_NOTCH_W = 8.0
-OPEN_EDGE_NOTCH_Z0 = SHOULDER_Z0 - 0.40
-OPEN_EDGE_NOTCH_Z1 = 51.20
-OPEN_EDGE_NOTCH_Y_DEPTH = 2.80
-NO_C_BOTTOM_LIP = True
 
 # ---------- Right end wall: ZERO / SPAN ----------
 BTN_HOLDER_Y = (18.0, 94.0)
@@ -113,7 +116,7 @@ LID_OUTSET = 0.0
 LID_X0, LID_X1 = -LID_OUTSET, L + LID_OUTSET
 LID_Y0, LID_Y1 = -LID_OUTSET, W + LID_OUTSET
 LID_CORNER_R = 6.0
-LID_SKIRT_W = 2.0
+LID_SKIRT_W = 2.5
 LID_LEFT_END_OPEN = True
 LID_IN_X0, LID_IN_X1 = LID_X0 + LID_SKIRT_W, LID_X1 - LID_SKIRT_W
 LID_IN_Y0, LID_IN_Y1 = LID_Y0 + LID_SKIRT_W, LID_Y1 - LID_SKIRT_W

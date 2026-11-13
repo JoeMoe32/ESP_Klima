@@ -7,7 +7,7 @@ R = Path(__file__).resolve().parent
 
 
 def sub_once(text: str, pattern: str, repl: str, label: str) -> str:
-    new, count = re.subn(pattern, repl, text, count=1, flags=re.S)
+    new, count = re.subn(pattern, lambda _m: repl, text, count=1, flags=re.S)
     if count != 1:
         raise RuntimeError(f"{label}: expected exactly one replacement, got {count}")
     return new
@@ -41,9 +41,9 @@ X = long axis, Y = short axis, Z = upward.
 """''',
     "parameter docstring",
 )
-params = params.replace("SHOULDER_INSET = 2.3", "SHOULDER_INSET = 2.9")
-params = params.replace("SHOULDER_CORNER_R = 3.7", "SHOULDER_CORNER_R = 3.1")
-params = params.replace("LID_SKIRT_W = 2.0", "LID_SKIRT_W = 2.6")
+params = params.replace("SHOULDER_INSET = 2.3", "SHOULDER_INSET = 2.8")
+params = params.replace("SHOULDER_CORNER_R = 3.7", "SHOULDER_CORNER_R = 3.2")
+params = params.replace("LID_SKIRT_W = 2.0", "LID_SKIRT_W = 2.5")
 
 guide_block = '''# Edge-only, captured 45-degree slide guides.
 # The user-visible motion remains the earlier 8 mm slide. The guide tongue is
@@ -71,12 +71,12 @@ GUIDE_RISE = 0.90
 
 # Blind groove on the inside of the 2.6 mm skirt. The groove is a diagonal
 # parallelogram, not a rectangular tunnel. The outside skin remains closed.
-GUIDE_GROOVE_INNER_Y_FRONT = 2.85
-GUIDE_GROOVE_OUTER_Y_FRONT = 1.65
-GUIDE_GROOVE_RISE = 1.20
+GUIDE_GROOVE_INNER_Y_FRONT = 2.75
+GUIDE_GROOVE_OUTER_Y_FRONT = 1.60
+GUIDE_GROOVE_RISE = 1.15
 GUIDE_GROOVE_Z0 = 46.4
 GUIDE_GROOVE_Z1 = 50.2
-GUIDE_OUTER_SKIN = 1.65
+GUIDE_OUTER_SKIN = 1.60
 GUIDE_ENTRY_OUTER_SKIN = 1.15
 GUIDE_ENTRY_W = 7.60
 GUIDE_ENTRY_BOTTOM_Z = 44.60
@@ -200,7 +200,9 @@ for x in C.GUIDE_X_REAR:
 if C.GUIDE_ENTRY_OUTER_SKIN < 1.0 or C.GUIDE_OUTER_SKIN < 1.0:
     raise SystemExit('Abbruch: sichtbare Deckelhaut an der Führung ist zu dünn.')
 
-# ---------------- P03 sensor pod ----------------'''
+# ---------------- P03 sensor pod ----------------
+px0, px1, py0, py1, pz0, pz1 = C.POD
+t = C.POD_WALL'''
 build = sub_once(
     build,
     r"# Definitive red-line correction:.*?# ---------------- P03 sensor pod ----------------\n(?:# ---------------- P03 sensor pod ----------------\n)?",
@@ -247,7 +249,7 @@ svg_block = '''guide_section_svg = f\'\'\'<svg xmlns="http://www.w3.org/2000/svg
 <style>text{{font-family:Arial,sans-serif;fill:#172b3a}}.t{{font-size:.55px;font-weight:bold}}.s{{font-size:.42px}}.lid{{fill:#f0b27a;stroke:#7d4e24;stroke-width:.08}}.body{{fill:#a9dfbf;stroke:#246b3d;stroke-width:.08}}.cut{{fill:white;stroke:#b33;stroke-width:.10}}.dim{{stroke:#b33;stroke-width:.08}}</style>
 <text class="t" x="0.3" y="44.0">V0.8 Schnitt: innenliegende 45-Grad-Schiebefuehrung</text>
 <rect class="lid" x="0" y="45" width="2.6" height="10"/>
-<polygon class="cut" points="2.85,46.4 1.65,47.6 1.65,51.4 2.85,50.2"/>
+<polygon class="cut" points="2.75,46.4 1.60,47.55 1.60,51.35 2.75,50.2"/>
 <rect class="body" x="2.9" y="45" width="4.0" height="10"/>
 <polygon class="body" points="2.9,46.8 2.0,47.7 2.0,50.7 2.9,49.8"/>
 <text class="s" x="7.2" y="47.2">Deckelaussenhaut bleibt geschlossen</text>
@@ -463,7 +465,7 @@ page1 = '''def page1_base(c):
     dim_v(c,ox+C.L*mm+9*mm,oy-C.FLANGE*mm,oy+(C.W+C.FLANGE)*mm,"132")
     label(c,12*mm,27*mm,"Rot: Fuehrungen vorn/hinten bei X18 und X190; alle innerhalb der Randzonen.",7)
     label(c,12*mm,22*mm,"Gruen gestrichelt: gesamte mittlere Zone ohne Deckelfixierung oder Rastmechanik.",7)
-    label(c,12*mm,17*mm,"Schulter 2,9 zurueckgesetzt; Deckelschuerze 2,6; nominelles Spiel 0,30.",7)
+    label(c,12*mm,17*mm,"Schulter 2,8 zurueckgesetzt; Deckelschuerze 2,5; nominelles Spiel 0,30.",7)
     footer(c,1)
 '''
 sketch = sub_once(sketch, r"def page1_base\(c\):.*?(?=\ndef page2_walls)", page1, "sketch page1")
@@ -526,12 +528,12 @@ page9 = '''def page9_assembly(c):
     label(c,18*mm,85*mm,"Schnitt Fuehrung (vergroessert)",8,True)
     x=55*mm; y=42*mm; s=8*mm
     c.setFillColor(colors.HexColor("#F5CBA7")); c.setStrokeColor(C_HOOD)
-    c.rect(x,y,2.6*s,10*s,stroke=1,fill=1)
-    p=c.beginPath(); p.moveTo(x+2.85*s,y+1.4*s); p.lineTo(x+1.65*s,y+2.6*s); p.lineTo(x+1.65*s,y+6.4*s); p.lineTo(x+2.85*s,y+5.2*s); p.close()
+    c.rect(x,y,2.5*s,10*s,stroke=1,fill=1)
+    p=c.beginPath(); p.moveTo(x+2.75*s,y+1.4*s); p.lineTo(x+1.60*s,y+2.55*s); p.lineTo(x+1.60*s,y+6.35*s); p.lineTo(x+2.75*s,y+5.2*s); p.close()
     c.setFillColor(colors.white); c.drawPath(p,stroke=1,fill=1)
     c.setFillColor(colors.HexColor("#A9DFBF")); c.setStrokeColor(C_POD)
-    c.rect(x+2.9*s,y,4*s,10*s,stroke=1,fill=1)
-    p=c.beginPath(); p.moveTo(x+2.9*s,y+1.8*s); p.lineTo(x+2.0*s,y+2.7*s); p.lineTo(x+2.0*s,y+5.7*s); p.lineTo(x+2.9*s,y+4.8*s); p.close()
+    c.rect(x+2.8*s,y,4*s,10*s,stroke=1,fill=1)
+    p=c.beginPath(); p.moveTo(x+2.8*s,y+1.8*s); p.lineTo(x+1.9*s,y+2.7*s); p.lineTo(x+1.9*s,y+5.7*s); p.lineTo(x+2.8*s,y+4.8*s); p.close()
     c.drawPath(p,stroke=1,fill=1)
     label(c,x+62*mm,y+56*mm,"Aussenhaut bleibt geschlossen",7,True)
     label(c,x+62*mm,y+48*mm,"Nut/Zunge diagonal 45 Grad",7)
@@ -548,7 +550,7 @@ page10 = '''def page10_summary(c):
     items=[
         "Microtaster, Waveshare, Sensorpod, Pruefstation und O-Ringe unveraendert.",
         "P01 208 x 112 x 55; Wand/Boden 3,2; Ecken R6,0.",
-        "P02 aussen 208 x 112; 3,0-mm-Top; 10,0-mm-Uebergriff; Schuerze 2,6.",
+        "P02 aussen 208 x 112; 3,0-mm-Top; 10,0-mm-Uebergriff; Schuerze 2,5.",
         "Vier Fuehrungspunkte ausschliesslich bei X18 und X190; Mitte frei.",
         "Blinde Innennuten mit 45-Grad-Parallelogrammprofil; aussen keine Fenster.",
         "8-mm-Absenk-/Schiebeprinzip aus dem funktionierenden Vorentwurf bleibt bestehen.",
@@ -594,10 +596,10 @@ P01 ohne Flansche       208,0 x 112,0 x 55,0 mm
 P01 Wand/Boden          3,2 mm
 Aussenradius            R6,0 mm
 Schulterbeginn          Z45,0 mm
-Schulterruecksprung     2,9 mm
+Schulterruecksprung     2,8 mm
 P02 Topplatte           3,0 mm
 P02 Uebergriff          10,0 mm
-P02 Schuerzenwand       2,6 mm
+P02 Schuerzenwand       2,5 mm
 Schulterspiel           0,30 mm je Seite
 ```
 
@@ -692,8 +694,8 @@ Fuehrungen vorn/hinten  X18 und X190
 Schiebeweg              8,0 mm
 Zungenbreite            6,0 mm
 Zungenprofil            0,90 mm Vorsprung / 0,90 mm Anstieg
-Deckelschuerze          2,60 mm
-Schulterruecksprung     2,90 mm
+Deckelschuerze          2,50 mm
+Schulterruecksprung     2,80 mm
 Spiel                   0,30 mm
 sichtbare C-Fenster     keine
 Endrastung              verdeckt vorne rechts X190
