@@ -48,3 +48,11 @@ Die Pruefstation bleibt bis zur physischen Kontrolle vorlaeufig.
 - mindestens 20 Oeffnungs-/Schliesszyklen;
 - keine Weissbruchbildung oder Risse;
 - Kabelreserve, O-Ring-Sitz und Gasdichtheit.
+
+## Verbindliche No-C-Korrektur
+
+An den beiden sichtbaren Randpositionen X=18,0 und X=190,0 gibt es keinen
+C-foermigen Ausschnitt mehr. Die 8,0-mm-Aussparungen laufen vom Kerbendach
+senkrecht bis ueber die physische Unterkante der 10-mm-Deckelschuerze. Ein
+unterer horizontaler Ruecksteg ist geometrisch ausgeschlossen und wird im
+CAD-Kernel mit einem Volumenpruefkoerper kontrolliert.

@@ -29,6 +29,11 @@ def run() -> int:
     check('rounded corners', C.BODY_CORNER_R >= 4.0)
     check('no lid columns', C.NO_LID_COLUMNS)
     check('no centre fixings', C.NO_CENTER_FIXINGS)
+    check('no C bottom lip flag', C.NO_C_BOTTOM_LIP)
+    check('two open-edge notches', C.OPEN_EDGE_NOTCH_X == (18.0, 190.0))
+    check('notches reach below skirt edge',
+          C.OPEN_EDGE_NOTCH_Z0 < C.LID_Z - C.LID_OVERLAP)
+    check('notch width printable', C.OPEN_EDGE_NOTCH_W >= 7.0)
     check('shoulder height 10 mm', close(C.SHOULDER_H, 10.0))
     check('lid overlap 10 mm', close(C.LID_OVERLAP, 10.0))
     check('left insertion end open', C.LID_LEFT_END_OPEN)

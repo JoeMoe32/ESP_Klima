@@ -78,6 +78,16 @@ EDGE_SNAP_RELEASE_FLEX = 0.50
 # locally over the ramped bump and snaps into the open-bottom notch.
 NO_TOP_LATCH_TONGUE = True
 
+# Definitive no-C correction. At both visible former window positions the cut
+# runs vertically from the physical lower skirt edge upward. There is no lower
+# return/lip, so the side profile is U-shaped/open to the edge, never C-shaped.
+OPEN_EDGE_NOTCH_X = (18.0, 190.0)
+OPEN_EDGE_NOTCH_W = 8.0
+OPEN_EDGE_NOTCH_Z0 = SHOULDER_Z0 - 0.40
+OPEN_EDGE_NOTCH_Z1 = 51.20
+OPEN_EDGE_NOTCH_Y_DEPTH = 2.80
+NO_C_BOTTOM_LIP = True
+
 # ---------- Right end wall: ZERO / SPAN ----------
 BTN_HOLDER_Y = (18.0, 94.0)
 BTN_HOLDER_Z = (20.0, 36.0)

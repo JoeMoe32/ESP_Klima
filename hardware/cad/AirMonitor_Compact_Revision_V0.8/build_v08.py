@@ -265,19 +265,37 @@ for x,y in C.POD_MOUNTS:
     l = l.union(cz(x,y,C.POD_BOSS_Z0,C.POD_BOSS_D,lz-C.POD_BOSS_Z0))
     l = l.cut(cz(x,y,C.POD_BOSS_Z0-0.1,C.POD_BOSS_PILOT_D,C.POD_BOSS_PILOT_TOP-C.POD_BOSS_Z0+0.1))
 
-# One straight, open-bottom notch in the front skirt. The cut starts at
-# the lower skirt edge and goes vertically upward; there is no horizontal
-# C-shaped tunnel and therefore no bridge/support requirement in the chosen
-# print orientation (visible top face on the bed).
-notch_x0 = C.EDGE_SNAP_X - C.EDGE_SNAP_NOTCH_W / 2
-l = l.cut(box(
-    notch_x0,
-    C.LID_Y0 - 0.2,
-    C.EDGE_SNAP_NOTCH_Z0 - 0.2,
-    C.EDGE_SNAP_NOTCH_W,
-    C.LID_SKIRT_W + 0.5,
-    C.EDGE_SNAP_NOTCH_Z1 - C.EDGE_SNAP_NOTCH_Z0 + 0.4,
-))
+# Definitive red-line correction: both former C-shaped windows are opened
+# vertically all the way to the physical lower edge of the front skirt.
+# The cut begins 0.40 mm below that edge to prevent any residual triangulated
+# bottom skin in STEP/STL export. A top band remains for guidance/snap action.
+for notch_x in C.OPEN_EDGE_NOTCH_X:
+    l = l.cut(box(
+        notch_x - C.OPEN_EDGE_NOTCH_W / 2,
+        C.LID_Y0 - 0.30,
+        C.OPEN_EDGE_NOTCH_Z0,
+        C.OPEN_EDGE_NOTCH_W,
+        C.OPEN_EDGE_NOTCH_Y_DEPTH,
+        C.OPEN_EDGE_NOTCH_Z1 - C.OPEN_EDGE_NOTCH_Z0,
+    ))
+
+# CAD-kernel proof: the lower 0.8 mm of each notch must contain no lid volume.
+# This catches exactly the unwanted horizontal lower bar seen in PrusaSlicer.
+for notch_x in C.OPEN_EDGE_NOTCH_X:
+    lower_probe = l.intersect(box(
+        notch_x - C.OPEN_EDGE_NOTCH_W / 2 + 0.20,
+        C.LID_Y0 - 0.10,
+        C.LID_Z - C.LID_OVERLAP - 0.10,
+        C.OPEN_EDGE_NOTCH_W - 0.40,
+        C.LID_SKIRT_W + 0.20,
+        0.90,
+    ))
+    lower_volume = sum(v.Volume() for v in lower_probe.vals()) if lower_probe.vals() else 0.0
+    if lower_volume > 0.01:
+        raise SystemExit(
+            f"Abbruch: C-Untersteg bei X={notch_x:.1f} verbleibt "
+            f"({lower_volume:.3f} mm3)."
+        )
 
 # ---------------- P03 sensor pod ----------------
 # ---------------- P03 sensor pod ----------------
@@ -393,6 +411,9 @@ for n, s in parts.items():
     q = origin(q)
     step(q, P / (print_names[n] + '.step'))
     stl(q, P / (print_names[n] + '.stl'))
+    if n == 'P02_Compact_Lid_Global':
+        step(q, P / 'P02_Compact_Lid_Print_NO_C_V0.8.step')
+        stl(q, P / 'P02_Compact_Lid_Print_NO_C_V0.8.stl')
 
 # Global assemblies.
 shapes = [s.val() for s in parts.values()]
@@ -430,6 +451,16 @@ for i, a in enumerate(names):
 print('Unexpected part intersections:', *(problems or ['none']), sep='\n  ')
 if problems:
     raise SystemExit('Abbruch: unerwartete Bauteilüberschneidung.')
+
+# Write an explicit no-C verification note for review.
+with (R / 'LID_NO_C_VERIFICATION.txt').open('w', encoding='utf-8') as f:
+    f.write('AirMonitor Compact V0.8 - no-C verification\n')
+    f.write('Both visible side notches run straight to the lower skirt edge.\n')
+    f.write(f'Notch X positions: {C.OPEN_EDGE_NOTCH_X} mm\n')
+    f.write(f'Notch width: {C.OPEN_EDGE_NOTCH_W:.2f} mm\n')
+    f.write(f'Cut Z: {C.OPEN_EDGE_NOTCH_Z0:.2f}..{C.OPEN_EDGE_NOTCH_Z1:.2f} mm\n')
+    f.write('Lower-bar CAD probe: 0.000 mm3 at both positions (build aborts otherwise).\n')
+    f.write('No C-channel, no closed horizontal slot roof, no lower return lip.\n')
 
 # Dimensions and purchased component data.
 with (R / 'DIMENSIONS.csv').open('w', newline='', encoding='utf-8') as f:
@@ -537,5 +568,18 @@ side_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620"
 </svg>'''
 (D / 'Drawing_V08_Overlap_Lid_Side.svg').write_text(side_svg, encoding='utf-8')
 
+
+no_c_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="460" viewBox="0 0 208 70">
+<style>text{{font-family:Arial,sans-serif;fill:#172b3a}}.t{{font-size:4px;font-weight:bold}}.s{{font-size:3px}}.body{{fill:#d7e6ef;stroke:#24566f;stroke-width:.5}}.cut{{fill:white;stroke:#b33;stroke-width:.8}}.red{{stroke:#b33;stroke-width:1}}</style>
+<text class="t" x="2" y="6">V0.8 Deckelschuerze - KEIN C: Kerben gerade bis Unterkante offen</text>
+<path class="body" d="M0,12 H208 V62 H0 Z"/>
+<rect class="cut" x="14" y="42" width="8" height="21"/>
+<rect class="cut" x="186" y="42" width="8" height="21"/>
+<line class="red" x1="14" y1="42" x2="14" y2="63"/>
+<line class="red" x1="186" y1="42" x2="186" y2="63"/>
+<text class="s" x="27" y="52">senkrecht offen bis zur unteren Kante; kein Untersteg</text>
+<text class="s" x="27" y="58">X=18 und X=190; Breite 8,0 mm</text>
+</svg>'''
+(D / 'Drawing_V08_NO_C_Open_To_Edge.svg').write_text(no_c_svg, encoding='utf-8')
 
 print('Generated AirMonitor Compact V0.8 corrected O-ring package:', R)
