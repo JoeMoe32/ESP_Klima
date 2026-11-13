@@ -37,6 +37,10 @@ jobs:
               're.subn(pattern, repl, text, count=1, flags=re.S)',
               're.subn(pattern, lambda _m: repl, text, count=1, flags=re.S)',
           )
+          s = s.replace(
+              "# ---------------- P03 sensor pod ----------------'''",
+              "# ---------------- P03 sensor pod ----------------\npx0, px1, py0, py1, pz0, pz1 = C.POD\nt = C.POD_WALL'''",
+          )
           p.write_text(s, encoding='utf-8')
           PY
           python apply_v08_45deg_side_guides.py
