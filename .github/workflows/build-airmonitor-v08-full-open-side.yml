@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
 
+# Definitive rebuild: remove the hidden inner shoulder strip as well as the outer wall bridge.
 jobs:
   build-verify:
     runs-on: ubuntu-latest
