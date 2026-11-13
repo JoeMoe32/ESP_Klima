@@ -1,28 +1,33 @@
-# Claude-/Daniel-Prüfprompt - AirMonitor Compact V0.8
+# Daniel-/Claude-Pruefprompt - AirMonitor Compact V0.8
 
-Die Konstruktion wurde bereits erstellt. Bitte nur prüfen und Abweichungen
-dokumentieren; keine selbstständige Neukonstruktion ohne Rückmeldung.
+Die Konstruktion ist bereits umgesetzt. Bitte nur kontrollieren und Abweichungen
+dokumentieren.
 
-## Verbindliche Punkte
+## Kritischer Punkt
 
-1. Deckel und unteres Gehäuse außen 208 x 112, beide R6 und bündig.
-2. Deckelübergriff 10 mm; Einsetzseite links offen.
-3. Keine Deckelführung, Rastung oder Stabilisierung in der mittleren Zone.
-4. Randführungen: vorn X18; hinten X18 und X190.
-5. Endrastung vorn rechts bei X184.
-6. Führungsnasen mit 45°-Unterseite; Druck ohne Support vorgesehen.
-7. In der Bedienansicht gleitet der Deckel von links nach rechts in die
-   bündige Endstellung.
-8. Microtaster, Waveshare, Sensorpod, Prüfstation und O-Ringe unverändert.
+Die Deckelfuehrung darf **kein C-Profil** enthalten. Die Rastkerbe im vorderen
+Deckelrand muss vom Kerbendach senkrecht gerade bis zur unteren Schuerzenkante
+offen sein. In der Drucklage mit der sichtbaren Oberseite auf dem Druckbett ist
+diese Kerbe nach oben offen und benoetigt keine Stuetzstruktur.
 
-## Prüfen
+## Soll
 
-- reale Einsetz- und Schieberichtung;
-- Kollisionsfreiheit in offener und geschlossener Stellung;
-- freie Gehäusemitte;
-- Rastkraft, Spiel, Klappern und 20 Öffnungszyklen;
-- Brücken im PrusaSlicer ohne Support;
-- optisch bündige Außenkontur und gleichmäßige Fuge;
-- Kabelreserve sowie Prüfstation/O-Ringe.
+```text
+Schulterfuehrung umlaufend
+keine Deckelfixierung in Gehaeusemitte
+keine geschlossenen horizontalen Seitenkanaele
+Rastnase X190 / Breite 6,0 / Vorsprung 0,80
+Rastnase Z47,0..50,0 / Unterseite 45 Grad
+Kerbe Breite 7,40 / Z45,0..50,6 / bis Unterkante offen
+Schiebeweg 8,0
+```
 
-Ergebnis: `freigegeben`, `freigegeben mit Änderung` oder `nicht freigegeben`.
+Pruefen:
+
+1. Kerbe ist wirklich unten offen und nicht C-foermig.
+2. PrusaSlicer erzeugt fuer die Kerbe und Rastnase keine automatische Stuetze.
+3. Deckel laesst sich ohne Bruch aufsetzen, einschieben und loesen.
+4. Geschlossen ist die Aussenkontur optisch buendig.
+5. Microtaster und Pruefstation wurden nicht verschoben.
+
+Ergebnis: `freigegeben`, `freigegeben mit Aenderung` oder `nicht freigegeben`.

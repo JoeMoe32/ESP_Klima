@@ -194,31 +194,25 @@ for x, y in C.STANDOFFS:
     b = b.cut(cz(x, y, floor-0.2, C.STANDOFF_PILOT_D,
                  C.BOARD_BOTTOM_Z-floor+0.5))
 
-def side_lug(xc, rear=False):
-    x0 = xc-C.SIDE_LUG_WIDTH/2
-    if rear:
-        points = [(sy1,C.SIDE_LUG_Z0),
-                  (sy1+C.SIDE_LUG_PROJ,C.SIDE_LUG_Z0+C.SIDE_LUG_RAMP),
-                  (sy1+C.SIDE_LUG_PROJ,C.SIDE_LUG_Z1),
-                  (sy1,C.SIDE_LUG_Z1)]
-    else:
-        points = [(sy0,C.SIDE_LUG_Z0),
-                  (sy0-C.SIDE_LUG_PROJ,C.SIDE_LUG_Z0+C.SIDE_LUG_RAMP),
-                  (sy0-C.SIDE_LUG_PROJ,C.SIDE_LUG_Z1),
-                  (sy0,C.SIDE_LUG_Z1)]
-    return (cq.Workplane('YZ', origin=(x0,0,0))
-            .polyline(points).close().extrude(C.SIDE_LUG_WIDTH))
+def edge_snap_bump():
+    """Support-free ramped side bump at the front/right edge.
 
-for x in C.SIDE_LUG_X_FRONT:
-    b = b.union(side_lug(x, False))
-for x in C.SIDE_LUG_X_REAR:
-    b = b.union(side_lug(x, True))
+    The lower Y/Z face rises 0.8 mm over 0.8 mm (45 degrees), so P01 can be
+    printed upright without support. The bump is retained only by the lid
+    skirt flexing into a simple open-bottom notch; no C-channel is used.
+    """
+    x0 = C.EDGE_SNAP_X - C.EDGE_SNAP_WIDTH / 2
+    points = [
+        (sy0, C.EDGE_SNAP_Z0),
+        (sy0 - C.EDGE_SNAP_PROJ,
+         C.EDGE_SNAP_Z0 + C.EDGE_SNAP_RAMP),
+        (sy0 - C.EDGE_SNAP_PROJ, C.EDGE_SNAP_Z1),
+        (sy0, C.EDGE_SNAP_Z1),
+    ]
+    return (cq.Workplane('YZ', origin=(x0, 0, 0))
+            .polyline(points).close().extrude(C.EDGE_SNAP_WIDTH))
 
-px, py = C.LATCH_PIN
-pz = H
-for d, hh in C.LATCH_PIN_SEGMENTS:
-    b = b.union(cz(px,py,pz,d,hh))
-    pz += hh
+b = b.union(edge_snap_bump())
 
 dy, dz, dd = C.DC5521
 b = b.cut(cx(-0.2,dy,dz,dd,wall+0.5))
@@ -271,38 +265,21 @@ for x,y in C.POD_MOUNTS:
     l = l.union(cz(x,y,C.POD_BOSS_Z0,C.POD_BOSS_D,lz-C.POD_BOSS_Z0))
     l = l.cut(cz(x,y,C.POD_BOSS_Z0-0.1,C.POD_BOSS_PILOT_D,C.POD_BOSS_PILOT_TOP-C.POD_BOSS_Z0+0.1))
 
-slot_y_front = C.LID_Y0 - 0.2
-slot_y_rear = C.LID_IN_Y1 - 0.2
-slot_depth = C.LID_SKIRT_W + 0.5
+# One straight, open-bottom notch in the front skirt. The cut starts at
+# the lower skirt edge and goes vertically upward; there is no horizontal
+# C-shaped tunnel and therefore no bridge/support requirement in the chosen
+# print orientation (visible top face on the bed).
+notch_x0 = C.EDGE_SNAP_X - C.EDGE_SNAP_NOTCH_W / 2
+l = l.cut(box(
+    notch_x0,
+    C.LID_Y0 - 0.2,
+    C.EDGE_SNAP_NOTCH_Z0 - 0.2,
+    C.EDGE_SNAP_NOTCH_W,
+    C.LID_SKIRT_W + 0.5,
+    C.EDGE_SNAP_NOTCH_Z1 - C.EDGE_SNAP_NOTCH_Z0 + 0.4,
+))
 
-def cut_edge_slot(shape, x, yy):
-    entry = x - C.SLIDE_TRAVEL
-    entry_x0 = entry - C.SLOT_ENTRY_W / 2
-    entry_h = C.SLOT_ENTRY_TOP_Z - (lz - C.LID_OVERLAP) + 0.2
-    track_x1 = x + C.SLOT_TRACK_END_EXTRA
-    shape = shape.cut(box(entry_x0, yy, lz - C.LID_OVERLAP - 0.1,
-                          C.SLOT_ENTRY_W, slot_depth, entry_h))
-    shape = shape.cut(box(entry, yy, C.SLOT_TRACK_Z0,
-                          track_x1 - entry, slot_depth,
-                          C.SLOT_TRACK_Z1 - C.SLOT_TRACK_Z0))
-    return shape
-
-for x in C.SIDE_LUG_X_FRONT:
-    l = cut_edge_slot(l, x, slot_y_front)
-for x in C.SIDE_LUG_X_REAR:
-    l = cut_edge_slot(l, x, slot_y_rear)
-
-tx0,tx1=C.LATCH_TONGUE_X
-ty0,ty1=C.LATCH_TONGUE_Y
-l = l.cut(box(tx0,ty0,lz-0.1,tx1-tx0,ty1-ty0,lt-C.LATCH_TONGUE_SKIN+0.1))
-l = l.cut(box(tx0,ty1,lz-0.2,tx1-tx0,C.LATCH_SLOT_W,lt+0.4))
-l = l.cut(box(tx0-C.LATCH_SLOT_W,ty0,lz-0.2,C.LATCH_SLOT_W,ty1-ty0+C.LATCH_SLOT_W,lt+0.4))
-lhx,lhy,lhd=C.LATCH_HOLE
-l = l.cut(cz(lhx,lhy,lz-0.2,lhd,lt+0.4))
-nx0,nx1=C.LATCH_SKIRT_NOTCH_X
-l = l.cut(box(nx0,C.LID_Y0-0.2,lz-C.LID_OVERLAP-0.1,
-              nx1-nx0,C.LID_SKIRT_W+0.5,C.LID_OVERLAP+0.2))
-
+# ---------------- P03 sensor pod ----------------
 # ---------------- P03 sensor pod ----------------
 px0, px1, py0, py1, pz0, pz1 = C.POD
 t = C.POD_WALL

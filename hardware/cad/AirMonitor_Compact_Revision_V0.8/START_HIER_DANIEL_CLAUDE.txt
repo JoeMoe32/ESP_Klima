@@ -1,18 +1,14 @@
 START HIER - AirMonitor Compact V0.8
 
-1. Öffnen:
-   01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step
+Neu kontrollieren:
+- Deckelkerbe senkrecht gerade bis zur Unterkante offen
+- kein C-Kanal / keine geschlossene horizontale Nut
+- Schulter fuehrt den Deckel
+- Rastnase nur am vorderen rechten Rand
+- Druck ohne Stuetzstruktur in PrusaSlicer pruefen
 
-2. Prüfen:
-   - Deckel/Gehäuse außen bündig 208 x 112 / R6
-   - Randführungen X18 / X190
-   - Endrastung X184
-   - Mitte ohne Deckelfixierungen
-   - Einsetzseite offen
-   - supportfreie Drucklage
+Fusion 360:
+01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step
 
-3. Massskizzen:
-   AirMonitor_V08_Massskizzen_1zu1.pdf
-
-4. Spezifikation:
-   CAD_COMPACT_SPEC_V0.8.md
+Massskizzen:
+AirMonitor_V08_Massskizzen_1zu1.pdf

@@ -144,7 +144,7 @@ def draw_groove_section(c, x, y, title, substrate_label):
 
 def page1_base(c):
     header(c,"P01 - abgerundeter Gehaeuseboden / Draufsicht innen",
-           "3,2-mm-Wand; R6; obere Schulter gestrichelt; keine Deckelstuetzen in der Mitte")
+           "3,2-mm-Wand; R6; Schulter fuehrt den Deckel; Mitte ohne Deckelfixierung")
     ox,oy=38*mm,39*mm
     c.roundRect(ox,oy-C.FLANGE*mm,C.L*mm,(C.W+2*C.FLANGE)*mm,2*mm)
     c.roundRect(ox,oy,C.L*mm,C.W*mm,C.BODY_CORNER_R*mm)
@@ -160,16 +160,15 @@ def page1_base(c):
         c.circle(ox+x*mm,oy+y*mm,C.STANDOFF_D/2*mm)
         c.circle(ox+x*mm,oy+y*mm,C.STANDOFF_PILOT_D/2*mm)
     c.setStrokeColor(C_ORING)
-    for x in C.SIDE_LUG_X_FRONT:
-        c.rect(ox+(x-C.SIDE_LUG_WIDTH/2)*mm,oy+(C.SHOULDER_INSET-C.SIDE_LUG_PROJ)*mm,C.SIDE_LUG_WIDTH*mm,C.SIDE_LUG_PROJ*mm)
-    for x in C.SIDE_LUG_X_REAR:
-        c.rect(ox+(x-C.SIDE_LUG_WIDTH/2)*mm,oy+(C.W-C.SHOULDER_INSET)*mm,C.SIDE_LUG_WIDTH*mm,C.SIDE_LUG_PROJ*mm)
+    c.rect(ox+(C.EDGE_SNAP_X-C.EDGE_SNAP_WIDTH/2)*mm,
+           oy+(C.SHOULDER_INSET-C.EDGE_SNAP_PROJ)*mm,
+           C.EDGE_SNAP_WIDTH*mm,C.EDGE_SNAP_PROJ*mm)
     c.setStrokeColor(colors.black)
     dim_h(c,ox,ox+C.L*mm,oy-17*mm,"208")
     dim_v(c,ox+C.L*mm+9*mm,oy-C.FLANGE*mm,oy+(C.W+C.FLANGE)*mm,"132")
-    label(c,12*mm,27*mm,"Violett: Schulter je 2,3 zurueckgesetzt; Beginn Z45,0.",7)
-    label(c,12*mm,22*mm,"Rot: drei Fuehrungslaschen nur an den Raendern; Mitte komplett frei.",7)
-    label(c,12*mm,17*mm,"Blau: notwendige Waveshare-Abstandshalter; Wand/Boden 3,2; R6,0.",7)
+    label(c,12*mm,27*mm,"Violett: durchgehende Schulter je 2,3 zurueckgesetzt; Beginn Z45,0.",7)
+    label(c,12*mm,22*mm,"Rot: nur eine kleine 45-Grad-Rastnase am rechten Rand; keine C-Fuehrung.",7)
+    label(c,12*mm,17*mm,"Mitte frei; Deckel wird durch die Schulter gefuehrt. Waveshare-Bossen bleiben notwendig.",7)
     footer(c,1)
 
 def page2_walls(c):
@@ -225,7 +224,7 @@ def page3_endwalls(c):
 
 def page4_lid(c):
     header(c,"P02 - abgerundeter Ueberwurf-Schiebedeckel",
-           "208 x 112; R6; 10 mm Schuerze; Randfuehrungen und Rastung rechts")
+           "208 x 112; R6; 10-mm-Schuerze; Kerbe offen gerade bis zur Unterkante")
     ox,oy=37.5*mm,46.5*mm
     w=C.LID_X1-C.LID_X0; h=C.LID_Y1-C.LID_Y0
     c.roundRect(ox,oy,w*mm,h*mm,C.LID_CORNER_R*mm)
@@ -238,20 +237,29 @@ def page4_lid(c):
     for x,y,lx,ly in C.VENTS:
         c.rect(ox+(x-C.LID_X0)*mm,oy+(y-C.LID_Y0)*mm,lx*mm,ly*mm)
     c.setStrokeColor(C_ORING)
-    for x in C.SIDE_LUG_X:
-        entry=x-C.SLIDE_TRAVEL
-        for yy in (C.LID_Y0,C.LID_Y1):
-            py=oy+(yy-C.LID_Y0)*mm
-            c.line(ox+(entry-C.LID_X0)*mm,py,ox+(x+C.SLOT_TRACK_END_EXTRA-C.LID_X0)*mm,py)
-    tx0,tx1=C.LATCH_TONGUE_X; ty0,ty1=C.LATCH_TONGUE_Y
-    c.rect(ox+(tx0-C.LID_X0)*mm,oy+(ty0-C.LID_Y0)*mm,(tx1-tx0)*mm,(ty1-ty0)*mm)
-    hx,hy,hd=C.LATCH_HOLE
-    c.circle(ox+(hx-C.LID_X0)*mm,oy+(hy-C.LID_Y0)*mm,hd/2*mm)
-    dim_h(c,ox,ox+w*mm,oy-10*mm,"209,0")
-    dim_v(c,ox+w*mm+8*mm,oy,oy+h*mm,"113,0")
-    label(c,12*mm,29*mm,"Aufsetzen: +8,0 mm in X; Schliessen: 8,0 mm nach -X.",7)
-    label(c,12*mm,24*mm,"Vier Laschen halten vertikal; Federzunge rastet am Ende ein.",7)
-    label(c,12*mm,19*mm,"Druck: sichtbare Oberseite auf dem Bett; keine Slicer-Stuetzen vorgesehen.",7,True)
+    nx0=C.EDGE_SNAP_X-C.EDGE_SNAP_NOTCH_W/2
+    c.line(ox+(nx0-C.LID_X0)*mm,oy,
+           ox+(nx0-C.LID_X0)*mm,oy+8*mm)
+    c.line(ox+(nx0+C.EDGE_SNAP_NOTCH_W-C.LID_X0)*mm,oy,
+           ox+(nx0+C.EDGE_SNAP_NOTCH_W-C.LID_X0)*mm,oy+8*mm)
+    c.line(ox+(nx0-C.LID_X0)*mm,oy+8*mm,
+           ox+(nx0+C.EDGE_SNAP_NOTCH_W-C.LID_X0)*mm,oy+8*mm)
+    dim_h(c,ox,ox+w*mm,oy-10*mm,"208,0")
+    dim_v(c,ox+w*mm+8*mm,oy,oy+h*mm,"112,0")
+
+    # Enlarged side section explaining the red-line correction.
+    sx,sy=170*mm,25*mm
+    c.setStrokeColor(colors.black)
+    c.rect(sx,sy,38*mm,18*mm)
+    c.setStrokeColor(C_ORING); c.setLineWidth(1.1)
+    c.line(sx+10*mm,sy,sx+10*mm,sy+10*mm)
+    c.line(sx+10*mm,sy+10*mm,sx+28*mm,sy+10*mm)
+    label(c,sx,sy+22*mm,"Schnitt: offene Kerbe",7,True)
+    label(c,sx,sy-5*mm,"Rot: senkrecht gerade bis Unterkante; kein C-Kanal.",6.5)
+
+    label(c,12*mm,29*mm,"Aufsetzen: +8,0 mm in X; Schliessen in Bedienansicht von links nach rechts.",7)
+    label(c,12*mm,24*mm,"Schulter fuehrt. Rechte Seitenwand federt ueber 45-Grad-Nase und rastet in Kerbe ein.",7)
+    label(c,12*mm,19*mm,"Druck: Oberseite auf Bett; Kerbe ist in Drucklage nach oben offen, daher ohne Stuetze.",7,True)
     footer(c,4)
 
 def page5_pod(c):
@@ -447,7 +455,7 @@ def page10_summary(c):
     checks=[
         "[ ] Deckel senkt sich in +8-mm-Lage ohne Verkanten ab.",
         "[ ] Vier Laschen greifen gleichzeitig; kein Klappern oder Klemmen.",
-        "[ ] Rastzunge funktioniert mindestens 20 Zyklen ohne Riss.",
+        "[ ] offene Seitenkerbe funktioniert mindestens 20 Zyklen ohne Riss.",
         "[ ] P03/P07 und Kabel haben in beiden Lagen Freiraum.",
         "[ ] Deckel ist plan; Schuerze und Ecken sind unverzogen.",
         "[ ] O-Ring-Sitz, Pruefstation, Leckrate und Nullpunkt sind dokumentiert.",

@@ -7,7 +7,8 @@ station geometry, but redesigns the outer enclosure and service lid:
 - a continuous recessed upper shoulder instead of lid-support columns;
 - a cap lid that overlaps the enclosure by 10.0 mm;
 - all lid guides moved to the outer edge zones; the enclosure centre stays free;
-- three wall-integrated 45-degree guide lugs plus one edge snap;
+- continuous shoulder guidance with no C-shaped side channels;
+- one support-free edge snap with a notch open straight down to the skirt edge;
 - visually flush outer contour with matching body/lid radius;
 - 8.0 mm short slide in the operating view from left to right;
 - support-free target orientation: base on its floor, lid on its visible top.
@@ -42,37 +43,40 @@ BOARD_BOTTOM_Z, BOARD_TOP_Z = 9.6, 27.6
 CARRIER = (10.0, 185.0, 11.0, 101.0, 9.6, 27.6)
 PCB_WAVESHARE = (20.6, 172.4, 11.0, 101.0, 9.6, 11.2)
 
-# Edge-only slide retention. There is no lid fixing in the central zone.
-# Global -X appears left-to-right in the defined operating/front view.
+# Support-free shoulder slide and open-bottom edge snap.
+# The 10 mm skirt is guided by the continuous recessed shoulder. There are no
+# C-shaped channels and no closed horizontal slot roofs. The only positive
+# fixation is a small ramped bump at the front/right edge. Its matching lid
+# notch runs vertically straight down to the lower skirt edge (red-line idea).
 SLIDE_TRAVEL = 8.0
 SLIDE_OPEN_OFFSET_X = 8.0
 SLIDE_CLOSE_DIRECTION = '-X'
 SLIDE_USER_DIRECTION = 'left-to-right in operating view'
-SIDE_LUG_X_FRONT = (18.0,)
-SIDE_LUG_X_REAR = (18.0, 190.0)
-SIDE_LUG_X = tuple(sorted(set(SIDE_LUG_X_FRONT + SIDE_LUG_X_REAR)))
-SIDE_LUG_WIDTH = 6.0
-SIDE_LUG_PROJ = 1.2
-SIDE_LUG_Z0 = 47.0
-SIDE_LUG_Z1 = 50.0
-SIDE_LUG_RAMP = 1.2
+GUIDE_MODE = 'continuous shoulder with open-bottom edge snap'
+NO_C_CHANNELS = True
+NO_CLOSED_SIDE_CHANNELS = True
+NO_HORIZONTAL_SLOT_ROOFS = True
 
-# Lid slot geometry, open at the skirt bottom in the insertion position.
-SLOT_ENTRY_W = 7.6
-SLOT_ENTRY_TOP_Z = 51.2
-SLOT_TRACK_Z0 = 46.6
-SLOT_TRACK_Z1 = 50.4
-SLOT_TRACK_END_EXTRA = 3.8
+# Compatibility: former guide-lug collections are intentionally empty.
+SIDE_LUG_X_FRONT = ()
+SIDE_LUG_X_REAR = ()
+SIDE_LUG_X = ()
 
-# End snap moved to the front/right edge zone; centre remains completely free.
-LATCH_TONGUE_X = (177.0, 200.0)
-LATCH_TONGUE_Y = (0.0, 10.5)
-LATCH_SLOT_W = 0.9
-LATCH_TONGUE_SKIN = 1.20
-LATCH_HOLE = (184.0, 2.2, 3.4)
-LATCH_PIN = (184.0, 2.2)
-LATCH_PIN_SEGMENTS = [(3.0, 0.8), (2.2, 0.7), (1.2, 0.7)]
-LATCH_SKIRT_NOTCH_X = (175.0, 202.0)
+EDGE_SNAP_X = 190.0
+EDGE_SNAP_SIDE = 'front'
+EDGE_SNAP_WIDTH = 6.0
+EDGE_SNAP_PROJ = 0.80
+EDGE_SNAP_Z0 = 47.0
+EDGE_SNAP_Z1 = 50.0
+EDGE_SNAP_RAMP = 0.80
+EDGE_SNAP_NOTCH_W = 7.40
+EDGE_SNAP_NOTCH_Z0 = SHOULDER_Z0
+EDGE_SNAP_NOTCH_Z1 = 50.60
+EDGE_SNAP_RELEASE_FLEX = 0.50
+
+# Former top-surface spring tongue is removed. The side skirt itself flexes
+# locally over the ramped bump and snaps into the open-bottom notch.
+NO_TOP_LATCH_TONGUE = True
 
 # ---------- Right end wall: ZERO / SPAN ----------
 BTN_HOLDER_Y = (18.0, 94.0)

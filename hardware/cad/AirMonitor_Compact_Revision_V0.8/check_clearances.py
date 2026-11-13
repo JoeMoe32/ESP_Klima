@@ -1,4 +1,4 @@
-"""Numeric checks for AirMonitor Compact V0.8 edge-guide revision."""
+"""Numeric checks for AirMonitor Compact V0.8 open-bottom snap revision."""
 from __future__ import annotations
 import math
 import compact_params as C
@@ -45,32 +45,24 @@ def run() -> int:
     check('lid top is print-bed face', C.LID_PRINT_TOP_FACE_DOWN)
 
     check('slide travel 8 mm', close(C.SLIDE_TRAVEL, 8.0))
-    check('slide close direction retained for sensor clearance', C.SLIDE_CLOSE_DIRECTION == '-X')
+    check('slide close direction retained', C.SLIDE_CLOSE_DIRECTION == '-X')
     check('operating-view direction documented', 'left-to-right' in C.SLIDE_USER_DIRECTION)
-    check('lug ramp 45 degrees', close(C.SIDE_LUG_RAMP, C.SIDE_LUG_PROJ))
-    check('slot entry wider than lug', C.SLOT_ENTRY_W > C.SIDE_LUG_WIDTH)
-    check('slot track covers lug height', C.SLOT_TRACK_Z0 < C.SIDE_LUG_Z0 and C.SLOT_TRACK_Z1 > C.SIDE_LUG_Z1)
-    check('three guide lugs', len(C.SIDE_LUG_X_FRONT) + len(C.SIDE_LUG_X_REAR) == 3)
-    all_lugs = tuple(C.SIDE_LUG_X_FRONT) + tuple(C.SIDE_LUG_X_REAR)
-    for i, x in enumerate(all_lugs, 1):
-        check(f'lug {i} in edge zone', x <= 25.0 or x >= C.L-25.0, f'X={x}')
-        entry = x-C.SLIDE_TRAVEL
-        check(f'lug {i} entry inside lid', entry-C.SLOT_ENTRY_W/2 >= C.LID_X0 and entry+C.SLOT_ENTRY_W/2 <= C.LID_X1)
-    check('no lug in centre 25..183', all(not (25.0 < x < C.L-25.0) for x in all_lugs))
+    check('continuous shoulder guide', 'shoulder' in C.GUIDE_MODE)
+    check('no C channels', C.NO_C_CHANNELS and C.NO_CLOSED_SIDE_CHANNELS)
+    check('no horizontal slot roofs', C.NO_HORIZONTAL_SLOT_ROOFS)
+    check('former guide arrays empty', len(C.SIDE_LUG_X_FRONT) == 0 and len(C.SIDE_LUG_X_REAR) == 0)
+    check('top latch removed', C.NO_TOP_LATCH_TONGUE)
 
-    tx0, tx1 = C.LATCH_TONGUE_X
-    ty0, ty1 = C.LATCH_TONGUE_Y
-    hx, hy, _ = C.LATCH_HOLE
-    px, py = C.LATCH_PIN
-    pin_h = sum(h for _, h in C.LATCH_PIN_SEGMENTS)
-    tongue_under = C.LID_Z + C.LID_T - C.LATCH_TONGUE_SKIN
-    interference = C.H + pin_h - tongue_under
-    check('latch aligned', close(hx, px) and close(hy, py))
-    check('latch at right edge zone', px >= C.L-30.0, f'X={px}')
-    check('latch hole in tongue', tx0 < hx < tx1 and ty0 <= hy <= ty1)
-    check('tongue printable skin', 1.0 <= C.LATCH_TONGUE_SKIN <= 1.4)
-    check('snap interference', 0.2 <= interference <= 0.6, f'{interference:.2f}')
-    check('pin outside tongue before close', px < tx0 + C.SLIDE_OPEN_OFFSET_X)
+    check('snap at right edge zone', C.EDGE_SNAP_X >= C.L-25.0, f'X={C.EDGE_SNAP_X}')
+    check('snap ramp 45 degrees', close(C.EDGE_SNAP_RAMP, C.EDGE_SNAP_PROJ))
+    check('notch wider than bump', C.EDGE_SNAP_NOTCH_W > C.EDGE_SNAP_WIDTH)
+    check('notch open at skirt bottom', close(C.EDGE_SNAP_NOTCH_Z0, C.LID_Z-C.LID_OVERLAP))
+    check('notch covers bump vertically', C.EDGE_SNAP_NOTCH_Z0 <= C.EDGE_SNAP_Z0 and C.EDGE_SNAP_NOTCH_Z1 >= C.EDGE_SNAP_Z1)
+    check('notch is straight vertical cut', C.NO_HORIZONTAL_SLOT_ROOFS)
+    front_clearance = C.SHOULDER_INSET - C.LID_IN_Y0
+    snap_interference = C.EDGE_SNAP_PROJ - front_clearance
+    check('snap flex 0.3..0.6 mm', 0.30 <= snap_interference <= 0.60, f'{snap_interference:.3f}')
+    check('snap notch inside lid', C.EDGE_SNAP_X-C.EDGE_SNAP_NOTCH_W/2 >= C.LID_X0 and C.EDGE_SNAP_X+C.EDGE_SNAP_NOTCH_W/2 <= C.LID_X1)
 
     check('ZERO-SPAN 16 mm', close(C.SPAN[0]-C.ZERO[0], 16.0))
     check('ZERO/SPAN height retained', close(C.ZERO[1],26.0) and close(C.SPAN[1],26.0))
