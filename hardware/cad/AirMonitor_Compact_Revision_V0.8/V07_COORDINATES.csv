@@ -1,9 +1,0 @@
-feature,value,status
-Sensor group X shift,0.0 mm; V0.6 X position retained,approved correction
-Sensor group Y centre,56.0 mm,approved correction
-P03 body,X 6.0..59.5 / Y 15.0..97.0 / Z 40.0..54.0,CAD
-P03 sealing rim,Z 54.0..55.0,CAD
-P07 plate,X 4.0..60.0 / Y 3.2..108.8 / Z 58.0..61.0,CAD
-P04A,"EPDM70 Ø45.00x1.50; centre (32.00,33.50); path 46.00x34.00 R8.00; stretch 0.12%",stocked SKU H48761
-P04B,"EPDM70 Ø50.00x1.50; centre (32.00,74.50); path 45.80x42.00 R8.00; stretch 0.05%",stocked SKU H96773
-P08,"EPDM70 Ø77.00x1.50; centre (32.75,56.00); path 51.20x79.00 R8.00; stretch 0.02%",stocked SKU H48789

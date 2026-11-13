@@ -1,4 +1,4 @@
-"""Build Laminar AirMonitor HCHO Compact V0.7 corrected O-ring revision.
+"""Build Laminar AirMonitor HCHO Compact V0.8 corrected O-ring revision.
 
 Generates global STEP, print-oriented STEP/STL, SVG review drawings and CSV data.
 The sensor/calibration group retains the proven V0.6 X position, is centred in Y,
@@ -22,7 +22,7 @@ import compact_params as C  # noqa: E402
 import check_clearances  # noqa: E402
 
 if check_clearances.run() != 0:
-    raise SystemExit('Abbruch: V0.7 Mass-/Freiraumprüfung fehlgeschlagen.')
+    raise SystemExit('Abbruch: V0.8 Mass-/Freiraumprüfung fehlgeschlagen.')
 
 G = R / '01_CAD_Global'
 P = R / '02_CAD_Print'
@@ -34,7 +34,7 @@ for pth in (G, P, D):
             shutil.rmtree(child)
         else:
             child.unlink()
-REV = 'V0.7'
+REV = 'V0.8'
 
 
 def box(x: float, y: float, z: float, l: float, w: float, h: float):
@@ -147,105 +147,133 @@ def top_text(text, x, y, z, size=3.2):
 
 L, W, H, wall, floor = C.L, C.W, C.H, C.WALL, C.FLOOR
 
-# ---------------- P01 enclosure base ----------------
-b = box(0, 0, 0, L, W, floor)
-for q in (box(0, 0, 0, wall, W, H), box(L - wall, 0, 0, wall, W, H),
-          box(0, 0, 0, L, wall, H), box(0, W - wall, 0, L, wall, H)):
-    b = b.union(q)
-b = b.union(box(0, -C.FLANGE, 0, L, C.FLANGE, floor))
-b = b.union(box(0, W, 0, L, C.FLANGE, floor))
-for x, y in C.WALL_MOUNT_HOLES:
-    b = b.cut(cz(x, y, -0.2, C.WALL_MOUNT_D, floor + 0.5))
-for y in (-0.5, W - wall - 0.5):
-    b = b.cut(box(C.OPEN_X0, y, C.OPEN_Z,
-                  C.OPEN_X1 - C.OPEN_X0, wall + 1.0, H - C.OPEN_Z + 1.0))
-for x, y in C.LID_SUPPORTS:
-    b = b.union(cz(x, y, floor, C.LID_SUPPORT_D, H - floor))
-for x, y in C.SLIDE_STUDS:
-    b = b.union(cz(x, y, floor, C.SLIDE_STUD_BASE_D, H - floor))
-    b = b.union(cz(x, y, H, C.SLIDE_STEM_D, C.SLIDE_STEM_H))
-    b = b.union(cz(x, y, H + C.SLIDE_STEM_H, C.SLIDE_HEAD_D, C.SLIDE_HEAD_H))
-for x, y in C.STANDOFFS:
-    b = b.union(cz(x, y, floor, C.STANDOFF_D, C.BOARD_BOTTOM_Z - floor))
-    b = b.cut(cz(x, y, floor - 0.2, C.STANDOFF_PILOT_D,
-                 C.BOARD_BOTTOM_Z - floor + 0.5))
+# ---------------- P01 rounded enclosure base ----------------
+L, W, H, wall, floor = C.L, C.W, C.H, C.WALL, C.FLOOR
 
-# Snap detent pin on top of the front long wall.
+lower_outer = rounded_prism(0, L, 0, W, C.BODY_CORNER_R,
+                            0, C.SHOULDER_Z0)
+lower_inner = rounded_prism(wall, L-wall, wall, W-wall,
+                            max(0.8, C.BODY_CORNER_R-wall),
+                            floor, C.SHOULDER_Z0-floor+0.2)
+b = lower_outer.cut(lower_inner)
+
+sx0, sx1 = C.SHOULDER_INSET, L-C.SHOULDER_INSET
+sy0, sy1 = C.SHOULDER_INSET, W-C.SHOULDER_INSET
+upper_outer = rounded_prism(sx0, sx1, sy0, sy1,
+                            C.SHOULDER_CORNER_R,
+                            C.SHOULDER_Z0, C.SHOULDER_H)
+upper_inner = rounded_prism(sx0+wall, sx1-wall,
+                            sy0+wall, sy1-wall,
+                            max(0.8, C.SHOULDER_CORNER_R-wall),
+                            C.SHOULDER_Z0-0.1, C.SHOULDER_H+0.2)
+b = b.union(upper_outer.cut(upper_inner))
+
+b = b.union(rounded_prism(0, L, -C.FLANGE, 0, 2.0, 0, floor))
+b = b.union(rounded_prism(0, L, W, W+C.FLANGE, 2.0, 0, floor))
+for x, y in C.WALL_MOUNT_HOLES:
+    b = b.cut(cz(x, y, -0.2, C.WALL_MOUNT_D, floor+0.5))
+
+for y in (-0.5, W-wall-0.5):
+    b = b.cut(box(C.OPEN_X0, y, C.OPEN_Z,
+                  C.OPEN_X1-C.OPEN_X0, wall+1.0,
+                  C.OPEN_TOP_Z-C.OPEN_Z+0.2))
+
+for x, y in C.STANDOFFS:
+    b = b.union(cz(x, y, floor, C.STANDOFF_D,
+                   C.BOARD_BOTTOM_Z-floor))
+    b = b.cut(cz(x, y, floor-0.2, C.STANDOFF_PILOT_D,
+                 C.BOARD_BOTTOM_Z-floor+0.5))
+
+def side_lug(xc, rear=False):
+    x0 = xc-C.SIDE_LUG_WIDTH/2
+    if rear:
+        points = [(sy1,C.SIDE_LUG_Z0),
+                  (sy1+C.SIDE_LUG_PROJ,C.SIDE_LUG_Z0+C.SIDE_LUG_RAMP),
+                  (sy1+C.SIDE_LUG_PROJ,C.SIDE_LUG_Z1),
+                  (sy1,C.SIDE_LUG_Z1)]
+    else:
+        points = [(sy0,C.SIDE_LUG_Z0),
+                  (sy0-C.SIDE_LUG_PROJ,C.SIDE_LUG_Z0+C.SIDE_LUG_RAMP),
+                  (sy0-C.SIDE_LUG_PROJ,C.SIDE_LUG_Z1),
+                  (sy0,C.SIDE_LUG_Z1)]
+    return (cq.Workplane('YZ', origin=(x0,0,0))
+            .polyline(points).close().extrude(C.SIDE_LUG_WIDTH))
+
+for x in C.SIDE_LUG_X:
+    b = b.union(side_lug(x,False)).union(side_lug(x,True))
+
 px, py = C.LATCH_PIN
 pz = H
 for d, hh in C.LATCH_PIN_SEGMENTS:
-    b = b.union(cz(px, py, pz, d, hh))
+    b = b.union(cz(px,py,pz,d,hh))
     pz += hh
 
-# DC5521 on left end wall.
 dy, dz, dd = C.DC5521
-b = b.cut(cx(-0.2, dy, dz, dd, wall + 0.5))
-
-# ZERO/SPAN and PCB holders on right end wall.
-for y, z, d in (C.ZERO, C.SPAN):
-    b = b.cut(cx(L - wall - 0.2, y, z, d, wall + 0.5))
-hx = L - wall - C.BTN_HOLDER_LEN
+b = b.cut(cx(-0.2,dy,dz,dd,wall+0.5))
+for y, z, d in (C.ZERO,C.SPAN):
+    b = b.cut(cx(L-wall-0.2,y,z,d,wall+0.5))
+hx = L-wall-C.BTN_HOLDER_LEN
 for y in C.BTN_HOLDER_Y:
     for z in C.BTN_HOLDER_Z:
-        b = b.union(cx(hx, y, z, C.BTN_HOLDER_D, C.BTN_HOLDER_LEN))
-        b = b.cut(cx(hx - 0.2, y, z, C.BTN_HOLDER_PILOT_D,
-                     C.BTN_HOLDER_LEN + 0.5))
+        b = b.union(cx(hx,y,z,C.BTN_HOLDER_D,C.BTN_HOLDER_LEN))
+        b = b.cut(cx(hx-0.2,y,z,C.BTN_HOLDER_PILOT_D,C.BTN_HOLDER_LEN+0.5))
 
-# Physical markings.
-for text, y, z in (('ZERO', C.ZERO[0], C.BTN_MARK_Z), ('SPAN', C.SPAN[0], C.BTN_MARK_Z)):
+for text_label,y,z in (('ZERO',C.ZERO[0],C.BTN_MARK_Z),
+                       ('SPAN',C.SPAN[0],C.BTN_MARK_Z)):
     try:
-        b = b.cut(outside_text_right(text, y, z))
+        b = b.cut(outside_text_right(text_label,y,z))
     except Exception as exc:
-        print('WARN right-wall marking skipped:', text, exc)
+        print('WARN right-wall marking skipped:',text_label,exc)
 try:
-    b = b.cut(outside_text_left('24 V DC', C.DC5521[0], 38.0, 4.0))
-    b = b.cut(outside_text_left('V0.7', 91.0, 8.0, 3.0))
+    b = b.cut(outside_text_left('24 V DC',C.DC5521[0],38.0,4.0))
+    b = b.cut(outside_text_left('V0.8',91.0,8.0,3.0))
 except Exception as exc:
-    print('WARN left-wall marking skipped:', exc)
+    print('WARN left-wall marking skipped:',exc)
 
-# ---------------- P02 sliding lid ----------------
+# ---------------- P02 rounded 10-mm overlap cap lid ----------------
 lz, lt = C.LID_Z, C.LID_T
-l = box(0, 0, lz, L, W, lt)
-for x, y, lx, ly in C.VENTS:
-    l = l.cut(box(x, y, lz - 0.5, lx, ly, lt + 1.0))
-for x, y in C.HOOD_SCREWS:
-    l = l.union(cz(x, y, C.HOOD_SCREW_BOSS_Z0,
-                   C.HOOD_SCREW_BOSS_D, lz - C.HOOD_SCREW_BOSS_Z0))
-    l = l.cut(cz(x, y, C.HOOD_SCREW_BOSS_Z0 + 0.5,
-                 C.HOOD_SCREW_PILOT_D,
-                 lz + lt - C.HOOD_SCREW_BOSS_Z0))
-for x, y in C.POD_MOUNTS:
-    l = l.union(cz(x, y, C.POD_BOSS_Z0,
-                   C.POD_BOSS_D, lz - C.POD_BOSS_Z0))
-    l = l.cut(cz(x, y, C.POD_BOSS_Z0 - 0.1,
-                 C.POD_BOSS_PILOT_D,
-                 C.POD_BOSS_PILOT_TOP - C.POD_BOSS_Z0 + 0.1))
+l = rounded_prism(C.LID_X0,C.LID_X1,C.LID_Y0,C.LID_Y1,
+                  C.LID_CORNER_R,lz,lt)
+skirt_outer = rounded_prism(C.LID_X0,C.LID_X1,C.LID_Y0,C.LID_Y1,
+                            C.LID_CORNER_R,lz-C.LID_OVERLAP,C.LID_OVERLAP)
+skirt_inner = rounded_prism(C.LID_IN_X0,C.LID_IN_X1,C.LID_IN_Y0,C.LID_IN_Y1,
+                            max(0.8,C.LID_CORNER_R-C.LID_SKIRT_W),
+                            lz-C.LID_OVERLAP-0.1,C.LID_OVERLAP+0.2)
+l = l.union(skirt_outer.cut(skirt_inner))
 
-# Four blind, two-level keyhole tracks. Top face remains closed and planar.
-for x, y in C.SLIDE_STUDS:
-    entry_x = x - C.SLIDE_TRAVEL
-    head_z0 = lz + C.SLIDE_STEM_H - 0.05
-    head_depth = C.SLIDE_POCKET_DEPTH - (C.SLIDE_STEM_H - 0.05)
-    head_channel = capsule_x(entry_x, x, y, C.SLIDE_HEAD_CLEAR_D,
-                             head_z0, head_depth + 0.05)
-    throat = capsule_x(entry_x, x, y, C.SLIDE_STEM_CLEAR_W,
-                       lz - 0.1, C.SLIDE_THROAT_DEPTH + 0.2)
-    entry = cz(entry_x, y, lz - 0.1, C.SLIDE_HEAD_CLEAR_D,
-               C.SLIDE_POCKET_DEPTH + 0.2)
-    l = l.cut(head_channel.union(throat).union(entry))
+for x,y,lx,ly in C.VENTS:
+    l = l.cut(box(x,y,lz-0.5,lx,ly,lt+1.0))
+for x,y in C.HOOD_SCREWS:
+    l = l.union(cz(x,y,C.HOOD_SCREW_BOSS_Z0,C.HOOD_SCREW_BOSS_D,lz-C.HOOD_SCREW_BOSS_Z0))
+    l = l.cut(cz(x,y,C.HOOD_SCREW_BOSS_Z0+0.5,C.HOOD_SCREW_PILOT_D,lz+lt-C.HOOD_SCREW_BOSS_Z0))
+for x,y in C.POD_MOUNTS:
+    l = l.union(cz(x,y,C.POD_BOSS_Z0,C.POD_BOSS_D,lz-C.POD_BOSS_Z0))
+    l = l.cut(cz(x,y,C.POD_BOSS_Z0-0.1,C.POD_BOSS_PILOT_D,C.POD_BOSS_PILOT_TOP-C.POD_BOSS_Z0+0.1))
 
-# Flush spring tongue at the front edge: top remains flat on the print bed.
-tx0, tx1 = C.LATCH_TONGUE_X
-ty0, ty1 = C.LATCH_TONGUE_Y
-l = l.cut(box(tx0, ty0, lz - 0.1, tx1 - tx0, ty1 - ty0,
-              lt - C.LATCH_TONGUE_SKIN + 0.1))
-l = l.cut(box(tx0, ty1, lz - 0.2, tx1 - tx0, C.LATCH_SLOT_W, lt + 0.4))
-l = l.cut(box(tx0 - C.LATCH_SLOT_W, ty0, lz - 0.2,
-              C.LATCH_SLOT_W, ty1 - ty0 + C.LATCH_SLOT_W, lt + 0.4))
-lhx, lhy, lhd = C.LATCH_HOLE
-l = l.cut(cz(lhx, lhy, lz - 0.2, lhd, lt + 0.4))
+slot_y_front = C.LID_Y0-0.2
+slot_y_rear = C.LID_IN_Y1-0.2
+slot_depth = C.LID_SKIRT_W+0.5
+for x in C.SIDE_LUG_X:
+    entry = x-C.SLIDE_TRAVEL
+    entry_x0 = entry-C.SLOT_ENTRY_W/2
+    entry_h = C.SLOT_ENTRY_TOP_Z-(lz-C.LID_OVERLAP)+0.2
+    track_x1 = x+C.SLOT_TRACK_END_EXTRA
+    for yy in (slot_y_front,slot_y_rear):
+        l = l.cut(box(entry_x0,yy,lz-C.LID_OVERLAP-0.1,
+                      C.SLOT_ENTRY_W,slot_depth,entry_h))
+        l = l.cut(box(entry,yy,C.SLOT_TRACK_Z0,
+                      track_x1-entry,slot_depth,C.SLOT_TRACK_Z1-C.SLOT_TRACK_Z0))
 
-# Important: no lid-screw holes and no O-ring grooves in P02.
+tx0,tx1=C.LATCH_TONGUE_X
+ty0,ty1=C.LATCH_TONGUE_Y
+l = l.cut(box(tx0,ty0,lz-0.1,tx1-tx0,ty1-ty0,lt-C.LATCH_TONGUE_SKIN+0.1))
+l = l.cut(box(tx0,ty1,lz-0.2,tx1-tx0,C.LATCH_SLOT_W,lt+0.4))
+l = l.cut(box(tx0-C.LATCH_SLOT_W,ty0,lz-0.2,C.LATCH_SLOT_W,ty1-ty0+C.LATCH_SLOT_W,lt+0.4))
+lhx,lhy,lhd=C.LATCH_HOLE
+l = l.cut(cz(lhx,lhy,lz-0.2,lhd,lt+0.4))
+nx0,nx1=C.LATCH_SKIRT_NOTCH_X
+l = l.cut(box(nx0,C.LID_Y0-0.2,lz-C.LID_OVERLAP-0.1,
+              nx1-nx0,C.LID_SKIRT_W+0.5,C.LID_OVERLAP+0.2))
 
 # ---------------- P03 sensor pod ----------------
 px0, px1, py0, py1, pz0, pz1 = C.POD
@@ -422,7 +450,7 @@ with (R / 'PURCHASED_O_RINGS.csv').open('w', newline='', encoding='utf-8') as f:
         w.writerow([r['name'], C.ORING_MATERIAL, f"{r['id']:.2f}", f"{r['cord']:.2f}",
                     C.ORING_SUPPLIER, r['sku'], variant, url])
 
-with (R / 'V07_COORDINATES.csv').open('w', newline='', encoding='utf-8') as f:
+with (R / 'V08_COORDINATES.csv').open('w', newline='', encoding='utf-8') as f:
     w = csv.writer(f)
     w.writerow(['feature', 'value', 'status'])
     w.writerow(['Sensor group X shift', '0.0 mm; V0.6 X position retained', 'approved correction'])
@@ -443,7 +471,7 @@ svg_style = '''<style>text{font-family:Arial,sans-serif;fill:#172b3a}.t{font-siz
 
 sensor_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="650" viewBox="-5 -8 218 130">
 {svg_style}
-<text class="t" x="0" y="-3">AirMonitor V0.7 – korrigierte Sensorgruppe, Draufsicht [mm]</text>
+<text class="t" x="0" y="-3">AirMonitor V0.8 – korrigierte Sensorgruppe, Draufsicht [mm]</text>
 <rect class="wall" x="0" y="0" width="208" height="112"/>
 <line class="axis" x1="0" y1="56" x2="208" y2="56"/>
 <rect class="part" x="4" y="3.2" width="56" height="105.6"/>
@@ -453,11 +481,11 @@ sensor_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="65
 <text class="s" x="65" y="62">Pod rechts +8,0 mm breiter</text>
 <text class="s" x="65" y="69">P07 56,0 × 105,6; P03 53,5 × 82,0</text>
 </svg>'''
-(D / 'Drawing_Sensor_Group_X_Retained_Y_Centred_V0.7.svg').write_text(sensor_svg, encoding='utf-8')
+(D / 'Drawing_Sensor_Group_X_Retained_Y_Centred_V0.8.svg').write_text(sensor_svg, encoding='utf-8')
 
 or_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" viewBox="0 0 110 100">
 {svg_style}
-<text class="t" x="3" y="6">AirMonitor V0.7 – EPDM-O-Ringe und Nuten</text>
+<text class="t" x="3" y="6">AirMonitor V0.8 – EPDM-O-Ringe und Nuten</text>
 <rect class="part" x="4" y="10" width="56" height="85"/>
 <rect class="groove" x="9" y="17" width="46" height="34" rx="8"/>
 <rect class="groove" x="9.1" y="53.5" width="45.8" height="42" rx="8"/>
@@ -471,26 +499,36 @@ or_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" v
 <text class="s" x="64" y="142">Nut im erhöhten Pod-Rand</text>
 <text class="s" x="64" y="149">Deckel bleibt 3,0 mm voll</text>
 </svg>'''
-(D / 'Drawing_EPDM_O_Ring_Grooves_V0.7.svg').write_text(or_svg, encoding='utf-8')
+(D / 'Drawing_EPDM_O_Ring_Grooves_V0.8.svg').write_text(or_svg, encoding='utf-8')
 
-slide_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="720" viewBox="-5 -8 220 132">
+cap_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="760" viewBox="-8 -10 225 135">
 {svg_style}
-<text class="t" x="0" y="-3">AirMonitor V0.7 - Schiebedeckel, Oberseite und verdeckte Unterseite [mm]</text>
-<rect class="wall" x="0" y="0" width="208" height="112"/>
-<text class="s" x="80" y="108">Oberseite plan; Druckseite</text>
-<g stroke="#24566f" fill="none" stroke-dasharray="2 1" stroke-width="0.5">
-  <path d="M67 7 H75"/><circle cx="67" cy="7" r="3.8"/><circle cx="75" cy="7" r="2.3"/>
-  <path d="M67 105 H75"/><circle cx="67" cy="105" r="3.8"/><circle cx="75" cy="105" r="2.3"/>
-  <path d="M162 7 H170"/><circle cx="162" cy="7" r="3.8"/><circle cx="170" cy="7" r="2.3"/>
-  <path d="M162 105 H170"/><circle cx="162" cy="105" r="3.8"/><circle cx="170" cy="105" r="2.3"/>
-  <rect x="110" y="0" width="22" height="10.5"/>
-  <circle cx="116" cy="2.2" r="1.7"/>
+<text class="t" x="0" y="-5">AirMonitor V0.8 - abgerundeter 10-mm-Ueberwurfdeckel [mm]</text>
+<rect class="wall" x="0" y="0" width="208" height="112" rx="6"/>
+<rect class="part" x="2" y="2" width="204" height="108" rx="4"/>
+<rect x="-0.5" y="-0.5" width="209" height="113" rx="6.5" fill="none" stroke="#7A3FA0" stroke-width="0.6"/>
+<text class="s" x="70" y="108">Deckel 209 x 113, R6,5</text>
+<text class="s" x="70" y="103">Schulter 204 x 108, R4; Spiel 0,30/Seite</text>
+<g stroke="#b33" fill="none" stroke-width="0.7">
+<path d="M72 2 H83"/><path d="M164 2 H175"/>
+<path d="M72 110 H83"/><path d="M164 110 H175"/>
 </g>
-<line x1="145" y1="20" x2="137" y2="20" stroke="#b33" stroke-width="0.7"/>
-<text class="s" x="138" y="17">Schliessen: 8 mm nach -X, dann Rastung</text>
-<text class="s" x="82" y="12">blinde Schluessellochbahnen unten</text>
-<text class="s" x="108" y="15">Federzunge / Rastloch</text>
+<text class="s" x="72" y="8">4 Seitenschlitze / 8 mm Weg</text>
+<text class="s" x="108" y="16">Rastzunge + Bediennotch</text>
 </svg>'''
-(D / 'Drawing_Sliding_Lid_Flat_Top_V0.7.svg').write_text(slide_svg, encoding='utf-8')
+(D / 'Drawing_V08_Rounded_Overlap_Lid.svg').write_text(cap_svg, encoding='utf-8')
 
-print('Generated AirMonitor Compact V0.7 corrected O-ring package:', R)
+side_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="-5 -5 218 70">
+{svg_style}
+<text class="t" x="0" y="-1">AirMonitor V0.8 - Seitenansicht Deckeluebergriff [mm]</text>
+<path class="wall" d="M0 55 V0 H208 V55 H206 V45 H2 V55 Z"/>
+<path d="M-0.5 58 H208.5 V45 H206 V55 H2 V45 H-0.5 Z" fill="#F1E8F7" stroke="#7A3FA0" stroke-width="0.5"/>
+<rect x="36.6" y="12" width="122" height="33" fill="white" stroke="#172b3a" stroke-width="0.4"/>
+<text class="s" x="162" y="50">10 mm Uebergriff</text>
+<text class="s" x="70" y="30">freie Oeffnung 122 x 33</text>
+<text class="s" x="70" y="62">Topplatte 3 mm; Oberseite Druckbettseite</text>
+</svg>'''
+(D / 'Drawing_V08_Overlap_Lid_Side.svg').write_text(side_svg, encoding='utf-8')
+
+
+print('Generated AirMonitor Compact V0.8 corrected O-ring package:', R)

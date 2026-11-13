@@ -1,14 +1,15 @@
-"""Laminar AirMonitor HCHO - Compact V0.7 corrected parameters (mm).
+"""Laminar AirMonitor HCHO - Compact V0.8 parameters (mm).
 
-Current V0.7 state:
-- sensor/calibration group keeps the proven V0.6 X position;
-- complete group is centred on enclosure Y=56.0;
-- sensor pod is 8.0 mm wider on the right/cable side;
-- purchased EPDM 70 Shore A O-rings replace printed TPU seals;
-- ZERO/SPAN PCB assembly is moved 15.0 mm downward as one rigid group;
-- P02 is a short-travel sliding lid: place at +8 mm X, lower, slide 8 mm
-  toward -X, and the front spring tongue snaps over a detent pin;
-- the lid upper face has no protruding closure hardware and is the print-bed face.
+V0.8 retains the confirmed V0.7 electronics, micro-switch and calibration
+station geometry, but redesigns the outer enclosure and service lid:
+- rounded external corners;
+- slightly thicker 3.2 mm enclosure walls and floor;
+- a continuous recessed upper shoulder instead of lid-support columns;
+- a cap lid that overlaps the enclosure by 10.0 mm;
+- four wall-integrated, 45-degree printable slide lugs and through-slots;
+- 8.0 mm slide travel and the existing end snap;
+- no additional lid columns in the enclosure centre;
+- support-free target orientation: base on its floor, lid on its visible top.
 
 Global coordinates: origin = outer lower corner of P01 without flange,
 X = long axis, Y = short axis, Z = upward.
@@ -16,42 +17,22 @@ X = long axis, Y = short axis, Z = upward.
 
 # ---------- Main enclosure P01 ----------
 L, W, H = 208.0, 112.0, 55.0
-WALL = FLOOR = 2.8
+WALL = FLOOR = 3.2
 FLANGE = 10.0
-OPEN_X0, OPEN_X1, OPEN_Z = 36.6, 158.6, 12.0
+BODY_CORNER_R = 6.0
+SHOULDER_Z0 = 45.0
+SHOULDER_H = H - SHOULDER_Z0
+SHOULDER_INSET = 2.0
+SHOULDER_CORNER_R = 4.0
+NO_LID_COLUMNS = True
+
+OPEN_X0, OPEN_X1 = 36.6, 158.6
+OPEN_Z, OPEN_TOP_Z = 12.0, SHOULDER_Z0
 WALL_MOUNT_HOLES = [(37.0, -5.0), (37.0, W + 5.0),
                     (L - 37.0, -5.0), (L - 37.0, W + 5.0)]
 WALL_MOUNT_D = 4.5
 
-# Existing corner supports remain, but no lid screws are used in V0.7.
-LID_SUPPORTS = [(7.0, 7.0), (7.0, W - 7.0),
-                (L - 7.0, 7.0), (L - 7.0, W - 7.0)]
-LID_SUPPORT_D = 9.0
-
-# Four mushroom studs retain the lid in blind keyhole tracks on its underside.
-SLIDE_STUDS = [(75.0, 7.0), (75.0, W - 7.0),
-               (170.0, 7.0), (170.0, W - 7.0)]
-SLIDE_STUD_BASE_D = 8.0
-SLIDE_TRAVEL = 8.0
-SLIDE_OPEN_OFFSET_X = 8.0
-SLIDE_CLOSE_DIRECTION = '-X'
-SLIDE_STEM_D, SLIDE_STEM_H = 4.0, 0.65
-SLIDE_HEAD_D, SLIDE_HEAD_H = 7.0, 0.75
-SLIDE_HEAD_CLEAR_D = 7.6
-SLIDE_STEM_CLEAR_W = 4.6
-SLIDE_POCKET_DEPTH = 1.65
-SLIDE_THROAT_DEPTH = 0.75
-
-# Snap tongue is cut into the front edge of P02. It remains flush on top.
-LATCH_TONGUE_X = (110.0, 132.0)   # free end at X=110, root at X=132
-LATCH_TONGUE_Y = (0.0, 10.5)
-LATCH_SLOT_W = 0.9
-LATCH_TONGUE_SKIN = 1.20
-LATCH_HOLE = (116.0, 2.2, 3.4)     # x, y, diameter through tongue
-LATCH_PIN = (116.0, 2.2)           # x, y on top of front long wall
-LATCH_PIN_SEGMENTS = [(3.0, 0.8), (2.2, 0.7), (1.2, 0.7)]  # d, h
-
-# Waveshare mounting retained from approved correction.
+# Waveshare mounting retained from V0.7.
 STANDOFFS = [(24.0, 25.0), (169.0, 25.0),
              (24.0, 87.0), (169.0, 87.0)]
 STANDOFF_D, STANDOFF_PILOT_D = 9.0, 2.5
@@ -59,9 +40,35 @@ BOARD_BOTTOM_Z, BOARD_TOP_Z = 9.6, 27.6
 CARRIER = (10.0, 185.0, 11.0, 101.0, 9.6, 27.6)
 PCB_WAVESHARE = (20.6, 172.4, 11.0, 101.0, 9.6, 11.2)
 
+# Wall-integrated slide lugs. Lower face rises 1.2 over 1.2 = 45 degrees.
+SLIDE_TRAVEL = 8.0
+SLIDE_OPEN_OFFSET_X = 8.0
+SLIDE_CLOSE_DIRECTION = '-X'
+SIDE_LUG_X = (80.0, 172.0)
+SIDE_LUG_WIDTH = 6.0
+SIDE_LUG_PROJ = 1.2
+SIDE_LUG_Z0 = 47.0
+SIDE_LUG_Z1 = 50.0
+SIDE_LUG_RAMP = 1.2
+
+# Lid slot geometry, open at the skirt bottom in the insertion position.
+SLOT_ENTRY_W = 7.6
+SLOT_ENTRY_TOP_Z = 51.2
+SLOT_TRACK_Z0 = 46.6
+SLOT_TRACK_Z1 = 50.4
+SLOT_TRACK_END_EXTRA = 3.8
+
+# Snap tongue remains wall-based; no free-standing central pin/column.
+LATCH_TONGUE_X = (110.0, 132.0)
+LATCH_TONGUE_Y = (0.0, 10.5)
+LATCH_SLOT_W = 0.9
+LATCH_TONGUE_SKIN = 1.20
+LATCH_HOLE = (116.0, 2.2, 3.4)
+LATCH_PIN = (116.0, 2.2)
+LATCH_PIN_SEGMENTS = [(3.0, 0.8), (2.2, 0.7), (1.2, 0.7)]
+LATCH_SKIRT_NOTCH_X = (108.0, 134.0)
+
 # ---------- Right end wall: ZERO / SPAN ----------
-# Entire PCB, both switches, all four holders and both service holes moved -15 mm in Z.
-BTN_ASSEMBLY_DZ = -15.0
 BTN_HOLDER_Y = (18.0, 94.0)
 BTN_HOLDER_Z = (20.0, 36.0)
 BTN_HOLDER_D, BTN_HOLDER_PILOT_D, BTN_HOLDER_LEN = 5.0, 1.6, 6.0
@@ -79,12 +86,20 @@ MARK_DEPTH = 0.35
 MARK_FONT = 'DejaVu Sans'
 MARK_FONT_SIZE = 3.8
 
-# ---------- Lid P02 ----------
+# ---------- Cap lid P02 ----------
 LID_Z, LID_T = 55.0, 3.0
+LID_OVERLAP = 10.0
+LID_OUTSET = 0.5
+LID_X0, LID_X1 = -LID_OUTSET, L + LID_OUTSET
+LID_Y0, LID_Y1 = -LID_OUTSET, W + LID_OUTSET
+LID_CORNER_R = 6.5
+LID_SKIRT_W = 2.2
+LID_IN_X0, LID_IN_X1 = LID_X0 + LID_SKIRT_W, LID_X1 - LID_SKIRT_W
+LID_IN_Y0, LID_IN_Y1 = LID_Y0 + LID_SKIRT_W, LID_Y1 - LID_SKIRT_W
 LID_TOP_FACE_FLAT = True
 LID_PRINT_TOP_FACE_DOWN = True
 
-# Sensor/calibration group remains at V0.6 X and is centred only in Y.
+# Sensor/calibration group remains at the confirmed V0.7 position.
 SENSOR_DX = 0.0
 SENSOR_DY = -1.0
 POD_EXTRA_X = 8.0
@@ -92,7 +107,6 @@ VENTS = [(12.0, 22.0 + 8.0 * i, 33.0, 4.0) for i in range(9)]
 HOOD_SCREWS = [(27.0, 9.0), (27.0, 103.0)]
 HOOD_SCREW_PILOT_D = 1.8
 HOOD_SCREW_BOSS_D, HOOD_SCREW_BOSS_Z0 = 6.0, 53.0
-
 POD_MOUNTS = [(16.0, 11.0), (42.0, 11.0),
               (16.0, 101.0), (42.0, 101.0)]
 POD_BOSS_D, POD_BOSS_Z0 = 7.0, 52.0
@@ -119,7 +133,6 @@ ORING_GROOVE_W = 1.80
 ORING_GROOVE_D = 1.10
 ORING_COMPRESSION = (ORING_CORD - ORING_GROOVE_D) / ORING_CORD
 ORING_CORNER_R = 8.0
-
 P04A_RING = dict(name='P04A', id=45.0, cord=ORING_CORD,
                  cx=32.0, cy=33.5, cw=46.0, ch=34.0, r=8.0,
                  sku='H48761')

@@ -1,26 +1,22 @@
-# AirMonitor Compact Revision V0.7
+# AirMonitor Compact Revision V0.8
 
-Aktueller V0.7-Stand:
+V0.8 ist die neue abgerundete Gehäuse- und Deckelrevision.
 
-- Sensor-/Kalibriereinheit: V0.6-X-Lage, auf Y=56,0 zentriert
-- Sensorpod rechts 8,0 mm breiter
-- drei geschlossene EPDM-70-Kauf-O-Ringe
-- ZERO-/SPAN-Baugruppe 15,0 mm tiefer
-- P02 als kurzer Schiebedeckel mit 8,0 mm Weg und Rastzunge
-- sichtbare Deckeloberseite plan; Drucklage mit Oberseite auf dem Druckbett
+- Deckel reicht 10 mm über die Außenwände nach unten.
+- Boden besitzt eine zurückgesetzte obere Schulter.
+- Wand und Boden sind 3,2 mm dick.
+- Boden R6, Deckel R6,5.
+- Keine zusätzlichen Deckelsäulen in der Mitte.
+- Vier wandintegrierte 45°-Laschen führen den Deckel über 8 mm.
+- Die Federzunge rastet am Ende ein.
+- P01 und P02 sind für Druck ohne Slicer-Stützen ausgelegt.
+- Microtaster und Prüfstation entsprechen V0.7.
 
-## Deckel bedienen
+## Dateien
 
-1. Zum Montieren Deckel +8 mm in X versetzt von oben aufsetzen.
-2. Pilzkoepfe in die grossen Unterseitentaschen absenken.
-3. Deckel 8 mm nach links schieben, bis die Zunge einrastet.
-4. Zum Oeffnen die Zunge am vorderen Rand leicht anheben, Deckel 8 mm nach rechts schieben und abheben.
-
-## Start
-
-- Referenzbaugruppe: `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.7.step`
-- Druckteile: `02_CAD_Print/`
-- Massskizzen: `AirMonitor_V07_Massskizzen_1zu1.pdf`
-- Spezifikation: `CAD_COMPACT_SPEC_V0.7.md`
-- O-Ringe: `PURCHASED_O_RINGS.csv`
-- Daniel/Claude: `PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.7.md`
+- `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step`
+- `02_CAD_Print/P01_Compact_Base_Print.stl`
+- `02_CAD_Print/P02_Compact_Lid_Print.stl`
+- `AirMonitor_V08_Massskizzen_1zu1.pdf`
+- `CAD_COMPACT_SPEC_V0.8.md`
+- `PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.8.md`

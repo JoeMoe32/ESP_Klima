@@ -1,20 +1,22 @@
-START HIER - AirMonitor Compact V0.7
+START HIER - AirMonitor Compact V0.8
 
 1. Fusion 360:
-   01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.7.step
+   01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step
 
-2. Massskizzen:
-   AirMonitor_V07_Massskizzen_1zu1.pdf
+2. Maßskizzen:
+   AirMonitor_V08_Massskizzen_1zu1.pdf
 
-3. Neu pruefen:
-   - Microtaster-Baugruppe 15 mm tiefer
-   - Schiebedeckel: +8 mm aufsetzen, 8 mm nach links schliessen
-   - vier blinde Schluessellochbahnen
-   - Rastzunge und Raststift
-   - sichtbare Deckeloberseite plan / Druckseite
+3. Prüfen:
+   - 10 mm Übergriff
+   - abgerundete Außenkanten
+   - 3,2 mm Wand/Boden
+   - keine Deckelsäulen in der Mitte
+   - vier Wandlaschen / 8 mm Weg
+   - Rastzunge
+   - Druck ohne Slicer-Stützen
 
 4. Spezifikation:
-   CAD_COMPACT_SPEC_V0.7.md
+   CAD_COMPACT_SPEC_V0.8.md
 
 5. Claude:
-   PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.7.md
+   PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.8.md
