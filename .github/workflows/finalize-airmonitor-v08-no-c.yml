@@ -55,5 +55,4 @@ jobs:
             exit 0
           fi
           git commit -m "Open V0.8 lid notches straight to skirt edge"
-          git pull --rebase origin cad/airmonitor-compact-v0.8
           git push origin HEAD:cad/airmonitor-compact-v0.8
