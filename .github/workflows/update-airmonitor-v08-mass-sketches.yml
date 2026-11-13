@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/update-airmonitor-v08-mass-sketches.yml"
       - "hardware/cad/AirMonitor_Compact_Revision_V0.8/apply_v08_mass_sketch_update.py"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.8/fix_v08_mass_sketch_page10.py"
       - "hardware/cad/AirMonitor_Compact_Revision_V0.8/verify_v08_mass_sketches.py"
 
 permissions:
@@ -29,7 +30,9 @@ jobs:
 
       - name: Apply sketch update
         working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.8
-        run: python apply_v08_mass_sketch_update.py
+        run: |
+          python apply_v08_mass_sketch_update.py
+          python fix_v08_mass_sketch_page10.py
 
       - name: Install PDF dependencies
         run: |
