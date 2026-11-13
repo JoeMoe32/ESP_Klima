@@ -27,9 +27,9 @@ addition = '''NO_TOP_LATCH_TONGUE = True
 # return/lip, so the side profile is U-shaped/open to the edge, never C-shaped.
 OPEN_EDGE_NOTCH_X = (18.0, 190.0)
 OPEN_EDGE_NOTCH_W = 8.0
-OPEN_EDGE_NOTCH_Z0 = LID_Z - LID_OVERLAP - 0.40
+OPEN_EDGE_NOTCH_Z0 = SHOULDER_Z0 - 0.40
 OPEN_EDGE_NOTCH_Z1 = 51.20
-OPEN_EDGE_NOTCH_Y_DEPTH = LID_SKIRT_W + 0.80
+OPEN_EDGE_NOTCH_Y_DEPTH = 2.80
 NO_C_BOTTOM_LIP = True
 '''
 if "OPEN_EDGE_NOTCH_X" not in params:
