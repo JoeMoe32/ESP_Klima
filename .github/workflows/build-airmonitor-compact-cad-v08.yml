@@ -2,12 +2,6 @@ name: Build AirMonitor Compact CAD V0.8
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - cad/airmonitor-compact-v0.8
-    paths:
-      - "hardware/cad/AirMonitor_Compact_Revision_V0.8/**"
-      - ".github/workflows/build-airmonitor-compact-cad-v08.yml"
 
 permissions:
   contents: write
@@ -49,5 +43,4 @@ jobs:
             exit 0
           fi
           git commit -m "Generate AirMonitor Compact V0.8 CAD and mass sketches"
-          git pull --rebase origin cad/airmonitor-compact-v0.8
           git push origin HEAD:cad/airmonitor-compact-v0.8
