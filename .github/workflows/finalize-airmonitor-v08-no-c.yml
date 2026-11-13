@@ -6,6 +6,7 @@ on:
       - cad/airmonitor-compact-v0.8
     paths:
       - ".github/workflows/finalize-airmonitor-v08-no-c.yml"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.8/apply_v08_open_notches_to_edge.py"
 
 permissions:
   contents: write
