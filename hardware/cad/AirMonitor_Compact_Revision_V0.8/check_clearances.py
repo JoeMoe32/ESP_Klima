@@ -69,16 +69,22 @@ def run() -> int:
     check('Waveshare X pattern', close(C.STANDOFFS[1][0]-C.STANDOFFS[0][0],145.0))
     check('Waveshare Y pattern', close(C.STANDOFFS[2][1]-C.STANDOFFS[0][1],62.0))
 
+    # Only P03 passes through the enclosure shoulder. P07 sits above P02 and
+    # therefore must be checked against the lid footprint, not the shoulder cavity.
     inner_x0 = C.SHOULDER_INSET + C.WALL
     inner_x1 = C.L - C.SHOULDER_INSET - C.WALL
     inner_y0 = C.SHOULDER_INSET + C.WALL
     inner_y1 = C.W - C.SHOULDER_INSET - C.WALL
-    geometries = [('P03', C.POD[:4]), ('P07', C.HOOD_PLATE)]
-    for name, (gx0,gx1,gy0,gy1) in geometries:
-        check(f'{name} closed inside shoulder X', inner_x0 <= gx0 and gx1 <= inner_x1,
-              f'{gx0}..{gx1} vs {inner_x0}..{inner_x1}')
-        check(f'{name} open inside shoulder X', inner_x0 <= gx0+C.SLIDE_OPEN_OFFSET_X and gx1+C.SLIDE_OPEN_OFFSET_X <= inner_x1)
-        check(f'{name} inside shoulder Y', inner_y0 <= gy0 and gy1 <= inner_y1)
+    gx0, gx1, gy0, gy1 = C.POD[:4]
+    check('P03 closed inside shoulder X', inner_x0 <= gx0 and gx1 <= inner_x1,
+          f'{gx0}..{gx1} vs {inner_x0}..{inner_x1}')
+    check('P03 open inside shoulder X', inner_x0 <= gx0+C.SLIDE_OPEN_OFFSET_X and gx1+C.SLIDE_OPEN_OFFSET_X <= inner_x1)
+    check('P03 inside shoulder Y', inner_y0 <= gy0 and gy1 <= inner_y1)
+
+    hx0, hx1, hy0, hy1 = C.HOOD_PLATE
+    check('P07 inside lid X', C.LID_X0 <= hx0 and hx1 <= C.LID_X1)
+    check('P07 inside lid Y', C.LID_Y0 <= hy0 and hy1 <= C.LID_Y1)
+    check('P07 stays fixed to moving lid', close(C.HOOD_Z0, C.LID_Z + C.LID_T))
 
     check('O-ring cord', close(C.ORING_CORD,1.50))
     check('groove wider than cord', C.ORING_GROOVE_W > C.ORING_CORD)
