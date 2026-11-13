@@ -47,6 +47,21 @@ jobs:
           grep -q "Page count: 11" MASS_SKETCH_VERIFICATION.txt
           grep -q "Blank-page check: passed" MASS_SKETCH_VERIFICATION.txt
 
+      - name: Upload verified sketches
+        uses: actions/upload-artifact@v4
+        with:
+          name: airmonitor-v08-mass-sketches
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            hardware/cad/AirMonitor_Compact_Revision_V0.8/AirMonitor_V08_Massskizzen_1zu1.pdf
+            hardware/cad/AirMonitor_Compact_Revision_V0.8/MASS_SKETCH_VERIFICATION.txt
+            hardware/cad/AirMonitor_Compact_Revision_V0.8/03_Renders_Drawings/MassSketches_V08_ContactSheet.png
+            hardware/cad/AirMonitor_Compact_Revision_V0.8/03_Renders_Drawings/MassSketch_V08_Page04_Lid.png
+            hardware/cad/AirMonitor_Compact_Revision_V0.8/03_Renders_Drawings/MassSketch_V08_Page09_Assembly.png
+            hardware/cad/AirMonitor_Compact_Revision_V0.8/03_Renders_Drawings/MassSketch_V08_Page10_PrintDetail.png
+            hardware/cad/AirMonitor_Compact_Revision_V0.8/03_Renders_Drawings/MassSketch_V08_Page11_Checklist.png
+
       - name: Commit updated sketches and review renders
         run: |
           git config user.name "github-actions[bot]"
