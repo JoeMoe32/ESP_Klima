@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" viewBox="0 0 110 100">
 <style>text{font-family:Arial,sans-serif;fill:#172b3a}.t{font-size:4px;font-weight:bold}.s{font-size:3px}.wall{fill:#f5f5f5;stroke:#172b3a;stroke-width:.5}.part{fill:#d7e6ef;stroke:#24566f;stroke-width:.45}.groove{fill:none;stroke:#b33;stroke-width:1.2}.axis{stroke:#777;stroke-width:.2;stroke-dasharray:1 1}</style>
-<text class="t" x="3" y="6">AirMonitor V0.7 – EPDM-O-Ringe und Nuten</text>
+<text class="t" x="3" y="6">AirMonitor V0.8 – EPDM-O-Ringe und Nuten</text>
 <rect class="part" x="4" y="10" width="56" height="85"/>
 <rect class="groove" x="9" y="17" width="46" height="34" rx="8"/>
 <rect class="groove" x="9.1" y="53.5" width="45.8" height="42" rx="8"/>

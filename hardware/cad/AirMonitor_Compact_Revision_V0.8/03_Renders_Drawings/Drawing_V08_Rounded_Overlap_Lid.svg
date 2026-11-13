@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="760" viewBox="-8 -10 225 135">
+<style>text{font-family:Arial,sans-serif;fill:#172b3a}.t{font-size:4px;font-weight:bold}.s{font-size:3px}.wall{fill:#f5f5f5;stroke:#172b3a;stroke-width:.5}.part{fill:#d7e6ef;stroke:#24566f;stroke-width:.45}.groove{fill:none;stroke:#b33;stroke-width:1.2}.axis{stroke:#777;stroke-width:.2;stroke-dasharray:1 1}</style>
+<text class="t" x="0" y="-5">AirMonitor V0.8 - abgerundeter 10-mm-Ueberwurfdeckel [mm]</text>
+<rect class="wall" x="0" y="0" width="208" height="112" rx="6"/>
+<rect class="part" x="2" y="2" width="204" height="108" rx="4"/>
+<rect x="-0.5" y="-0.5" width="209" height="113" rx="6.5" fill="none" stroke="#7A3FA0" stroke-width="0.6"/>
+<text class="s" x="70" y="108">Deckel 209 x 113, R6,5</text>
+<text class="s" x="70" y="103">Schulter 204 x 108, R4; Spiel 0,30/Seite</text>
+<g stroke="#b33" fill="none" stroke-width="0.7">
+<path d="M72 2 H83"/><path d="M164 2 H175"/>
+<path d="M72 110 H83"/><path d="M164 110 H175"/>
+</g>
+<text class="s" x="72" y="8">4 Seitenschlitze / 8 mm Weg</text>
+<text class="s" x="108" y="16">Rastzunge + Bediennotch</text>
+</svg>

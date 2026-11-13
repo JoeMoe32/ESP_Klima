@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="-5 -5 218 70">
+<style>text{font-family:Arial,sans-serif;fill:#172b3a}.t{font-size:4px;font-weight:bold}.s{font-size:3px}.wall{fill:#f5f5f5;stroke:#172b3a;stroke-width:.5}.part{fill:#d7e6ef;stroke:#24566f;stroke-width:.45}.groove{fill:none;stroke:#b33;stroke-width:1.2}.axis{stroke:#777;stroke-width:.2;stroke-dasharray:1 1}</style>
+<text class="t" x="0" y="-1">AirMonitor V0.8 - Seitenansicht Deckeluebergriff [mm]</text>
+<path class="wall" d="M0 55 V0 H208 V55 H206 V45 H2 V55 Z"/>
+<path d="M-0.5 58 H208.5 V45 H206 V55 H2 V45 H-0.5 Z" fill="#F1E8F7" stroke="#7A3FA0" stroke-width="0.5"/>
+<rect x="36.6" y="12" width="122" height="33" fill="white" stroke="#172b3a" stroke-width="0.4"/>
+<text class="s" x="162" y="50">10 mm Uebergriff</text>
+<text class="s" x="70" y="30">freie Oeffnung 122 x 33</text>
+<text class="s" x="70" y="62">Topplatte 3 mm; Oberseite Druckbettseite</text>
+</svg>
