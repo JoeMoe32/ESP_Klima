@@ -257,7 +257,7 @@ skirt = skirt_outer.cut(skirt_inner)
 if C.LID_LEFT_END_OPEN:
     skirt = skirt.cut(box(C.LID_X0 - 0.2, C.LID_Y0 - 0.2,
                            lz - C.LID_OVERLAP - 0.2,
-                           C.LID_SKIRT_W + 0.6,
+                           C.WALL + 0.8,
                            C.LID_Y1 - C.LID_Y0 + 0.4,
                            C.LID_OVERLAP + 0.4))
 l = l.union(skirt)
