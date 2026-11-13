@@ -182,24 +182,72 @@ def page1_base(c):
     footer(c,1)
 
 def page2_walls(c):
-    header(c,"P01/P02 - Laengswand und 10-mm-Deckeluebergriff",
-           "Deckelschuerze Z55..45; freie Bodenoeffnung endet bei Z45")
-    ox,oy=38*mm,55*mm
-    c.roundRect(ox,oy,C.L*mm,C.H*mm,C.BODY_CORNER_R*mm)
-    c.rect(ox+C.OPEN_X0*mm,oy+C.OPEN_Z*mm,(C.OPEN_X1-C.OPEN_X0)*mm,(C.OPEN_TOP_Z-C.OPEN_Z)*mm)
-    c.saveState(); c.setStrokeColor(C_HOOD); c.setLineWidth(0.8)
-    c.line(ox-C.LID_OUTSET*mm,oy+(C.LID_Z-C.LID_OVERLAP)*mm,ox-C.LID_OUTSET*mm,oy+(C.LID_Z+C.LID_T)*mm)
-    c.line(ox+(C.L+C.LID_OUTSET)*mm,oy+(C.LID_Z-C.LID_OVERLAP)*mm,ox+(C.L+C.LID_OUTSET)*mm,oy+(C.LID_Z+C.LID_T)*mm)
-    c.line(ox-C.LID_OUTSET*mm,oy+(C.LID_Z+C.LID_T)*mm,ox+(C.L+C.LID_OUTSET)*mm,oy+(C.LID_Z+C.LID_T)*mm)
+    header(c, "P01/P02 - Laengswand ohne oberen Quertraeger",
+           "P01-Oeffnung X36,6..158,6 / Z12..55: 122 x 43 und bis zur Oberkante offen")
+    ox, oy = 38 * mm, 55 * mm
+
+    # Draw the actual printable P01 wall contour as a U-shape. The 122 mm
+    # centre opening is open all the way to Z=55; there is no line/material
+    # above it. P02 is shown separately in violet.
+    path = c.beginPath()
+    path.moveTo(ox, oy)
+    path.lineTo(ox + C.L * mm, oy)
+    path.lineTo(ox + C.L * mm, oy + C.H * mm)
+    path.lineTo(ox + C.OPEN_X1 * mm, oy + C.H * mm)
+    path.lineTo(ox + C.OPEN_X1 * mm, oy + C.OPEN_Z * mm)
+    path.lineTo(ox + C.OPEN_X0 * mm, oy + C.OPEN_Z * mm)
+    path.lineTo(ox + C.OPEN_X0 * mm, oy + C.H * mm)
+    path.lineTo(ox, oy + C.H * mm)
+    path.close()
+    c.setStrokeColor(colors.black)
+    c.setFillColor(colors.white)
+    c.drawPath(path, stroke=1, fill=0)
+
+    # Separate overlapping lid, not a bridge belonging to P01.
+    c.saveState()
+    c.setStrokeColor(C_HOOD)
+    c.setLineWidth(0.8)
+    c.line(ox - C.LID_OUTSET * mm,
+           oy + (C.LID_Z + C.LID_T) * mm,
+           ox + (C.L + C.LID_OUTSET) * mm,
+           oy + (C.LID_Z + C.LID_T) * mm)
+    c.line(ox - C.LID_OUTSET * mm,
+           oy + (C.LID_Z - C.LID_OVERLAP) * mm,
+           ox - C.LID_OUTSET * mm,
+           oy + (C.LID_Z + C.LID_T) * mm)
+    c.line(ox + (C.L + C.LID_OUTSET) * mm,
+           oy + (C.LID_Z - C.LID_OVERLAP) * mm,
+           ox + (C.L + C.LID_OUTSET) * mm,
+           oy + (C.LID_Z + C.LID_T) * mm)
     c.restoreState()
-    dim_h(c,ox,ox+C.L*mm,oy-12*mm,"208")
-    dim_h(c,ox+C.OPEN_X0*mm,ox+C.OPEN_X1*mm,oy+C.OPEN_TOP_Z*mm+7*mm,"122")
-    dim_v(c,ox+C.L*mm+8*mm,oy,oy+C.H*mm,"55")
-    dim_v(c,ox+C.L*mm+18*mm,oy+C.SHOULDER_Z0*mm,oy+C.H*mm,"10")
-    label(c,12*mm,27*mm,"Bodenoeffnung: X36,6..158,6 / Z12,0..45,0 = 122 x 33.",7)
-    label(c,12*mm,22*mm,"Deckel: Topplatte 3,0; Schuerze 10,0; Oberseite ist Druckbettseite.",7)
-    label(c,12*mm,17*mm,"Koerper/Deckel R6,0 und aussen buendig; Schulter R3,7.",7)
-    footer(c,2)
+
+    dim_h(c, ox, ox + C.L * mm, oy - 12 * mm, "208")
+    # Put the width dimension below the opening so it cannot be confused with
+    # a physical horizontal bridge.
+    dim_h(c,
+          ox + C.OPEN_X0 * mm,
+          ox + C.OPEN_X1 * mm,
+          oy + (C.OPEN_Z - 7) * mm,
+          "122")
+    dim_v(c, ox + C.L * mm + 8 * mm, oy, oy + C.H * mm, "55")
+    dim_v(c,
+          ox + C.OPEN_X1 * mm + 8 * mm,
+          oy + C.OPEN_Z * mm,
+          oy + C.OPEN_TOP_Z * mm,
+          "43")
+    dim_v(c,
+          ox + C.L * mm + 18 * mm,
+          oy + C.SHOULDER_Z0 * mm,
+          oy + C.H * mm,
+          "10")
+
+    label(c, 12 * mm, 29 * mm,
+          "P01-Oeffnung: X36,6..158,6 / Z12,0..55,0 = 122 x 43; bis Oberkante offen.", 7, True)
+    label(c, 12 * mm, 24 * mm,
+          "Der bisherige 122-mm-Quertraeger oberhalb der Oeffnung ist vollstaendig entfernt.", 7, True, C_ORING)
+    label(c, 12 * mm, 19 * mm,
+          "Violett: separater P02-Deckel mit 10-mm-Uebergriff; nicht Bestandteil der P01-Druckbruecke.", 7)
+    footer(c, 2)
 
 def page3_endwalls(c):
     header(c, "P01 - Stirnwaende",
@@ -627,7 +675,7 @@ def page11_summary(c):
     label(c, 18 * mm, 160 * mm, "Umgesetzt", 8, True)
     items = [
         "Microtaster, Waveshare, Sensorpod, Pruefstation und O-Ringe unveraendert.",
-        "P01 208 x 112 x 55; Wand/Boden 3,2; Ecken R6,0.",
+        "P01 208 x 112 x 55; Wand/Boden 3,2; Ecken R6; beide Laengsoeffnungen 122 x 43 bis Z55 offen.",
         "P02 aussen 208 x 112; 3,0-mm-Top; 10,0-mm-Uebergriff; Schuerze 2,5.",
         "Vier Fuehrungspunkte ausschliesslich bei X18 und X190; Mitte frei.",
         "Blinde Innennuten mit 45-Grad-Parallelogrammprofil; aussen keine Fenster.",
@@ -643,7 +691,7 @@ def page11_summary(c):
         "[ ] Alle vier Zungen lassen sich in +8-mm-Lage gleichzeitig absenken.",
         "[ ] Deckel schiebt leicht, bleibt aber vertikal sicher gefangen.",
         "[ ] Verdeckte Rastung ist loesbar und uebersteht mindestens 20 Zyklen.",
-        "[ ] PrusaSlicer fordert an Fuehrung und Einfuehrtaschen keine Stuetzen.",
+        "[ ] P01 besitzt ueber den 122-mm-Oeffnungen keinen Quertraeger; PrusaSlicer fordert dort keine Stuetzen.",
         "[ ] Aussenfuge ist gleichmaessig; keine sichtbaren C-Ausschnitte.",
         "[ ] Kabelreserve, O-Ringe, Leckrate und Nullpunkt sind dokumentiert.",
     ]

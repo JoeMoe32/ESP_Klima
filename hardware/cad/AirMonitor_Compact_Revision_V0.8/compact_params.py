@@ -11,6 +11,8 @@ geometry. Only the lid retention is revised again:
 - the lid exterior remains closed and visually flush;
 - entry pockets are open only toward the inside and lower skirt edge;
 - a hidden detent at the front/right guide provides the end snap;
+- both 122 mm longitudinal openings run from Z=12 to the upper edge Z=55;
+  there is no horizontal wall bridge above either opening;
 - P01 prints on its floor and P02 on its visible top without slicer supports.
 
 Global coordinates: origin = outer lower corner of P01 without flange,
@@ -30,7 +32,8 @@ NO_LID_COLUMNS = True
 NO_CENTER_FIXINGS = True
 
 OPEN_X0, OPEN_X1 = 36.6, 158.6
-OPEN_Z, OPEN_TOP_Z = 12.0, SHOULDER_Z0
+OPEN_Z, OPEN_TOP_Z = 12.0, H
+NO_SIDE_OPENING_BRIDGE = True
 WALL_MOUNT_HOLES = [(37.0, -5.0), (37.0, W + 5.0),
                     (L - 37.0, -5.0), (L - 37.0, W + 5.0)]
 WALL_MOUNT_D = 4.5

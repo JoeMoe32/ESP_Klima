@@ -2,8 +2,10 @@ AirMonitor Compact V0.8 - Mass sketch verification
 PDF: AirMonitor_V08_Massskizzen_1zu1.pdf
 Page count: 11
 Blank-page check: passed for all pages
+Open-top longitudinal wall correction: page 2
 Dedicated guide print detail: page 10
 Review renders:
+- 03_Renders_Drawings/MassSketch_V08_Page02_OpenTopSide.png
 - 03_Renders_Drawings/MassSketch_V08_Page04_Lid.png
 - 03_Renders_Drawings/MassSketch_V08_Page09_Assembly.png
 - 03_Renders_Drawings/MassSketch_V08_Page10_PrintDetail.png

@@ -31,7 +31,10 @@ def run() -> int:
     check('shoulder height 10', close(C.SHOULDER_H,10.0))
     check('overlap 10', close(C.LID_OVERLAP,10.0))
     check('left insertion side open', C.LID_LEFT_END_OPEN)
-    check('opening ends at shoulder', close(C.OPEN_TOP_Z,C.SHOULDER_Z0))
+    check('side opening reaches top edge', close(C.OPEN_TOP_Z,C.H))
+    check('side opening has no upper bridge', C.NO_SIDE_OPENING_BRIDGE)
+    check('side opening is 122 x 43',
+          close(C.OPEN_X1-C.OPEN_X0,122.0) and close(C.OPEN_TOP_Z-C.OPEN_Z,43.0))
 
     clearance = C.SHOULDER_INSET-C.LID_SKIRT_W
     check('shoulder/skirt clearance 0.30', close(clearance,0.30), f'{clearance:.3f}')

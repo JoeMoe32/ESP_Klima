@@ -1,0 +1,7 @@
+AirMonitor Compact V0.8 - longitudinal side-opening verification
+Opening X: 36.6..158.6 mm = 122.0 mm
+Opening Z: 12.0..55.0 mm = 43.0 mm
+Upper horizontal bridge: removed
+Bridge volume front: 0.000 mm3
+Bridge volume rear: 0.000 mm3
+Target printing: opening is open to the upper edge; no 122 mm bridge support required

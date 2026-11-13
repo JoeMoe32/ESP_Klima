@@ -15,3 +15,10 @@ im Querschnitt:
 
 Damit wird die Schiebefunktion des frueheren Entwurfs beibehalten, ohne dessen
 problematische rechteckige C-Bruecke zu uebernehmen.
+
+## P01-Laengswand
+
+Der 122 mm breite Ausschnitt reicht von Z=12 bis zur oberen Gehaeusekante
+Z=55. Oberhalb des Ausschnitts bleibt kein P01-Quertraeger stehen. Damit muss
+P01 an dieser Stelle weder 122 mm frei ueberbruecken noch mit Stuetzmaterial
+gedruckt werden. Der 10-mm-Uebergriff ist Teil des separat gedruckten Deckels.

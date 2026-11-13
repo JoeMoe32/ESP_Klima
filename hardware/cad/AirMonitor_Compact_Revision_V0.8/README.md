@@ -9,6 +9,7 @@ Aktueller Stand:
 - verdeckte 45-Grad-Fuehrungszungen und blinde Innennuten;
 - keine sichtbaren C-Fenster und keine waagerechte Kanaldecke;
 - versteckte Endrastung vorne rechts;
+- beide 122-mm-Laengsoeffnungen in P01 reichen von Z12 bis Z55; kein oberer Quertraeger;
 - P01 und P02 fuer den Druck ohne Slicer-Stuetzen ausgelegt.
 
 ## Bedienung

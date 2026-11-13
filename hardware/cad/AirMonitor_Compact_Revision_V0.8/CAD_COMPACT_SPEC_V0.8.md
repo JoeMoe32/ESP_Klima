@@ -60,3 +60,16 @@ Schuerzenkante. Slicer-Stuetzen sind konstruktiv nicht vorgesehen.
 Microtaster, Boardposition, DC5521, Sensorpod, Kalibrierhaube, EPDM-O-Ringe,
 Y-Zentrierung und Markierungen bleiben unveraendert. Die Pruefstation bleibt bis
 zur physischen Kontrolle vorlaeufig.
+
+## Laengswandoeffnungen - verbindliche Druckkorrektur
+
+```text
+X-Bereich je Oeffnung    36,6..158,6 mm = 122,0 mm
+Z-Bereich je Oeffnung    12,0..55,0 mm = 43,0 mm
+Oberer Quertraeger       entfaellt vollstaendig
+```
+
+Beide Laengswandoeffnungen von P01 laufen bis zur oberen Gehaeusekante. Damit
+gibt es keine 122 mm lange waagerechte Bruecke mehr, die beim Druck Stuetzen
+oder eine unzulaessige freie Ueberbrueckung erfordern wuerde. Der violette
+10-mm-Uebergriff gehoert ausschliesslich zum separat gedruckten Deckel P02.

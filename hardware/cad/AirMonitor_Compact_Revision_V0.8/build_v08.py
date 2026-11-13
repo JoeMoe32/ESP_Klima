@@ -188,6 +188,27 @@ for y in (-0.5, W-wall-0.5):
                   C.OPEN_X1-C.OPEN_X0, wall+1.0,
                   C.OPEN_TOP_Z-C.OPEN_Z+0.2))
 
+# Definitive printability correction: no 122 mm horizontal bridge may remain
+# above either longitudinal opening. Probe the complete former bridge zone
+# between shoulder start Z=45 and enclosure top Z=55 on both long walls.
+side_bridge_volumes = []
+for wall_name, probe_y in (("front", -0.20), ("rear", W-wall-0.20)):
+    probe = b.intersect(box(
+        C.OPEN_X0 + 0.20,
+        probe_y,
+        C.SHOULDER_Z0 + 0.05,
+        C.OPEN_X1 - C.OPEN_X0 - 0.40,
+        wall + 0.40,
+        C.H - C.SHOULDER_Z0 - 0.10,
+    ))
+    volume = sum(v.Volume() for v in probe.vals()) if probe.vals() else 0.0
+    side_bridge_volumes.append((wall_name, volume))
+    if volume > 0.01:
+        raise SystemExit(
+            f"Abbruch: oberer 122-mm-Quertraeger an {wall_name} verbleibt "
+            f"({volume:.3f} mm3)."
+        )
+
 for x, y in C.STANDOFFS:
     b = b.union(cz(x, y, floor, C.STANDOFF_D,
                    C.BOARD_BOTTOM_Z-floor))
@@ -444,6 +465,9 @@ for n, s in parts.items():
     q = origin(q)
     step(q, P / (print_names[n] + '.step'))
     stl(q, P / (print_names[n] + '.stl'))
+    if n == 'P01_Compact_Base_Global':
+        step(q, P / 'P01_Compact_Base_Print_OPEN_TOP_V0.8.step')
+        stl(q, P / 'P01_Compact_Base_Print_OPEN_TOP_V0.8.stl')
     if n == 'P02_Compact_Lid_Global':
         step(q, P / 'P02_Compact_Lid_Print_45DEG_GUIDES_V0.8.step')
         stl(q, P / 'P02_Compact_Lid_Print_45DEG_GUIDES_V0.8.stl')
@@ -503,6 +527,15 @@ with (R / 'LID_45DEG_GUIDE_VERIFICATION.txt').open('w', encoding='utf-8') as f:
     f.write(f'Hidden snap interference: {C.SNAP_INTERFERENCE:.2f} mm\n')
     f.write('Target printing: P01 on floor, P02 visible top on bed, no slicer support\n')
 
+with (R / 'SIDE_OPENING_VERIFICATION.txt').open('w', encoding='utf-8') as f:
+    f.write('AirMonitor Compact V0.8 - longitudinal side-opening verification\n')
+    f.write(f'Opening X: {C.OPEN_X0:.1f}..{C.OPEN_X1:.1f} mm = {C.OPEN_X1-C.OPEN_X0:.1f} mm\n')
+    f.write(f'Opening Z: {C.OPEN_Z:.1f}..{C.OPEN_TOP_Z:.1f} mm = {C.OPEN_TOP_Z-C.OPEN_Z:.1f} mm\n')
+    f.write('Upper horizontal bridge: removed\n')
+    for wall_name, volume in side_bridge_volumes:
+        f.write(f'Bridge volume {wall_name}: {volume:.3f} mm3\n')
+    f.write('Target printing: opening is open to the upper edge; no 122 mm bridge support required\n')
+
 # Dimensions and purchased component data.
 with (R / 'DIMENSIONS.csv').open('w', newline='', encoding='utf-8') as f:
     w = csv.writer(f)
@@ -537,6 +570,7 @@ with (R / 'V08_COORDINATES.csv').open('w', newline='', encoding='utf-8') as f:
     w.writerow(['P07 plate', 'X 4.0..60.0 / Y 3.2..108.8 / Z 58.0..61.0', 'CAD'])
     w.writerow(['Lid guides', 'blind 45-degree tracks; X 18/190 at front and rear; 8 mm slide', 'CAD'])
     w.writerow(['Hidden snap', 'front/right X190; 0.20 mm nominal flex; blind detent', 'CAD'])
+    w.writerow(['Long-wall openings', 'X 36.6..158.6 / Z 12.0..55.0 = 122 x 43; open to top edge; no upper bridge', 'CAD / support-free correction'])
     for r in (C.P04A_RING, C.P04B_RING, C.P08_RING):
         path = 2 * (r['cw'] + r['ch']) + (2 * math.pi - 8) * r['r']
         free = math.pi * (r['id'] + r['cord'])
@@ -601,13 +635,15 @@ cap_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="760" 
 
 side_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="-5 -5 218 70">
 {svg_style}
-<text class="t" x="0" y="-1">AirMonitor V0.8 - Seitenansicht buendiger Deckeluebergriff [mm]</text>
-<path class="wall" d="M0 55 V0 H208 V55 H206 V45 H2 V55 Z"/>
-<path d="M-0.5 58 H208.5 V45 H206 V55 H2 V45 H-0.5 Z" fill="#F1E8F7" stroke="#7A3FA0" stroke-width="0.5"/>
-<rect x="36.6" y="12" width="122" height="33" fill="white" stroke="#172b3a" stroke-width="0.4"/>
-<text class="s" x="162" y="50">10 mm Uebergriff</text>
-<text class="s" x="70" y="30">freie Oeffnung 122 x 33</text>
-<text class="s" x="70" y="62">Topplatte 3 mm; Oberseite Druckbettseite</text>
+<text class="t" x="0" y="-1">AirMonitor V0.8 - Laengswand ohne 122-mm-Quertraeger [mm]</text>
+<path class="wall" d="M0 55 H36.6 V12 H158.6 V55 H208 V0 H0 Z"/>
+<path d="M-0.5 58 H208.5 V45 H206 V55 H158.6 V45 H36.6 V55 H2 V45 H-0.5 Z" fill="#F1E8F7" stroke="#7A3FA0" stroke-width="0.5"/>
+<path d="M36.6 12 H158.6" fill="none" stroke="#172b3a" stroke-width="0.4"/>
+<text class="s" x="162" y="50">P02: 10 mm Uebergriff</text>
+<text class="s" x="69" y="31">P01-Oeffnung 122 x 43</text>
+<text class="s" x="58" y="26">Z12 bis Oberkante Z55 - oben vollstaendig offen</text>
+<text class="s" x="59" y="20">kein horizontaler Quertraeger / keine Stuetzstruktur</text>
+<text class="s" x="70" y="62">Topplatte 3 mm; Deckel ist separates Bauteil</text>
 </svg>'''
 (D / 'Drawing_V08_Overlap_Lid_Side.svg').write_text(side_svg, encoding='utf-8')
 

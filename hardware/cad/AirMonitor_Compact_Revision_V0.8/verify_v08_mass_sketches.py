@@ -12,6 +12,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 EXPECTED_PAGES = 11
 REVIEW_PAGES = {
+    2: "MassSketch_V08_Page02_OpenTopSide.png",
     4: "MassSketch_V08_Page04_Lid.png",
     9: "MassSketch_V08_Page09_Assembly.png",
     10: "MassSketch_V08_Page10_PrintDetail.png",
@@ -60,6 +61,7 @@ verification.write_text(
             f"PDF: {PDF.name}",
             f"Page count: {len(pdf)}",
             "Blank-page check: passed for all pages",
+            "Open-top longitudinal wall correction: page 2",
             "Dedicated guide print detail: page 10",
             "Review renders:",
             *[f"- 03_Renders_Drawings/{name}" for name in REVIEW_PAGES.values()],
