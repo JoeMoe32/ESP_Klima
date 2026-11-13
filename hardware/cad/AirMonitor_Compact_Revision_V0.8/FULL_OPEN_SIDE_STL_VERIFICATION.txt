@@ -1,0 +1,10 @@
+AirMonitor Compact V0.8 - exact STL cross-section verification
+STL: P01_Compact_Base_Print_FULL_OPEN_SIDE_V0.8.stl
+Git-style mesh size: 895284 bytes
+Watertight: True
+Front inner-shoulder sample Y: 14.40 mm
+Rear inner-shoulder sample Y: 117.60 mm
+Forbidden bridge zone: X 36.85..158.35 / Z above 45.05 mm
+Result: no section segment enters the forbidden zone
+Outer wall and recessed inner shoulder are both open to the top
+Render: 03_Renders_Drawings/Render_V08_Base_Full_Open_CrossSection.png

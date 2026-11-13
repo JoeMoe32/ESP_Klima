@@ -29,3 +29,11 @@ Aktueller Stand:
 - `03_Renders_Drawings/Render_V08_Open_8mm.png`
 - `03_Renders_Drawings/Render_V08_Guide_Section.png`
 - `CAD_COMPACT_SPEC_V0.8.md`
+
+## Vollstaendig offene Laengsseiten
+
+Die 122-mm-Oeffnungen schneiden jetzt nicht nur die aeussere 3,2-mm-Wand,
+sondern auch die nach innen versetzte Schulterwand. Der zuvor im GitHub-STL
+noch sichtbare innere Streifen bei etwa Y=14..15 mm der Druckdatei ist entfernt.
+Zur cache-sicheren Kontrolle liegt zusaetzlich
+`P01_Compact_Base_Print_FULL_OPEN_SIDE_V0.8.stl` vor.

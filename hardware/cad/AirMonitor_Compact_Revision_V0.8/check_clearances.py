@@ -35,6 +35,13 @@ def run() -> int:
     check('side opening has no upper bridge', C.NO_SIDE_OPENING_BRIDGE)
     check('side opening is 122 x 43',
           close(C.OPEN_X1-C.OPEN_X0,122.0) and close(C.OPEN_TOP_Z-C.OPEN_Z,43.0))
+    check('full shoulder-cut flag', C.SIDE_OPEN_CUT_THROUGH_SHOULDER)
+    check('full side cut reaches front shoulder inner edge',
+          C.SIDE_OPEN_FRONT_Y1 >= C.SHOULDER_INSET + C.WALL)
+    check('full side cut reaches rear shoulder inner edge',
+          C.SIDE_OPEN_REAR_Y0 <= C.W - C.SHOULDER_INSET - C.WALL)
+    check('front cut begins outside body', C.SIDE_OPEN_FRONT_Y0 < 0.0)
+    check('rear cut ends outside body', C.SIDE_OPEN_REAR_Y1 > C.W)
 
     clearance = C.SHOULDER_INSET-C.LID_SKIRT_W
     check('shoulder/skirt clearance 0.30', close(clearance,0.30), f'{clearance:.3f}')

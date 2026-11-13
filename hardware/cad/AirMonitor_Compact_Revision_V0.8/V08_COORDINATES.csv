@@ -6,7 +6,7 @@ P03 sealing rim,Z 54.0..55.0,CAD
 P07 plate,X 4.0..60.0 / Y 3.2..108.8 / Z 58.0..61.0,CAD
 Lid guides,blind 45-degree tracks; X 18/190 at front and rear; 8 mm slide,CAD
 Hidden snap,front/right X190; 0.20 mm nominal flex; blind detent,CAD
-Long-wall openings,X 36.6..158.6 / Z 12.0..55.0 = 122 x 43; open to top edge; no upper bridge,CAD / support-free correction
+Long-wall openings,X 36.6..158.6 / Z 12.0..55.0 = 122 x 43; cut through outer wall and recessed shoulder; no bridge at any Y depth,CAD / support-free correction
 P04A,"EPDM70 Ø45.00x1.50; centre (32.00,33.50); path 46.00x34.00 R8.00; stretch 0.12%",stocked SKU H48761
 P04B,"EPDM70 Ø50.00x1.50; centre (32.00,74.50); path 45.80x42.00 R8.00; stretch 0.05%",stocked SKU H96773
 P08,"EPDM70 Ø77.00x1.50; centre (32.75,56.00); path 51.20x79.00 R8.00; stretch 0.02%",stocked SKU H48789

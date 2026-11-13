@@ -183,32 +183,42 @@ b = b.union(rounded_prism(0, L, W, W+C.FLANGE, 2.0, 0, floor))
 for x, y in C.WALL_MOUNT_HOLES:
     b = b.cut(cz(x, y, -0.2, C.WALL_MOUNT_D, floor+0.5))
 
-for y in (-0.5, W-wall-0.5):
-    b = b.cut(box(C.OPEN_X0, y, C.OPEN_Z,
-                  C.OPEN_X1-C.OPEN_X0, wall+1.0,
-                  C.OPEN_TOP_Z-C.OPEN_Z+0.2))
+side_open_cut_ranges = [
+    ("front", C.SIDE_OPEN_FRONT_Y0, C.SIDE_OPEN_FRONT_Y1),
+    ("rear", C.SIDE_OPEN_REAR_Y0, C.SIDE_OPEN_REAR_Y1),
+]
+for wall_name, y0, y1 in side_open_cut_ranges:
+    b = b.cut(box(
+        C.OPEN_X0,
+        y0,
+        C.OPEN_Z,
+        C.OPEN_X1 - C.OPEN_X0,
+        y1 - y0,
+        C.OPEN_TOP_Z - C.OPEN_Z + 0.20,
+    ))
 
-# Definitive printability correction: no 122 mm horizontal bridge may remain
-# above either longitudinal opening. Probe the complete former bridge zone
-# between shoulder start Z=45 and enclosure top Z=55 on both long walls.
+# Definitive printability correction: probe the complete combined wall depth,
+# including the recessed shoulder ring. This catches the exact hidden strip
+# that remained around Y=SHOULDER_INSET+WALL/2 in the previous STL.
 side_bridge_volumes = []
-for wall_name, probe_y in (("front", -0.20), ("rear", W-wall-0.20)):
+for wall_name, y0, y1 in side_open_cut_ranges:
+    probe_y0 = y0 + 0.10
+    probe_y1 = y1 - 0.10
     probe = b.intersect(box(
         C.OPEN_X0 + 0.20,
-        probe_y,
+        probe_y0,
         C.SHOULDER_Z0 + 0.05,
         C.OPEN_X1 - C.OPEN_X0 - 0.40,
-        wall + 0.40,
+        probe_y1 - probe_y0,
         C.H - C.SHOULDER_Z0 - 0.10,
     ))
     volume = sum(v.Volume() for v in probe.vals()) if probe.vals() else 0.0
-    side_bridge_volumes.append((wall_name, volume))
+    side_bridge_volumes.append((wall_name, y0, y1, volume))
     if volume > 0.01:
         raise SystemExit(
-            f"Abbruch: oberer 122-mm-Quertraeger an {wall_name} verbleibt "
-            f"({volume:.3f} mm3)."
+            f"Abbruch: innerer Schulter-Quertraeger an {wall_name} verbleibt "
+            f"({volume:.3f} mm3, Y={y0:.2f}..{y1:.2f})."
         )
-
 for x, y in C.STANDOFFS:
     b = b.union(cz(x, y, floor, C.STANDOFF_D,
                    C.BOARD_BOTTOM_Z-floor))
@@ -468,6 +478,8 @@ for n, s in parts.items():
     if n == 'P01_Compact_Base_Global':
         step(q, P / 'P01_Compact_Base_Print_OPEN_TOP_V0.8.step')
         stl(q, P / 'P01_Compact_Base_Print_OPEN_TOP_V0.8.stl')
+        step(q, P / 'P01_Compact_Base_Print_FULL_OPEN_SIDE_V0.8.step')
+        stl(q, P / 'P01_Compact_Base_Print_FULL_OPEN_SIDE_V0.8.stl')
     if n == 'P02_Compact_Lid_Global':
         step(q, P / 'P02_Compact_Lid_Print_45DEG_GUIDES_V0.8.step')
         stl(q, P / 'P02_Compact_Lid_Print_45DEG_GUIDES_V0.8.stl')
@@ -531,11 +543,12 @@ with (R / 'SIDE_OPENING_VERIFICATION.txt').open('w', encoding='utf-8') as f:
     f.write('AirMonitor Compact V0.8 - longitudinal side-opening verification\n')
     f.write(f'Opening X: {C.OPEN_X0:.1f}..{C.OPEN_X1:.1f} mm = {C.OPEN_X1-C.OPEN_X0:.1f} mm\n')
     f.write(f'Opening Z: {C.OPEN_Z:.1f}..{C.OPEN_TOP_Z:.1f} mm = {C.OPEN_TOP_Z-C.OPEN_Z:.1f} mm\n')
-    f.write('Upper horizontal bridge: removed\n')
-    for wall_name, volume in side_bridge_volumes:
-        f.write(f'Bridge volume {wall_name}: {volume:.3f} mm3\n')
-    f.write('Target printing: opening is open to the upper edge; no 122 mm bridge support required\n')
-
+    f.write('Outer wall bridge: removed\n')
+    f.write('Recessed inner shoulder bridge: removed\n')
+    for wall_name, y0, y1, volume in side_bridge_volumes:
+        f.write(f'Complete cut {wall_name} Y: {y0:.2f}..{y1:.2f} mm\n')
+        f.write(f'Full-depth bridge volume {wall_name}: {volume:.3f} mm3\n')
+    f.write('Target printing: both 122 mm openings are fully open through the entire wall/shoulder depth.\n')
 # Dimensions and purchased component data.
 with (R / 'DIMENSIONS.csv').open('w', newline='', encoding='utf-8') as f:
     w = csv.writer(f)
@@ -570,7 +583,7 @@ with (R / 'V08_COORDINATES.csv').open('w', newline='', encoding='utf-8') as f:
     w.writerow(['P07 plate', 'X 4.0..60.0 / Y 3.2..108.8 / Z 58.0..61.0', 'CAD'])
     w.writerow(['Lid guides', 'blind 45-degree tracks; X 18/190 at front and rear; 8 mm slide', 'CAD'])
     w.writerow(['Hidden snap', 'front/right X190; 0.20 mm nominal flex; blind detent', 'CAD'])
-    w.writerow(['Long-wall openings', 'X 36.6..158.6 / Z 12.0..55.0 = 122 x 43; open to top edge; no upper bridge', 'CAD / support-free correction'])
+    w.writerow(['Long-wall openings', 'X 36.6..158.6 / Z 12.0..55.0 = 122 x 43; cut through outer wall and recessed shoulder; no bridge at any Y depth', 'CAD / support-free correction'])
     for r in (C.P04A_RING, C.P04B_RING, C.P08_RING):
         path = 2 * (r['cw'] + r['ch']) + (2 * math.pi - 8) * r['r']
         free = math.pi * (r['id'] + r['cord'])

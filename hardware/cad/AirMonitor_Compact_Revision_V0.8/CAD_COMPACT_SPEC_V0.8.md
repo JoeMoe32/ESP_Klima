@@ -73,3 +73,11 @@ Beide Laengswandoeffnungen von P01 laufen bis zur oberen Gehaeusekante. Damit
 gibt es keine 122 mm lange waagerechte Bruecke mehr, die beim Druck Stuetzen
 oder eine unzulaessige freie Ueberbrueckung erfordern wuerde. Der violette
 10-mm-Uebergriff gehoert ausschliesslich zum separat gedruckten Deckel P02.
+
+## Korrektur des inneren Schulter-Quertraegers
+
+Die Laengsoeffnung X=36,6..158,6 und Z=12,0..55,0 wird ueber die komplette
+kombinierte Wandtiefe geschnitten. Vorne reicht der CAD-Schnitt von
+Y=-0,50 bis Y=6,50 mm, hinten von Y=105,50 bis Y=112,50 mm. Damit sind sowohl
+die aeussere Gehaeusewand als auch die versetzte Schulterwand entfernt; es
+bleibt kein 122-mm-Streifen fuer einen freien Brueckendruck stehen.

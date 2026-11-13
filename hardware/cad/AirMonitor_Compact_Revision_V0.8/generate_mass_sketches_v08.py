@@ -183,7 +183,7 @@ def page1_base(c):
 
 def page2_walls(c):
     header(c, "P01/P02 - Laengswand ohne oberen Quertraeger",
-           "P01-Oeffnung X36,6..158,6 / Z12..55: 122 x 43 und bis zur Oberkante offen")
+           "P01-Oeffnung 122 x 43: durch Aussenwand und Schulterring bis Z55 offen")
     ox, oy = 38 * mm, 55 * mm
 
     # Draw the actual printable P01 wall contour as a U-shape. The 122 mm
@@ -244,7 +244,7 @@ def page2_walls(c):
     label(c, 12 * mm, 29 * mm,
           "P01-Oeffnung: X36,6..158,6 / Z12,0..55,0 = 122 x 43; bis Oberkante offen.", 7, True)
     label(c, 12 * mm, 24 * mm,
-          "Der bisherige 122-mm-Quertraeger oberhalb der Oeffnung ist vollstaendig entfernt.", 7, True, C_ORING)
+          "Aussenwand UND innere Schulterwand sind ueber 122 mm vollstaendig bis oben offen.", 7, True, C_ORING)
     label(c, 12 * mm, 19 * mm,
           "Violett: separater P02-Deckel mit 10-mm-Uebergriff; nicht Bestandteil der P01-Druckbruecke.", 7)
     footer(c, 2)

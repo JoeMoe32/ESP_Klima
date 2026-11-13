@@ -12,7 +12,7 @@ geometry. Only the lid retention is revised again:
 - entry pockets are open only toward the inside and lower skirt edge;
 - a hidden detent at the front/right guide provides the end snap;
 - both 122 mm longitudinal openings run from Z=12 to the upper edge Z=55;
-  there is no horizontal wall bridge above either opening;
+  neither the outer wall nor the recessed inner shoulder leaves a horizontal bridge;
 - P01 prints on its floor and P02 on its visible top without slicer supports.
 
 Global coordinates: origin = outer lower corner of P01 without flange,
@@ -34,6 +34,12 @@ NO_CENTER_FIXINGS = True
 OPEN_X0, OPEN_X1 = 36.6, 158.6
 OPEN_Z, OPEN_TOP_Z = 12.0, H
 NO_SIDE_OPENING_BRIDGE = True
+# Complete cut ranges through lower wall plus recessed shoulder wall.
+SIDE_OPEN_FRONT_Y0 = -0.50
+SIDE_OPEN_FRONT_Y1 = SHOULDER_INSET + WALL + 0.50
+SIDE_OPEN_REAR_Y0 = W - SHOULDER_INSET - WALL - 0.50
+SIDE_OPEN_REAR_Y1 = W + 0.50
+SIDE_OPEN_CUT_THROUGH_SHOULDER = True
 WALL_MOUNT_HOLES = [(37.0, -5.0), (37.0, W + 5.0),
                     (L - 37.0, -5.0), (L - 37.0, W + 5.0)]
 WALL_MOUNT_D = 4.5
