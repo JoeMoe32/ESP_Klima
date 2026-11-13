@@ -1,0 +1,60 @@
+name: Update AirMonitor V0.8 mass sketches
+
+on:
+  push:
+    branches:
+      - cad/airmonitor-compact-v0.8
+    paths:
+      - ".github/workflows/update-airmonitor-v08-mass-sketches.yml"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.8/apply_v08_mass_sketch_update.py"
+      - "hardware/cad/AirMonitor_Compact_Revision_V0.8/verify_v08_mass_sketches.py"
+
+permissions:
+  contents: write
+
+jobs:
+  generate-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out V0.8 branch
+        uses: actions/checkout@v4
+        with:
+          ref: cad/airmonitor-compact-v0.8
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Apply sketch update
+        working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.8
+        run: python apply_v08_mass_sketch_update.py
+
+      - name: Install PDF dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install reportlab==4.2.5 pypdfium2==5.1.0 pillow==13.0.0
+
+      - name: Generate and render-check PDF
+        working-directory: hardware/cad/AirMonitor_Compact_Revision_V0.8
+        run: |
+          python generate_mass_sketches_v08.py
+          python verify_v08_mass_sketches.py
+          test -f AirMonitor_V08_Massskizzen_1zu1.pdf
+          test -f 03_Renders_Drawings/MassSketches_V08_ContactSheet.png
+          test -f 03_Renders_Drawings/MassSketch_V08_Page10_PrintDetail.png
+          grep -q "Page count: 11" MASS_SKETCH_VERIFICATION.txt
+          grep -q "Blank-page check: passed" MASS_SKETCH_VERIFICATION.txt
+
+      - name: Commit updated sketches and review renders
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A hardware/cad/AirMonitor_Compact_Revision_V0.8
+          if git diff --cached --quiet; then
+            echo "V0.8 mass sketches already current."
+            exit 0
+          fi
+          git commit -m "Update V0.8 sketches for hidden 45-degree lid guides"
+          git push origin HEAD:cad/airmonitor-compact-v0.8
