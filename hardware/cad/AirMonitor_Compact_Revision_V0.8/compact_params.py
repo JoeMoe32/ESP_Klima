@@ -6,9 +6,10 @@ station geometry, but redesigns the outer enclosure and service lid:
 - slightly thicker 3.2 mm enclosure walls and floor;
 - a continuous recessed upper shoulder instead of lid-support columns;
 - a cap lid that overlaps the enclosure by 10.0 mm;
-- four wall-integrated, 45-degree printable slide lugs and through-slots;
-- 8.0 mm slide travel and the existing end snap;
-- no additional lid columns in the enclosure centre;
+- all lid guides moved to the outer edge zones; the enclosure centre stays free;
+- three wall-integrated 45-degree guide lugs plus one edge snap;
+- visually flush outer contour with matching body/lid radius;
+- 8.0 mm short slide in the operating view from left to right;
 - support-free target orientation: base on its floor, lid on its visible top.
 
 Global coordinates: origin = outer lower corner of P01 without flange,
@@ -22,9 +23,10 @@ FLANGE = 10.0
 BODY_CORNER_R = 6.0
 SHOULDER_Z0 = 45.0
 SHOULDER_H = H - SHOULDER_Z0
-SHOULDER_INSET = 2.0
-SHOULDER_CORNER_R = 4.0
+SHOULDER_INSET = 2.3
+SHOULDER_CORNER_R = 3.7
 NO_LID_COLUMNS = True
+NO_CENTER_FIXINGS = True
 
 OPEN_X0, OPEN_X1 = 36.6, 158.6
 OPEN_Z, OPEN_TOP_Z = 12.0, SHOULDER_Z0
@@ -40,11 +42,15 @@ BOARD_BOTTOM_Z, BOARD_TOP_Z = 9.6, 27.6
 CARRIER = (10.0, 185.0, 11.0, 101.0, 9.6, 27.6)
 PCB_WAVESHARE = (20.6, 172.4, 11.0, 101.0, 9.6, 11.2)
 
-# Wall-integrated slide lugs. Lower face rises 1.2 over 1.2 = 45 degrees.
+# Edge-only slide retention. There is no lid fixing in the central zone.
+# Global -X appears left-to-right in the defined operating/front view.
 SLIDE_TRAVEL = 8.0
 SLIDE_OPEN_OFFSET_X = 8.0
 SLIDE_CLOSE_DIRECTION = '-X'
-SIDE_LUG_X = (80.0, 172.0)
+SLIDE_USER_DIRECTION = 'left-to-right in operating view'
+SIDE_LUG_X_FRONT = (18.0,)
+SIDE_LUG_X_REAR = (18.0, 190.0)
+SIDE_LUG_X = tuple(sorted(set(SIDE_LUG_X_FRONT + SIDE_LUG_X_REAR)))
 SIDE_LUG_WIDTH = 6.0
 SIDE_LUG_PROJ = 1.2
 SIDE_LUG_Z0 = 47.0
@@ -58,15 +64,15 @@ SLOT_TRACK_Z0 = 46.6
 SLOT_TRACK_Z1 = 50.4
 SLOT_TRACK_END_EXTRA = 3.8
 
-# Snap tongue remains wall-based; no free-standing central pin/column.
-LATCH_TONGUE_X = (110.0, 132.0)
+# End snap moved to the front/right edge zone; centre remains completely free.
+LATCH_TONGUE_X = (177.0, 200.0)
 LATCH_TONGUE_Y = (0.0, 10.5)
 LATCH_SLOT_W = 0.9
 LATCH_TONGUE_SKIN = 1.20
-LATCH_HOLE = (116.0, 2.2, 3.4)
-LATCH_PIN = (116.0, 2.2)
+LATCH_HOLE = (184.0, 2.2, 3.4)
+LATCH_PIN = (184.0, 2.2)
 LATCH_PIN_SEGMENTS = [(3.0, 0.8), (2.2, 0.7), (1.2, 0.7)]
-LATCH_SKIRT_NOTCH_X = (108.0, 134.0)
+LATCH_SKIRT_NOTCH_X = (175.0, 202.0)
 
 # ---------- Right end wall: ZERO / SPAN ----------
 BTN_HOLDER_Y = (18.0, 94.0)
@@ -89,11 +95,12 @@ MARK_FONT_SIZE = 3.8
 # ---------- Cap lid P02 ----------
 LID_Z, LID_T = 55.0, 3.0
 LID_OVERLAP = 10.0
-LID_OUTSET = 0.5
+LID_OUTSET = 0.0
 LID_X0, LID_X1 = -LID_OUTSET, L + LID_OUTSET
 LID_Y0, LID_Y1 = -LID_OUTSET, W + LID_OUTSET
-LID_CORNER_R = 6.5
-LID_SKIRT_W = 2.2
+LID_CORNER_R = 6.0
+LID_SKIRT_W = 2.0
+LID_LEFT_END_OPEN = True
 LID_IN_X0, LID_IN_X1 = LID_X0 + LID_SKIRT_W, LID_X1 - LID_SKIRT_W
 LID_IN_Y0, LID_IN_Y1 = LID_Y0 + LID_SKIRT_W, LID_Y1 - LID_SKIRT_W
 LID_TOP_FACE_FLAT = True

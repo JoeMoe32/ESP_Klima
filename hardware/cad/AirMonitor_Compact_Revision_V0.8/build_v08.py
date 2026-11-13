@@ -3,7 +3,7 @@
 Generates global STEP, print-oriented STEP/STL, SVG review drawings and CSV data.
 The sensor/calibration group retains the proven V0.6 X position, is centred in Y,
 uses purchased EPDM 70 Shore A O-rings, lowers ZERO/SPAN by 15 mm,
-and adds a flat-top short-travel sliding lid with a snap tongue.
+and adds an edge-guided, visually flush short-travel sliding lid.
 """
 from __future__ import annotations
 
@@ -168,6 +168,16 @@ upper_inner = rounded_prism(sx0+wall, sx1-wall,
                             C.SHOULDER_Z0-0.1, C.SHOULDER_H+0.2)
 b = b.union(upper_outer.cut(upper_inner))
 
+# Keep the insertion-side end wall full height. The lid has no left end
+# skirt, so it can be lowered in the +8 mm service position without
+# colliding with the shoulder. Intersecting with the rounded body
+# preserves the external R6 corner contour.
+left_end_wall = rounded_prism(0, L, 0, W, C.BODY_CORNER_R,
+                              C.SHOULDER_Z0, C.SHOULDER_H)
+left_end_wall = left_end_wall.intersect(
+    box(0, 0, C.SHOULDER_Z0, wall, W, C.SHOULDER_H))
+b = b.union(left_end_wall)
+
 b = b.union(rounded_prism(0, L, -C.FLANGE, 0, 2.0, 0, floor))
 b = b.union(rounded_prism(0, L, W, W+C.FLANGE, 2.0, 0, floor))
 for x, y in C.WALL_MOUNT_HOLES:
@@ -199,8 +209,10 @@ def side_lug(xc, rear=False):
     return (cq.Workplane('YZ', origin=(x0,0,0))
             .polyline(points).close().extrude(C.SIDE_LUG_WIDTH))
 
-for x in C.SIDE_LUG_X:
-    b = b.union(side_lug(x,False)).union(side_lug(x,True))
+for x in C.SIDE_LUG_X_FRONT:
+    b = b.union(side_lug(x, False))
+for x in C.SIDE_LUG_X_REAR:
+    b = b.union(side_lug(x, True))
 
 px, py = C.LATCH_PIN
 pz = H
@@ -239,7 +251,16 @@ skirt_outer = rounded_prism(C.LID_X0,C.LID_X1,C.LID_Y0,C.LID_Y1,
 skirt_inner = rounded_prism(C.LID_IN_X0,C.LID_IN_X1,C.LID_IN_Y0,C.LID_IN_Y1,
                             max(0.8,C.LID_CORNER_R-C.LID_SKIRT_W),
                             lz-C.LID_OVERLAP-0.1,C.LID_OVERLAP+0.2)
-l = l.union(skirt_outer.cut(skirt_inner))
+skirt = skirt_outer.cut(skirt_inner)
+# Open the insertion-side end of the 10 mm skirt. Front/rear skirts
+# remain continuous and the opposite end closes flush in service.
+if C.LID_LEFT_END_OPEN:
+    skirt = skirt.cut(box(C.LID_X0 - 0.2, C.LID_Y0 - 0.2,
+                           lz - C.LID_OVERLAP - 0.2,
+                           C.LID_SKIRT_W + 0.6,
+                           C.LID_Y1 - C.LID_Y0 + 0.4,
+                           C.LID_OVERLAP + 0.4))
+l = l.union(skirt)
 
 for x,y,lx,ly in C.VENTS:
     l = l.cut(box(x,y,lz-0.5,lx,ly,lt+1.0))
@@ -250,19 +271,26 @@ for x,y in C.POD_MOUNTS:
     l = l.union(cz(x,y,C.POD_BOSS_Z0,C.POD_BOSS_D,lz-C.POD_BOSS_Z0))
     l = l.cut(cz(x,y,C.POD_BOSS_Z0-0.1,C.POD_BOSS_PILOT_D,C.POD_BOSS_PILOT_TOP-C.POD_BOSS_Z0+0.1))
 
-slot_y_front = C.LID_Y0-0.2
-slot_y_rear = C.LID_IN_Y1-0.2
-slot_depth = C.LID_SKIRT_W+0.5
-for x in C.SIDE_LUG_X:
-    entry = x-C.SLIDE_TRAVEL
-    entry_x0 = entry-C.SLOT_ENTRY_W/2
-    entry_h = C.SLOT_ENTRY_TOP_Z-(lz-C.LID_OVERLAP)+0.2
-    track_x1 = x+C.SLOT_TRACK_END_EXTRA
-    for yy in (slot_y_front,slot_y_rear):
-        l = l.cut(box(entry_x0,yy,lz-C.LID_OVERLAP-0.1,
-                      C.SLOT_ENTRY_W,slot_depth,entry_h))
-        l = l.cut(box(entry,yy,C.SLOT_TRACK_Z0,
-                      track_x1-entry,slot_depth,C.SLOT_TRACK_Z1-C.SLOT_TRACK_Z0))
+slot_y_front = C.LID_Y0 - 0.2
+slot_y_rear = C.LID_IN_Y1 - 0.2
+slot_depth = C.LID_SKIRT_W + 0.5
+
+def cut_edge_slot(shape, x, yy):
+    entry = x - C.SLIDE_TRAVEL
+    entry_x0 = entry - C.SLOT_ENTRY_W / 2
+    entry_h = C.SLOT_ENTRY_TOP_Z - (lz - C.LID_OVERLAP) + 0.2
+    track_x1 = x + C.SLOT_TRACK_END_EXTRA
+    shape = shape.cut(box(entry_x0, yy, lz - C.LID_OVERLAP - 0.1,
+                          C.SLOT_ENTRY_W, slot_depth, entry_h))
+    shape = shape.cut(box(entry, yy, C.SLOT_TRACK_Z0,
+                          track_x1 - entry, slot_depth,
+                          C.SLOT_TRACK_Z1 - C.SLOT_TRACK_Z0))
+    return shape
+
+for x in C.SIDE_LUG_X_FRONT:
+    l = cut_edge_slot(l, x, slot_y_front)
+for x in C.SIDE_LUG_X_REAR:
+    l = cut_edge_slot(l, x, slot_y_rear)
 
 tx0,tx1=C.LATCH_TONGUE_X
 ty0,ty1=C.LATCH_TONGUE_Y
@@ -503,24 +531,26 @@ or_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" v
 
 cap_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="760" viewBox="-8 -10 225 135">
 {svg_style}
-<text class="t" x="0" y="-5">AirMonitor V0.8 - abgerundeter 10-mm-Ueberwurfdeckel [mm]</text>
+<text class="t" x="0" y="-5">AirMonitor V0.8 - randgefuehrter, buendiger Schiebedeckel [mm]</text>
 <rect class="wall" x="0" y="0" width="208" height="112" rx="6"/>
-<rect class="part" x="2" y="2" width="204" height="108" rx="4"/>
-<rect x="-0.5" y="-0.5" width="209" height="113" rx="6.5" fill="none" stroke="#7A3FA0" stroke-width="0.6"/>
-<text class="s" x="70" y="108">Deckel 209 x 113, R6,5</text>
-<text class="s" x="70" y="103">Schulter 204 x 108, R4; Spiel 0,30/Seite</text>
-<g stroke="#b33" fill="none" stroke-width="0.7">
-<path d="M72 2 H83"/><path d="M164 2 H175"/>
-<path d="M72 110 H83"/><path d="M164 110 H175"/>
+<rect class="part" x="2.3" y="2.3" width="203.4" height="107.4" rx="3.7"/>
+<rect x="0" y="0" width="208" height="112" rx="6" fill="none" stroke="#7A3FA0" stroke-width="0.7"/>
+<g stroke="#b33" fill="none" stroke-width="0.8">
+  <path d="M10 2.3 H18"/><path d="M10 109.7 H18"/><path d="M182 109.7 H190"/>
+  <rect x="177" y="0" width="23" height="10.5"/>
 </g>
-<text class="s" x="72" y="8">4 Seitenschlitze / 8 mm Weg</text>
-<text class="s" x="108" y="16">Rastzunge + Bediennotch</text>
+<text class="s" x="60" y="106">Aussenkontur Deckel = Gehaeuse: 208 x 112, R6</text>
+<text class="s" x="60" y="101">Fuehrungen nur in Randzonen; gesamte Mitte frei</text>
+<text class="s" x="145" y="16">Rastung vorn rechts</text>
+<text class="s" x="8" y="8">Einsetzseite offen</text>
+<path d="M145 20 H137" stroke="#24566f" stroke-width="0.7"/>
+<text class="s" x="145" y="25">Schliessen in Bedienansicht: links nach rechts</text>
 </svg>'''
 (D / 'Drawing_V08_Rounded_Overlap_Lid.svg').write_text(cap_svg, encoding='utf-8')
 
 side_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="-5 -5 218 70">
 {svg_style}
-<text class="t" x="0" y="-1">AirMonitor V0.8 - Seitenansicht Deckeluebergriff [mm]</text>
+<text class="t" x="0" y="-1">AirMonitor V0.8 - Seitenansicht buendiger Deckeluebergriff [mm]</text>
 <path class="wall" d="M0 55 V0 H208 V55 H206 V45 H2 V55 Z"/>
 <path d="M-0.5 58 H208.5 V45 H206 V55 H2 V45 H-0.5 Z" fill="#F1E8F7" stroke="#7A3FA0" stroke-width="0.5"/>
 <rect x="36.6" y="12" width="122" height="33" fill="white" stroke="#172b3a" stroke-width="0.4"/>

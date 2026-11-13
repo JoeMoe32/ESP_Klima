@@ -1,22 +1,18 @@
 START HIER - AirMonitor Compact V0.8
 
-1. Fusion 360:
+1. Öffnen:
    01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step
 
-2. Maßskizzen:
-   AirMonitor_V08_Massskizzen_1zu1.pdf
+2. Prüfen:
+   - Deckel/Gehäuse außen bündig 208 x 112 / R6
+   - Randführungen X18 / X190
+   - Endrastung X184
+   - Mitte ohne Deckelfixierungen
+   - Einsetzseite offen
+   - supportfreie Drucklage
 
-3. Prüfen:
-   - 10 mm Übergriff
-   - abgerundete Außenkanten
-   - 3,2 mm Wand/Boden
-   - keine Deckelsäulen in der Mitte
-   - vier Wandlaschen / 8 mm Weg
-   - Rastzunge
-   - Druck ohne Slicer-Stützen
+3. Massskizzen:
+   AirMonitor_V08_Massskizzen_1zu1.pdf
 
 4. Spezifikation:
    CAD_COMPACT_SPEC_V0.8.md
-
-5. Claude:
-   PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.8.md

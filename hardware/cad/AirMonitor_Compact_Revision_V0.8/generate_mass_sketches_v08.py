@@ -1,7 +1,7 @@
 """Generate revised 1:1 engineering sketches for AirMonitor Compact V0.8.
 
 Includes Y-centred sensor group, purchased EPDM O-rings, the complete
-ZERO/SPAN assembly 15 mm lower, and the flat-top 8 mm sliding snap lid.
+ZERO/SPAN assembly 15 mm lower, and the edge-guided flush sliding lid.
 """
 from pathlib import Path
 
@@ -160,14 +160,15 @@ def page1_base(c):
         c.circle(ox+x*mm,oy+y*mm,C.STANDOFF_D/2*mm)
         c.circle(ox+x*mm,oy+y*mm,C.STANDOFF_PILOT_D/2*mm)
     c.setStrokeColor(C_ORING)
-    for x in C.SIDE_LUG_X:
+    for x in C.SIDE_LUG_X_FRONT:
         c.rect(ox+(x-C.SIDE_LUG_WIDTH/2)*mm,oy+(C.SHOULDER_INSET-C.SIDE_LUG_PROJ)*mm,C.SIDE_LUG_WIDTH*mm,C.SIDE_LUG_PROJ*mm)
+    for x in C.SIDE_LUG_X_REAR:
         c.rect(ox+(x-C.SIDE_LUG_WIDTH/2)*mm,oy+(C.W-C.SHOULDER_INSET)*mm,C.SIDE_LUG_WIDTH*mm,C.SIDE_LUG_PROJ*mm)
     c.setStrokeColor(colors.black)
     dim_h(c,ox,ox+C.L*mm,oy-17*mm,"208")
     dim_v(c,ox+C.L*mm+9*mm,oy-C.FLANGE*mm,oy+(C.W+C.FLANGE)*mm,"132")
-    label(c,12*mm,27*mm,"Violett: Schulter je 2,0 zurueckgesetzt; Beginn Z45,0.",7)
-    label(c,12*mm,22*mm,"Rot: vier wandintegrierte Fuehrungslaschen; keine freien Deckelsaeulen.",7)
+    label(c,12*mm,27*mm,"Violett: Schulter je 2,3 zurueckgesetzt; Beginn Z45,0.",7)
+    label(c,12*mm,22*mm,"Rot: drei Fuehrungslaschen nur an den Raendern; Mitte komplett frei.",7)
     label(c,12*mm,17*mm,"Blau: notwendige Waveshare-Abstandshalter; Wand/Boden 3,2; R6,0.",7)
     footer(c,1)
 
@@ -188,7 +189,7 @@ def page2_walls(c):
     dim_v(c,ox+C.L*mm+18*mm,oy+C.SHOULDER_Z0*mm,oy+C.H*mm,"10")
     label(c,12*mm,27*mm,"Bodenoeffnung: X36,6..158,6 / Z12,0..45,0 = 122 x 33.",7)
     label(c,12*mm,22*mm,"Deckel: Topplatte 3,0; Schuerze 10,0; Oberseite ist Druckbettseite.",7)
-    label(c,12*mm,17*mm,"Koerper R6,0; Schulter R4,0; Deckel R6,5.",7)
+    label(c,12*mm,17*mm,"Koerper/Deckel R6,0 und aussen buendig; Schulter R3,7.",7)
     footer(c,2)
 
 def page3_endwalls(c):
@@ -224,7 +225,7 @@ def page3_endwalls(c):
 
 def page4_lid(c):
     header(c,"P02 - abgerundeter Ueberwurf-Schiebedeckel",
-           "209 x 113; R6,5; 10 mm Schuerze; vier Seitenschlitze und Rastzunge")
+           "208 x 112; R6; 10 mm Schuerze; Randfuehrungen und Rastung rechts")
     ox,oy=37.5*mm,46.5*mm
     w=C.LID_X1-C.LID_X0; h=C.LID_Y1-C.LID_Y0
     c.roundRect(ox,oy,w*mm,h*mm,C.LID_CORNER_R*mm)

@@ -1,26 +1,28 @@
 # Claude-/Daniel-Prüfprompt - AirMonitor Compact V0.8
 
-Öffne `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step`.
+Die Konstruktion wurde bereits erstellt. Bitte nur prüfen und Abweichungen
+dokumentieren; keine selbstständige Neukonstruktion ohne Rückmeldung.
 
-Unverändert aus V0.7: Microtaster, Waveshare, Sensorpod, Prüfstation, O-Ringe,
-DC5521 und Markierungen. Die Prüfstation darf vor der praktischen Prüfung nicht
-ohne Befund umgestaltet werden.
+## Verbindliche Punkte
 
-Prüfe:
+1. Deckel und unteres Gehäuse außen 208 x 112, beide R6 und bündig.
+2. Deckelübergriff 10 mm; Einsetzseite links offen.
+3. Keine Deckelführung, Rastung oder Stabilisierung in der mittleren Zone.
+4. Randführungen: vorn X18; hinten X18 und X190.
+5. Endrastung vorn rechts bei X184.
+6. Führungsnasen mit 45°-Unterseite; Druck ohne Support vorgesehen.
+7. In der Bedienansicht gleitet der Deckel von links nach rechts in die
+   bündige Endstellung.
+8. Microtaster, Waveshare, Sensorpod, Prüfstation und O-Ringe unverändert.
 
-1. Deckelübergriff exakt 10,0 mm.
-2. Schulter ab Z45,0, 2,0 mm zurückgesetzt.
-3. 0,30 mm nominelles Spiel je Seite.
-4. Wand/Boden 3,2 mm.
-5. Boden R6,0, Deckel R6,5.
-6. Keine zusätzlichen Deckelstützen oder Verschlusssäulen in der Mitte.
-7. Laschen X80/X172 greifen in die Seitenschlitze.
-8. +8 mm aufsetzen, 8 mm nach -X schließen.
-9. Druckorientierung ohne Slicer-Stützen.
-10. Federzunge sicher und lösbar.
-11. P03, P07, Kabel und Board in beiden Deckellagen kollisionsfrei.
+## Prüfen
 
-Prototyp: mindestens 20 Öffnungszyklen, Rastkraft, Verzug, Schürzenstabilität,
-O-Ring-Kompression und Gasdichtheit prüfen.
+- reale Einsetz- und Schieberichtung;
+- Kollisionsfreiheit in offener und geschlossener Stellung;
+- freie Gehäusemitte;
+- Rastkraft, Spiel, Klappern und 20 Öffnungszyklen;
+- Brücken im PrusaSlicer ohne Support;
+- optisch bündige Außenkontur und gleichmäßige Fuge;
+- Kabelreserve sowie Prüfstation/O-Ringe.
 
 Ergebnis: `freigegeben`, `freigegeben mit Änderung` oder `nicht freigegeben`.

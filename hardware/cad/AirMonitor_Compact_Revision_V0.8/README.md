@@ -1,22 +1,26 @@
 # AirMonitor Compact Revision V0.8
 
-V0.8 ist die neue abgerundete Gehäuse- und Deckelrevision.
+Aktueller V0.8-Stand:
 
-- Deckel reicht 10 mm über die Außenwände nach unten.
-- Boden besitzt eine zurückgesetzte obere Schulter.
-- Wand und Boden sind 3,2 mm dick.
-- Boden R6, Deckel R6,5.
-- Keine zusätzlichen Deckelsäulen in der Mitte.
-- Vier wandintegrierte 45°-Laschen führen den Deckel über 8 mm.
-- Die Federzunge rastet am Ende ein.
-- P01 und P02 sind für Druck ohne Slicer-Stützen ausgelegt.
-- Microtaster und Prüfstation entsprechen V0.7.
+- außen bündiger, abgerundeter Überwurf-Schiebedeckel
+- Deckel 10 mm nach unten übergreifend
+- Einsetzseite offen, Endstellung optisch bündig
+- Führungen ausschließlich an den äußeren Rändern
+- keine Deckelfixierung oder Stabilisierung in der Gehäusemitte
+- drei 45°-Führungen und eine Endrastung vorn rechts
+- supportfreie Zielausrichtung für P01 und P02
+- bestätigte Microtaster-Position und bestehende Prüfstation beibehalten
+
+## Bedienung
+
+Deckel in der Serviceposition absenken und in der definierten Bedienansicht
+von links nach rechts bis zur Rastung einschieben. Zum Öffnen die Rastzunge
+lösen, 8 mm zurückschieben und den Deckel abheben.
 
 ## Dateien
 
-- `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step`
-- `02_CAD_Print/P01_Compact_Base_Print.stl`
-- `02_CAD_Print/P02_Compact_Lid_Print.stl`
-- `AirMonitor_V08_Massskizzen_1zu1.pdf`
-- `CAD_COMPACT_SPEC_V0.8.md`
-- `PROMPT_CLAUDE_DANIEL_COMPACT_REVIEW_V0.8.md`
+- Baugruppe: `01_CAD_Global/AirMonitor_Compact_Assembly_V0.8.step`
+- Referenz: `01_CAD_Global/AirMonitor_Compact_Reference_With_Dummies_V0.8.step`
+- Druckteile: `02_CAD_Print/`
+- Massskizzen: `AirMonitor_V08_Massskizzen_1zu1.pdf`
+- Spezifikation: `CAD_COMPACT_SPEC_V0.8.md`
